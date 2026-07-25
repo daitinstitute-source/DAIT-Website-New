@@ -3,6 +3,7 @@
  * Header/Footer components. Program areas drive the Programs dropdown; the
  * dropdown lists live programs from the content collection at render time.
  */
+import { siteConfig } from "../config/site";
 
 export type ProgramArea =
   | "software-development"
@@ -70,7 +71,8 @@ export const mainNav: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Programs", href: "/programs/", dropdown: true },
   { label: "For Colleges", href: "/for-colleges/" },
-  { label: "For Companies", href: "/for-companies/" },
+  // Parked until the B2B offering is settled — see siteConfig.display.showForCompanies.
+  { label: "For Companies", href: "/for-companies/", comingSoon: !siteConfig.display.showForCompanies },
   { label: "Blog", href: "/blog/" },
   { label: "Why DAIT", href: "/why-dait/" }, // Dhakne Education Group legacy story
   { label: "Contact", href: "/contact/" },
