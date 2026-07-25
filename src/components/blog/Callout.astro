@@ -1,0 +1,55 @@
+---
+/**
+ * Callout — highlighted aside inside an article (key takeaway, honest caveat).
+ * tone: note (blue) | highlight (orange) | dark (full-width emphasis panel)
+ */
+import { Icon } from "astro-icon/components";
+
+type Tone = "note" | "highlight" | "dark";
+interface Props {
+  tone?: Tone;
+  title?: string;
+  icon?: string;
+}
+const {
+  tone = "note",
+  title,
+  icon = "lucide:lightbulb",
+} = Astro.props as Props;
+
+const tones: Record<Tone, { box: string; badge: string; title: string; body: string }> = {
+  note: {
+    box: "border-border-blue bg-accent-50",
+    badge: "bg-accent-500 text-white",
+    title: "text-ink-900",
+    body: "text-ink-600",
+  },
+  highlight: {
+    box: "border-orange-200 bg-orange-50",
+    badge: "bg-orange-500 text-white",
+    title: "text-ink-900",
+    body: "text-ink-600",
+  },
+  dark: {
+    box: "border-transparent bg-dark-950",
+    badge: "bg-orange-500 text-white",
+    title: "text-white",
+    body: "text-white/75",
+  },
+};
+const t = tones[tone];
+---
+
+<aside class={`viz my-9 flex gap-4 rounded-2xl border p-6 ${t.box}`}>
+  <span
+    class={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${t.badge}`}
+  >
+    <Icon name={icon} size={18} />
+  </span>
+  <div>
+    {title && <strong class={`block text-base font-bold ${t.title}`}>{title}</strong>}
+    <div class={`${title ? "mt-1.5" : ""} text-sm leading-relaxed ${t.body}`}>
+      <slot />
+    </div>
+  </div>
+</aside>

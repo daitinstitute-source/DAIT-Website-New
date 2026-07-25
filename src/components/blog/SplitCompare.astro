@@ -1,0 +1,65 @@
+---
+/**
+ * SplitCompare — two-column comparison panel (this vs that) for articles.
+ * Left column is the "cool"/neutral side, right column the highlighted side.
+ */
+import { Icon } from "astro-icon/components";
+
+interface Side {
+  title: string;
+  icon: string;
+  items: string[];
+}
+interface Props {
+  left: Side;
+  right: Side;
+  /** Small caption under the panel. */
+  footnote?: string;
+}
+const { left, right, footnote } = Astro.props as Props;
+
+const sides: Array<Side & { accent: "blue" | "orange" }> = [
+  { ...left, accent: "blue" },
+  { ...right, accent: "orange" },
+];
+const chrome = {
+  blue: { badge: "bg-accent-50 text-accent-600", tick: "text-accent-500" },
+  orange: { badge: "bg-orange-50 text-orange-600", tick: "text-orange-500" },
+};
+---
+
+<div class="viz my-9">
+  <div class="grid gap-4 md:grid-cols-2">
+    {
+      sides.map((s) => (
+        <div class="rounded-2xl border border-border bg-white p-6 shadow-sm">
+          <div class="flex items-center gap-3">
+            <span
+              class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${chrome[s.accent].badge}`}
+            >
+              <Icon name={s.icon} size={20} />
+            </span>
+            <h3 class="text-base font-bold text-ink-900">{s.title}</h3>
+          </div>
+          <ul class="mt-5 space-y-3">
+            {s.items.map((item) => (
+              <li class="flex gap-2.5 text-sm leading-relaxed text-ink-600">
+                <Icon
+                  name="lucide:check"
+                  size={16}
+                  class={`mt-1 shrink-0 ${chrome[s.accent].tick}`}
+                />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+  {
+    footnote && (
+      <p class="mt-3 text-center text-xs text-ink-500">{footnote}</p>
+    )
+  }
+</div>

@@ -1,0 +1,52 @@
+---
+/**
+ * Roadmap — numbered step timeline (learning paths, month-by-month plans).
+ * Renders as an ordered list with a connecting rail so the sequence reads
+ * visually as well as semantically.
+ */
+interface Step {
+  title: string;
+  body: string;
+  /** Short marker, e.g. "Month 1". Falls back to the step number. */
+  meta?: string;
+}
+interface Props {
+  steps: Step[];
+  title?: string;
+}
+const { steps, title } = Astro.props as Props;
+---
+
+<div class="viz my-9 rounded-2xl border border-border bg-white p-6 shadow-sm sm:p-7">
+  {title && <h3 class="mb-6 text-base font-bold text-ink-900">{title}</h3>}
+  <ol class="relative">
+    {
+      steps.map((s, idx) => (
+        <li class="relative flex gap-4 pb-7 last:pb-0">
+          {idx < steps.length - 1 && (
+            <span
+              aria-hidden="true"
+              class="absolute left-[1.125rem] top-10 bottom-1 w-px bg-border"
+            />
+          )}
+          <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-white">
+            {idx + 1}
+          </span>
+          <div class="pt-1">
+            {s.meta && (
+              <span class="block text-xs font-bold uppercase tracking-wider text-orange-600">
+                {s.meta}
+              </span>
+            )}
+            <span class="mt-0.5 block text-sm font-bold text-ink-900">
+              {s.title}
+            </span>
+            <span class="mt-1 block text-sm leading-relaxed text-ink-600">
+              {s.body}
+            </span>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</div>
