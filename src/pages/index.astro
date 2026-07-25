@@ -34,7 +34,10 @@ const featured = allPrograms
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 3);
 
-const upcoming = allPrograms
+// Batch start dates are hidden site-wide via siteConfig.display — see
+// config/site.ts. With none listed, the section below renders its
+// "New batch dates are announced regularly" card plus a register-interest CTA.
+const upcoming = (siteConfig.display.showNextBatchDate ? allPrograms : [])
   .filter((p) => p.data.nextBatchDate)
   .sort(
     (a, b) =>

@@ -83,7 +83,9 @@ const titleAccent = titleWords.slice(titleWords.length > 2 ? -2 : -1).join(" ");
 const titleLead = titleWords
   .slice(0, titleWords.length > 2 ? -2 : -1)
   .join(" ");
-const nextBatch = data.nextBatchDate
+// Batch start dates are hidden site-wide via siteConfig.display — see
+// config/site.ts. Gating here covers both the hero line and BatchEnrollment.
+const nextBatch = siteConfig.display.showNextBatchDate && data.nextBatchDate
   ? new Intl.DateTimeFormat("en-IN", {
       day: "numeric",
       month: "short",

@@ -51,7 +51,8 @@ const panels = [
     ],
     batch: gradBatch,
     duration: foundationDuration,
-    fee: foundationFee,
+    // Fees hidden site-wide via siteConfig.display — see config/site.ts.
+    fee: siteConfig.display.showFees ? foundationFee : undefined,
     curriculumNote: "Foundation track",
   },
   {
@@ -68,7 +69,9 @@ const panels = [
     ],
     batch: proBatch,
     duration: (hasProfessionalTrack && proDuration) || foundationDuration,
-    fee: (hasProfessionalTrack && proFee) || foundationFee,
+    fee: siteConfig.display.showFees
+      ? (hasProfessionalTrack && proFee) || foundationFee
+      : undefined,
     curriculumNote: hasProfessionalTrack ? "Advanced · Upskill track" : "Flexible track",
   },
 ];

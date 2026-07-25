@@ -218,6 +218,16 @@ export const siteConfig = {
     launchNote: "Introductory pricing for our first batches — limited seats.",
   },
 
+  // Temporary display switches. Fees and batch start dates stay in the program
+  // content (and in this config) but are hidden site-wide until pricing and the
+  // batch calendar are confirmed. Flip either back to `true` to restore it
+  // everywhere — no content edits needed. Both also gate the Course JSON-LD, so
+  // structured data never advertises a price or date the page doesn't show.
+  display: {
+    showFees: false,
+    showNextBatchDate: false,
+  },
+
   // Reserved for Phase 4 portal (separate app).
   portalUrl: "https://portal.daitinstitute.com", // not built yet
 
