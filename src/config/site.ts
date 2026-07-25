@@ -187,7 +187,7 @@ export const siteConfig = {
         name: "M. R. Dhakne",
         title: "Founder & MD — New Maitree Classes, SDA English School & Bachpan International",
         also: "",
-        photo: "",
+        photo: "/images/group/team/mr-dhakne.jpg",
         founder: false,
         late: true,
       },
