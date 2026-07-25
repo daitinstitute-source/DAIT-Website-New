@@ -30,7 +30,11 @@ const modeMap: Record<string, string> = {
 };
 
 // Optional price parsed from the display fee string (e.g. "₹12,000" -> 12000).
-const priceDigits = data.fee?.replace(/[^\d]/g, "") ?? "";
+// Suppressed while fees are hidden site-wide (siteConfig.display) so the
+// structured data never advertises a price the page itself doesn't show.
+const priceDigits = siteConfig.display.showFees
+  ? (data.fee?.replace(/[^\d]/g, "") ?? "")
+  : "";
 
 const courseSchema: WithContext<Course> = {
   "@context": "https://schema.org",
@@ -49,7 +53,7 @@ const courseSchema: WithContext<Course> = {
       "@type": "CourseInstance",
       courseMode: data.mode.map((m) => modeMap[m] ?? m),
       courseWorkload: data.duration,
-      ...(data.nextBatchDate
+      ...(siteConfig.display.showNextBatchDate && data.nextBatchDate
         ? { startDate: new Date(data.nextBatchDate).toISOString().slice(0, 10) }
         : {}),
       location: {

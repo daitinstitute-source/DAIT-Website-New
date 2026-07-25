@@ -6,6 +6,7 @@
 import { Icon } from "astro-icon/components";
 import Badge from "../ui/Badge.astro";
 import { programAreas } from "../../data/navigation";
+import { siteConfig } from "../../config/site";
 
 interface Props {
   slug: string;
@@ -27,7 +28,8 @@ const modeIcons: Record<string, string> = {
   online: "lucide:monitor",
   hybrid: "lucide:blend",
 };
-const nextBatch = data.nextBatchDate
+// Batch start dates are hidden site-wide via siteConfig.display — see config/site.ts.
+const nextBatch = siteConfig.display.showNextBatchDate && data.nextBatchDate
   ? new Intl.DateTimeFormat("en-IN", {
       day: "numeric",
       month: "short",

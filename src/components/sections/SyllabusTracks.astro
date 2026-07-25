@@ -45,6 +45,10 @@ const {
 const hasAdvanced = advanced.length > 0;
 const launchLabel = siteConfig.pricing.launchLabel;
 
+// Fees are hidden site-wide via siteConfig.display — see config/site.ts.
+const shownFoundationFee = siteConfig.display.showFees ? foundationFee : undefined;
+const shownProFee = siteConfig.display.showFees ? proFee : undefined;
+
 const gradBatch =
   batchOptions.find((b) => /weekday|mon|full-?time/i.test(b)) ?? batchOptions[0] ?? "";
 const proBatch =
@@ -93,9 +97,9 @@ const tabBase =
         <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-ink-700">
           <span class="rounded-full bg-accent-500 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">Foundation · Freshers</span>
           {foundationDuration && <span class="inline-flex items-center gap-1.5"><Icon name="lucide:clock" size={15} class="text-accent-600" /> {foundationDuration}</span>}
-          {foundationFee && (
+          {shownFoundationFee && (
             <span class="inline-flex items-center gap-1.5">
-              <Icon name="lucide:tag" size={15} class="text-accent-600" /> <strong class="text-ink-900">{foundationFee}</strong>
+              <Icon name="lucide:tag" size={15} class="text-accent-600" /> <strong class="text-ink-900">{shownFoundationFee}</strong>
               <span class="text-xs font-bold text-orange-600">· {launchLabel}</span>
             </span>
           )}
@@ -133,9 +137,9 @@ const tabBase =
         <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-ink-700">
           <span class="rounded-full bg-orange-500 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">Advanced · Professionals</span>
           {proDuration && <span class="inline-flex items-center gap-1.5"><Icon name="lucide:clock" size={15} class="text-orange-600" /> {proDuration}</span>}
-          {proFee && (
+          {shownProFee && (
             <span class="inline-flex items-center gap-1.5">
-              <Icon name="lucide:tag" size={15} class="text-orange-600" /> <strong class="text-ink-900">{proFee}</strong>
+              <Icon name="lucide:tag" size={15} class="text-orange-600" /> <strong class="text-ink-900">{shownProFee}</strong>
               <span class="text-xs font-bold text-orange-600">· {launchLabel}</span>
             </span>
           )}
