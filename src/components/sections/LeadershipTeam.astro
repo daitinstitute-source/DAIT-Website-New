@@ -1,9 +1,10 @@
 ---
 /**
  * LeadershipTeam — the Dhakne family management behind the group.
- * Real, unfakeable social proof. Photos are optional: a member without a photo
- * renders a clean initials avatar (no broken images). `late` members get a
- * respectful "Late" honorific.
+ * Real, unfakeable social proof. Photos are optional: a member whose photo is
+ * unset *or not yet on disk* renders a clean initials avatar (checked at build
+ * time via existingImage, so a path can be wired ahead of the file landing and
+ * never shows a broken image). `late` members get a respectful "Late" honorific.
  *
  * Photos go in public/images/group/team/ ; wire the path into
  * siteConfig.group.leadership[].photo when available.
@@ -12,6 +13,7 @@ import { Icon } from "astro-icon/components";
 import SectionLabel from "../ui/SectionLabel.astro";
 import IimBadge from "../ui/IimBadge.astro";
 import { siteConfig } from "../../config/site";
+import { existingImage } from "../../lib/media";
 
 interface Props {
   heading?: string;
@@ -67,9 +69,9 @@ const initials = (name: string) =>
           </span>
         )}
         <div class="flex items-center gap-4">
-          {member.photo ? (
+          {existingImage(member.photo) ? (
             <img
-              src={member.photo}
+              src={existingImage(member.photo)}
               alt={member.name}
               width="72"
               height="72"
