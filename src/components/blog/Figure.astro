@@ -1,0 +1,71 @@
+---
+/**
+ * Figure — in-article image with caption.
+ *
+ * Falls back to a branded gradient panel (labelled with the alt text) when the
+ * file isn't in /public yet, so a post can ship before the photography lands —
+ * same graceful-degradation contract as the blog cover image.
+ */
+import { Icon } from "astro-icon/components";
+import { existingImage } from "../../lib/media";
+
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  /** Lucide icon shown on the placeholder panel. */
+  icon?: string;
+  /** CSS aspect-ratio, e.g. "16/9" | "3/2". */
+  ratio?: string;
+}
+const {
+  src,
+  alt,
+  caption,
+  icon = "lucide:image",
+  ratio = "16/9",
+} = Astro.props as Props;
+
+const resolved = existingImage(src);
+---
+
+<figure class="viz my-9">
+  {
+    resolved ? (
+      <img
+        src={resolved}
+        alt={alt}
+        width="900"
+        height="506"
+        loading="lazy"
+        decoding="async"
+        class="w-full rounded-2xl object-cover shadow-md"
+        style={`aspect-ratio:${ratio}`}
+      />
+    ) : (
+      <div
+        class="relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 px-6 text-center shadow-md"
+        style={`aspect-ratio:${ratio}`}
+        role="img"
+        aria-label={alt}
+      >
+        <div
+          aria-hidden="true"
+          class="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full"
+          style="background: radial-gradient(circle, rgba(242,99,33,.35), transparent 65%);"
+        />
+        <Icon name={icon} size={40} class="relative text-white/60" />
+        <span class="relative max-w-[36ch] text-sm font-semibold text-white/80">
+          {alt}
+        </span>
+      </div>
+    )
+  }
+  {
+    caption && (
+      <figcaption class="mt-3 text-center text-sm text-ink-500">
+        {caption}
+      </figcaption>
+    )
+  }
+</figure>

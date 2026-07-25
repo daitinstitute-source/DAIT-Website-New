@@ -1,0 +1,53 @@
+---
+/**
+ * StatRow — a KPI row of stat tiles for headline numbers in an article.
+ *
+ * Per dataviz guidance: a handful of headline numbers is a stat row, not a
+ * chart. Values wear ink tokens (proportional figures, never tabular at display
+ * size); the coloured rule beside each tile carries the emphasis.
+ */
+interface Stat {
+  value: string;
+  label: string;
+  note?: string;
+  /** Highlights this tile in orange — use for at most one per row. */
+  emphasis?: boolean;
+}
+interface Props {
+  stats: Stat[];
+  source?: string;
+  class?: string;
+}
+const { stats, source, class: className = "" } = Astro.props as Props;
+---
+
+<div class={`viz my-9 ${className}`}>
+  <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      stats.map((s) => (
+        <li class="relative overflow-hidden rounded-2xl border border-border bg-white p-5 shadow-sm">
+          <span
+            aria-hidden="true"
+            class={`absolute inset-y-0 left-0 w-1 ${s.emphasis ? "bg-orange-500" : "bg-accent-500"}`}
+          />
+          <span class="block text-3xl font-black leading-none text-ink-900">
+            {s.value}
+          </span>
+          <span class="mt-2 block text-sm font-semibold text-ink-600">
+            {s.label}
+          </span>
+          {s.note && (
+            <span class="mt-1.5 block text-xs leading-snug text-ink-500">
+              {s.note}
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+  {
+    source && (
+      <p class="mt-3 text-xs text-ink-500">{source}</p>
+    )
+  }
+</div>

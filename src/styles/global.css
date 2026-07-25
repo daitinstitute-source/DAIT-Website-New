@@ -209,6 +209,42 @@
   .article a:hover {
     color: var(--color-accent-600);
   }
+  .article figure {
+    margin: 2.25rem 0;
+  }
+  .article figure img {
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+  }
+  .article figcaption {
+    font-size: 0.875rem;
+    color: var(--color-ink-500);
+  }
+  .article blockquote {
+    margin: 1.75rem 0;
+    padding-left: 1.25rem;
+    border-left: 3px solid var(--color-orange-500);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--color-ink-900);
+  }
+  /* Visual blocks (charts, stat rows, roadmaps) opt out of prose spacing so the
+     component's own layout classes win. `:where()` keeps specificity low enough
+     to override, and predictable enough to not fight component styles. */
+  .article .viz :where(p, li) {
+    margin: 0;
+  }
+  .article .viz :where(ul, ol) {
+    display: block;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .article .viz :where(h2, h3, h4) {
+    margin: 0;
+    font-size: inherit;
+    line-height: 1.4;
+  }
 
   /* Card floating on tinted page bg */
   .card {
