@@ -1,0 +1,67 @@
+---
+/**
+ * HeroBackdrop — the hero background layer.
+ *
+ * Photos live in `src/assets/hero/<name>.jpg` and are optimised at build time by
+ * astro:assets (<Picture> → responsive AVIF/WebP, resized widths). Drop a new
+ * `<slug>.jpg` there and the matching hero picks it up automatically; if no photo
+ * matches the given name, it falls back to the learner-silhouette SVG.
+ *
+ * Place as the first child of a `relative overflow-hidden` hero.
+ */
+import { Picture } from "astro:assets";
+
+interface Props {
+  name?: string;
+  /**
+   * Overlay tint over the photo:
+   *  - "brand" (default): saturated blue gradient — statement heroes
+   *  - "dark": deep, lightly-transparent scrim so the photo shows through (upGrad-style)
+   */
+  overlay?: "brand" | "dark";
+}
+const { name = "students", overlay = "brand" } = Astro.props;
+
+// Eagerly import every hero photo → map keyed by filename without extension.
+const modules = import.meta.glob<{ default: ImageMetadata }>(
+  "../../assets/hero/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+const photos: Record<string, ImageMetadata> = {};
+for (const [path, mod] of Object.entries(modules)) {
+  const key = path.split("/").pop()!.replace(/\.[^.]+$/, "");
+  photos[key] = mod.default;
+}
+const photo = photos[name];
+
+const overlayClass =
+  overlay === "dark"
+    ? "bg-gradient-to-r from-dark-950/88 via-dark-950/66 to-dark-900/40"
+    : "bg-gradient-to-br from-accent-700/90 via-accent-600/85 to-accent-600/80";
+---
+
+{
+  photo ? (
+    <>
+      <Picture
+        src={photo}
+        formats={["avif", "webp"]}
+        widths={[640, 960, 1280, 1920]}
+        sizes="100vw"
+        alt=""
+        loading="eager"
+        fetchpriority="high"
+        pictureAttributes={{ "aria-hidden": "true" }}
+        class="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
+      />
+      <div aria-hidden="true" class:list={["pointer-events-none absolute inset-0", overlayClass]} />
+    </>
+  ) : (
+    <img
+      src="/images/hero/learners.svg"
+      alt=""
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 h-full w-full object-cover object-bottom"
+    />
+  )
+}

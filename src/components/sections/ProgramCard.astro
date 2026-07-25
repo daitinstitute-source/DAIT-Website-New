@@ -1,0 +1,80 @@
+---
+/**
+ * ProgramCard — a single program summary card (homepage featured + programs hub).
+ * Takes a programs collection entry's data + slug.
+ */
+import { Icon } from "astro-icon/components";
+import Badge from "../ui/Badge.astro";
+import { programAreas } from "../../data/navigation";
+
+interface Props {
+  slug: string;
+  data: {
+    title: string;
+    tagline: string;
+    area: string;
+    duration: string;
+    mode: string[];
+    level: string;
+    nextBatchDate?: Date;
+  };
+}
+const { slug, data } = Astro.props;
+const area = programAreas.find((a) => a.slug === data.area);
+
+const modeIcons: Record<string, string> = {
+  classroom: "lucide:building-2",
+  online: "lucide:monitor",
+  hybrid: "lucide:blend",
+};
+const nextBatch = data.nextBatchDate
+  ? new Intl.DateTimeFormat("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(new Date(data.nextBatchDate))
+  : null;
+---
+
+<a
+  href={`/programs/${slug}/`}
+  class="card card--hover p-6 flex flex-col group"
+>
+  <div class="flex items-center justify-between gap-3">
+    <Badge tone="blue">{area?.short ?? data.area}</Badge>
+    <span class="text-xs font-semibold uppercase tracking-wide text-ink-400">
+      {data.level}
+    </span>
+  </div>
+
+  <h3 class="mt-4 text-xl text-ink-900 group-hover:text-accent-600 transition-colors">
+    {data.title}
+  </h3>
+  <p class="mt-2 text-sm text-ink-500 leading-relaxed flex-1">{data.tagline}</p>
+
+  <dl class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-ink-500">
+    <div class="flex items-center gap-1.5">
+      <Icon name="lucide:clock" size={15} class="text-accent-500" />
+      <dd>{data.duration}</dd>
+    </div>
+    <div class="flex items-center gap-1.5">
+      {data.mode.map((m) => <Icon name={modeIcons[m]} size={15} class="text-accent-500" />)}
+      <dd class="capitalize">{data.mode.join(" · ")}</dd>
+    </div>
+    {
+      nextBatch && (
+        <div class="flex items-center gap-1.5">
+          <Icon name="lucide:calendar" size={15} class="text-orange-500" />
+          <dd>Next batch {nextBatch}</dd>
+        </div>
+      )
+    }
+  </dl>
+
+  <span
+    class="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-accent-600 group-hover:gap-2.5 transition-all"
+  >
+    View program
+    <Icon name="lucide:arrow-right" size={16} />
+  </span>
+</a>

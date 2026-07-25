@@ -1,0 +1,299 @@
+---
+/**
+ * Homepage — 9 sections per DAIT-BUILD-SPEC, alternating dark/light:
+ * 1 Hero (D) · 2 Trust strip (L) · 3 Program areas (L) · 4 Founder/Why (D)
+ * 5 Featured programs (L) · 6 Audience split (L) · 7 Testimonials (D)
+ * 8 Upcoming batches (L) · 9 Final CTA (L→blue) · Footer (D)
+ */
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionLabel from "../components/ui/SectionLabel.astro";
+import Button from "../components/ui/Button.astro";
+import Hero from "../components/sections/Hero.astro";
+import PathSelector from "../components/sections/PathSelector.astro";
+import LegacyGroup from "../components/sections/LegacyGroup.astro";
+import FounderStory from "../components/sections/FounderStory.astro";
+import AudienceSplit from "../components/sections/AudienceSplit.astro";
+import TestimonialStrip from "../components/sections/TestimonialStrip.astro";
+import ProgramCard from "../components/sections/ProgramCard.astro";
+import CTABanner from "../components/sections/CTABanner.astro";
+import { siteConfig } from "../config/site";
+import { programAreas, primaryCta } from "../data/navigation";
+
+// Programs collection (empty until Phase 2 — everything degrades gracefully).
+const allPrograms = (await getCollection("programs")).filter(
+  (p) => !p.data.draft,
+);
+const countByArea = (slug: string) =>
+  allPrograms.filter((p) => p.data.area === slug).length;
+
+const featured = allPrograms
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+const upcoming = allPrograms
+  .filter((p) => p.data.nextBatchDate)
+  .sort(
+    (a, b) =>
+      new Date(a.data.nextBatchDate!).getTime() -
+      new Date(b.data.nextBatchDate!).getTime(),
+  )
+  .slice(0, 5);
+
+const latestPosts = (await getCollection("blog"))
+  .filter((p) => !p.data.draft)
+  .sort(
+    (a, b) =>
+      new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime(),
+  )
+  .slice(0, 3);
+const fmtDate = (d: Date) =>
+  new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(new Date(d));
+---
+
+<BaseLayout
+  title={`${siteConfig.name} — ${siteConfig.tagline}`}
+  brandedTitle={false}
+  description={siteConfig.description}
+  canonicalPath="/"
+>
+  <!-- ── 1 · Hero (statement) ──────────────────────────── -->
+  <Hero />
+
+  <!-- ── 2 · Choose your path (3 audiences) ────────────── -->
+  <Section tone="surface">
+    <PathSelector />
+  </Section>
+
+  <!-- ── 3 · Legacy trust bar (LIGHT) — Dhakne Education Group since 1998 ── -->
+  <Section tone="white" class="!py-8">
+    <LegacyGroup variant="bar" />
+  </Section>
+
+  <!-- ── 3 · Program areas (LIGHT) — 4 cards ───────────── -->
+  <Section tone="surface" id="areas">
+    <div class="max-w-2xl" data-reveal>
+      <SectionLabel>Our disciplines</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl">Four career tracks, built around <span class="text-orange-500">industry demand</span></h2>
+      <p class="mt-4 text-ink-500 measure">
+        Each track is structured around live projects and the tools employers hire for — with
+        Foundation paths for freshers and Advanced tracks for working professionals.
+      </p>
+    </div>
+
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        programAreas.map((area, i) => {
+          const n = countByArea(area.slug);
+          return (
+            <a
+              href={`/programs/#${area.slug}`}
+              class="card card--hover p-6 flex flex-col group"
+              data-reveal
+              data-reveal-delay={(i * 0.08).toString()}
+            >
+              <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-50 text-accent-600 group-hover:bg-accent-500 group-hover:text-white transition-colors">
+                <Icon name={area.icon} size={24} />
+              </span>
+              <h3 class="mt-5 text-lg text-ink-900">{area.label}</h3>
+              <p class="mt-2 text-sm text-ink-500 leading-relaxed flex-1">
+                {area.description}
+              </p>
+              <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-accent-600 group-hover:gap-2.5 transition-all">
+                {n > 0 ? `${n} program${n > 1 ? "s" : ""}` : "Explore"}
+                <Icon name="lucide:arrow-right" size={16} />
+              </span>
+            </a>
+          );
+        })
+      }
+    </div>
+  </Section>
+
+  <!-- ── Legacy · Dhakne Education Group (LIGHT) ───────── -->
+  <Section tone="white">
+    <LegacyGroup variant="full" />
+    <div class="mt-8" data-reveal>
+      <Button href="/why-dait/" variant="outline" size="sm" icon="lucide:arrow-right">
+        Meet the family behind DAIT
+      </Button>
+    </div>
+  </Section>
+
+  <!-- ── 4 · Why DAIT / Founder story (DARK) ───────────── -->
+  <Section tone="dark">
+    <FounderStory />
+  </Section>
+
+  <!-- ── 5 · Featured programs (LIGHT) ─────────────────── -->
+  <Section tone="white">
+    <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
+      <div class="max-w-2xl">
+        <SectionLabel>Flagship programs</SectionLabel>
+        <h2 class="mt-3 text-3xl sm:text-4xl">Where to <span class="text-orange-500">begin</span></h2>
+      </div>
+      <Button href="/programs/" variant="outline" size="sm" icon="lucide:arrow-right">
+        View all programs
+      </Button>
+    </div>
+
+    {
+      featured.length > 0 ? (
+        <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {featured.map((p) => (
+            <ProgramCard slug={p.id} data={p.data} />
+          ))}
+        </div>
+      ) : (
+        <div
+          class="mt-10 card p-8 sm:p-10 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+          data-reveal
+        >
+          <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
+            <Icon name="lucide:rocket" size={26} />
+          </span>
+          <div class="flex-1">
+            <h3 class="text-xl text-ink-900">New batches are being scheduled</h3>
+            <p class="mt-2 text-sm text-ink-500 measure">
+              Full program details and dates are rolling out shortly. Book a free
+              counselling call now and we'll match you to the right track and
+              reserve your seat.
+            </p>
+          </div>
+          <Button href={primaryCta.href} class="shrink-0">
+            {primaryCta.label}
+          </Button>
+        </div>
+      )
+    }
+  </Section>
+
+  <!-- ── 6 · Audience split (LIGHT) ────────────────────── -->
+  <Section tone="surface">
+    <AudienceSplit />
+  </Section>
+
+  <!-- ── 7 · Testimonials / outcomes (DARK) ────────────── -->
+  <Section tone="dark">
+    <TestimonialStrip />
+  </Section>
+
+  <!-- ── 8 · Upcoming batches (LIGHT) ──────────────────── -->
+  <Section tone="white">
+    <div class="max-w-2xl" data-reveal>
+      <SectionLabel>Upcoming cohorts</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl">Plan your <span class="text-orange-500">start</span></h2>
+    </div>
+
+    {
+      upcoming.length > 0 ? (
+        <div class="mt-8 overflow-x-auto" data-reveal>
+          <table class="w-full min-w-[560px] text-left text-sm">
+            <thead>
+              <tr class="border-b border-border text-ink-500">
+                <th class="py-3 pr-4 font-bold uppercase tracking-wide text-xs">
+                  Program
+                </th>
+                <th class="py-3 pr-4 font-bold uppercase tracking-wide text-xs">
+                  Mode
+                </th>
+                <th class="py-3 pr-4 font-bold uppercase tracking-wide text-xs">
+                  Next batch
+                </th>
+                <th class="py-3 font-bold uppercase tracking-wide text-xs" />
+              </tr>
+            </thead>
+            <tbody>
+              {upcoming.map((p) => (
+                <tr class="border-b border-border/70">
+                  <td class="py-4 pr-4 font-bold text-ink-900">
+                    {p.data.title}
+                  </td>
+                  <td class="py-4 pr-4 capitalize text-ink-500">
+                    {p.data.mode.join(" · ")}
+                  </td>
+                  <td class="py-4 pr-4 text-ink-600">
+                    {new Intl.DateTimeFormat("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    }).format(new Date(p.data.nextBatchDate!))}
+                  </td>
+                  <td class="py-4">
+                    <a
+                      href={`/programs/${p.id}/`}
+                      class="inline-flex items-center gap-1.5 text-sm font-bold text-accent-600 hover:gap-2.5 transition-all"
+                    >
+                      Enquire
+                      <Icon name="lucide:arrow-right" size={15} />
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div
+          class="mt-8 card p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+          data-reveal
+        >
+          <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">
+            <Icon name="lucide:calendar-clock" size={26} />
+          </span>
+          <div class="flex-1">
+            <h3 class="text-xl text-ink-900">
+              New batch dates are announced regularly
+            </h3>
+            <p class="mt-2 text-sm text-ink-500 measure">
+              Weekday full-time and weekend/evening batches run through the year.
+              Register your interest and we'll tell you the moment the next batch
+              for your track opens.
+            </p>
+          </div>
+          <Button href={primaryCta.href} variant="outline" class="shrink-0">
+            Register interest
+          </Button>
+        </div>
+      )
+    }
+  </Section>
+
+  <!-- ── Latest from the blog (LIGHT) ──────────────────── -->
+  {
+    latestPosts.length > 0 && (
+      <Section tone="surface">
+        <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
+          <div class="max-w-2xl">
+            <SectionLabel>From the blog</SectionLabel>
+            <h2 class="mt-3 text-3xl sm:text-4xl">Career guides & <span class="text-orange-500">AI skills</span></h2>
+          </div>
+          <Button href="/blog/" variant="outline" size="sm" icon="lucide:arrow-right">
+            View all articles
+          </Button>
+        </div>
+        <div class="mt-10 grid gap-6 md:grid-cols-3">
+          {latestPosts.map((post, i) => (
+            <a href={`/blog/${post.id}/`} class="card card--hover group flex flex-col p-6" data-reveal data-reveal-delay={(i * 0.06).toString()}>
+              <div class="flex items-center gap-3 text-xs">
+                <span class="rounded-full bg-accent-50 px-2.5 py-1 font-bold text-accent-600">{post.data.category}</span>
+                <span class="text-ink-400">{post.data.readMinutes} min read</span>
+              </div>
+              <h3 class="mt-4 text-lg font-bold text-ink-900 transition-colors group-hover:text-accent-600">{post.data.title}</h3>
+              <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-500">{post.data.description}</p>
+              <span class="mt-5 text-xs text-ink-400">{fmtDate(post.data.publishDate)}</span>
+            </a>
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- ── 9 · Final CTA (LIGHT bg, blue banner) ─────────── -->
+  <Section tone="surface">
+    <CTABanner />
+  </Section>
+</BaseLayout>

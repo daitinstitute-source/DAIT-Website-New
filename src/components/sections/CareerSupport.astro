@@ -1,0 +1,46 @@
+---
+/**
+ * CareerSupport — the "360° Career Support" grid (upGrad-style). Honest list of
+ * the support DAIT provides; generic across programs. Light section.
+ */
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+
+const items = [
+  { icon: "lucide:target", title: "Aptitude & Interview Training", desc: "Sharpen problem-solving and communication for interviews." },
+  { icon: "lucide:file-text", title: "Resume Building", desc: "Craft a recruiter-ready resume that highlights your projects." },
+  { icon: "lucide:linkedin", title: "LinkedIn Profile Review", desc: "Optimise your profile so hiring teams can find you." },
+  { icon: "lucide:list-checks", title: "Interview Question Bank", desc: "Practise with real, role-specific interview questions." },
+  { icon: "lucide:users-round", title: "1:1 Mock Interviews", desc: "Personal mock interviews with feedback to build confidence." },
+  { icon: "lucide:folder-git-2", title: "Portfolio & Live Projects", desc: "Graduate with real work employers can actually see." },
+];
+---
+
+<div>
+  <div class="max-w-2xl" data-reveal>
+    <SectionLabel>Career support</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+      <span class="text-orange-500">360°</span> career support
+    </h2>
+    <p class="mt-4 text-ink-500 measure">
+      We don't stop at teaching skills. From your first mock interview to your job offer, we help you
+      get hired.
+    </p>
+  </div>
+
+  <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {items.map((item, i) => (
+      <div
+        class="card card--hover p-6"
+        data-reveal
+        data-reveal-delay={(i * 0.06).toString()}
+      >
+        <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">
+          <Icon name={item.icon} size={24} />
+        </span>
+        <h3 class="mt-5 text-lg font-bold text-ink-900">{item.title}</h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink-500">{item.desc}</p>
+      </div>
+    ))}
+  </div>
+</div>

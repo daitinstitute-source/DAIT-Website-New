@@ -1,0 +1,109 @@
+---
+/**
+ * LeadershipTeam — the Dhakne family management behind the group.
+ * Real, unfakeable social proof. Photos are optional: a member without a photo
+ * renders a clean initials avatar (no broken images). `late` members get a
+ * respectful "Late" honorific.
+ *
+ * Photos go in public/images/group/team/ ; wire the path into
+ * siteConfig.group.leadership[].photo when available.
+ */
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+import IimBadge from "../ui/IimBadge.astro";
+import { siteConfig } from "../../config/site";
+
+interface Props {
+  heading?: string;
+  intro?: string;
+  onDark?: boolean;
+}
+const {
+  heading = "The family behind DAIT",
+  intro = "DAIT is led by the same family that has been trusted with Sambhaji Nagar's education for over two decades.",
+  onDark = false,
+} = Astro.props;
+
+const team = siteConfig.group.leadership;
+
+// Initials for the avatar fallback (drops honorifics like "Prof.").
+const initials = (name: string) =>
+  name
+    .replace(/prof\.?|dr\.?|mr\.?|mrs\.?/gi, "")
+    .trim()
+    .split(/\s+/)
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+---
+
+<div id="leadership">
+  <div class="max-w-2xl" data-reveal>
+    <SectionLabel onDark={onDark}>Leadership</SectionLabel>
+    <h2 class={`mt-3 text-3xl sm:text-4xl ${onDark ? "text-white" : "text-ink-900"}`}>{heading}</h2>
+    <p class={`mt-4 measure ${onDark ? "text-white/70" : "text-ink-500"}`}>{intro}</p>
+  </div>
+
+  <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {team.map((member, i) => (
+      <div
+        class={`relative rounded-3xl border p-6 ${
+          member.founder
+            ? onDark
+              ? "border-accent-400/40 bg-accent-500/10"
+              : "border-accent-300 bg-accent-50/60 shadow-sm"
+            : onDark
+              ? "border-white/10 bg-white/5"
+              : "border-border bg-white shadow-sm"
+        }`}
+        data-reveal
+        data-reveal-delay={(i * 0.08).toString()}
+      >
+        {member.founder && (
+          <span class="absolute right-5 top-5 rounded-full bg-accent-500 px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-widest text-white">
+            Founder
+          </span>
+        )}
+        <div class="flex items-center gap-4">
+          {member.photo ? (
+            <img
+              src={member.photo}
+              alt={member.name}
+              width="72"
+              height="72"
+              class="h-16 w-16 shrink-0 rounded-2xl object-cover"
+            />
+          ) : (
+            <span class={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-lg font-black ${onDark ? "bg-white/10 text-white/80" : "bg-gradient-to-br from-accent-100 to-accent-50 text-accent-600"}`}>
+              {initials(member.name)}
+            </span>
+          )}
+          <div>
+            <h3 class={`text-lg font-bold leading-tight ${onDark ? "text-white" : "text-ink-900"}`}>
+              {member.name}
+            </h3>
+            {member.late && (
+              <span class={`mt-1 inline-flex items-center gap-1 text-xs font-semibold ${onDark ? "text-white/50" : "text-ink-500"}`}>
+                <Icon name="lucide:flower" size={12} />
+                Late · In fond memory
+              </span>
+            )}
+          </div>
+        </div>
+        <p class={`mt-4 text-sm leading-relaxed ${onDark ? "text-white/70" : "text-ink-600"}`}>
+          {member.title}
+        </p>
+        {member.also && (
+          <p class={`mt-1 text-xs ${onDark ? "text-white/50" : "text-ink-500"}`}>{member.also}</p>
+        )}
+        {member.founder && (
+          <div class="mt-4">
+            <IimBadge variant={onDark ? "dark" : "light"} size="sm" />
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>

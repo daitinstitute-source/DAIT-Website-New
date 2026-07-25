@@ -1,0 +1,57 @@
+---
+/**
+ * CTABanner — the final "talk to a counsellor, free" conversion block.
+ * Dark by default. Primary CTA + WhatsApp.
+ */
+import { Icon } from "astro-icon/components";
+import Button from "../ui/Button.astro";
+import { whatsappLink } from "../../config/site";
+import { primaryCta } from "../../data/navigation";
+
+interface Props {
+  heading?: string;
+  sub?: string;
+}
+const {
+  heading = "Not sure where to start? Talk to a career advisor — free.",
+  sub = "A 20-minute call to map your background and goals to the right track. No pressure, no obligation.",
+} = Astro.props;
+
+const waHref = whatsappLink(
+  "Hi DAIT Institute, I'd like to book a free career counselling call.",
+);
+---
+
+<div
+  class="relative overflow-hidden rounded-[20px] bg-accent-500 px-6 py-12 sm:px-12 sm:py-14 text-center"
+  data-reveal
+>
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full"
+    style="background: radial-gradient(circle, rgba(242,99,33,.35), transparent 70%);"
+  >
+  </div>
+  <div class="relative mx-auto max-w-2xl">
+    <h2 class="text-2xl sm:text-3xl text-white text-balance">{heading}</h2>
+    <p class="mt-4 text-white/70">{sub}</p>
+    <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+      <Button href={primaryCta.href} size="lg" class="!border-white !bg-white !text-accent-600 hover:!bg-white/90 hover:!border-white/90">
+        {primaryCta.label}
+      </Button>
+      {
+        waHref && (
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-[10px] border-2 border-white/40 px-8 py-4 font-bold text-white hover:bg-white/10 transition-colors"
+          >
+            <Icon name="simple-icons:whatsapp" size={18} />
+            Chat on WhatsApp
+          </a>
+        )
+      }
+    </div>
+  </div>
+</div>

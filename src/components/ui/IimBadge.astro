@@ -1,0 +1,52 @@
+---
+/**
+ * IimBadge — the marquee credibility signal: DAIT's founder is an IIM Raipur
+ * alumnus (Strategic CMO Programme). Single source of truth = siteConfig.founder.iim.
+ * Reused site-wide (hero, founder story floating badge, mentor block, leadership card).
+ *
+ * Style: a white "credential pill" with a solid IIM mono-square + label — reads as
+ * an official qualification rather than a marketing chip.
+ *
+ * variant "dark"  → white pill + shadow (pops on dark sections / on the photo)
+ * variant "light" → white pill + border (for light sections)
+ * size "sm" | "md" · showProgram appends the programme sub-line
+ */
+import { siteConfig } from "../../config/site";
+
+interface Props {
+  variant?: "dark" | "light";
+  size?: "sm" | "md";
+  showProgram?: boolean;
+  class?: string;
+}
+const {
+  variant = "dark",
+  size = "md",
+  showProgram = false,
+  class: className = "",
+} = Astro.props;
+
+const iim = siteConfig.founder.iim;
+
+const shell =
+  variant === "dark"
+    ? "bg-white text-ink-900 shadow-lg ring-1 ring-black/5"
+    : "bg-white text-ink-900 border border-border shadow-sm";
+const pad = size === "sm" ? "p-1 pr-3" : "p-1.5 pr-4";
+const sq = size === "sm" ? "h-6 w-6 text-[0.55rem]" : "h-8 w-8 text-[0.65rem]";
+const school = size === "sm" ? "text-xs" : "text-sm";
+---
+
+<span class={`inline-flex items-center gap-2.5 rounded-xl ${shell} ${pad} ${className}`}>
+  <span
+    class={`flex ${sq} shrink-0 items-center justify-center rounded-lg bg-accent-600 font-black tracking-tight text-white`}
+  >
+    IIM
+  </span>
+  <span class="leading-tight">
+    <span class={`block font-extrabold ${school}`}>{iim.school}</span>
+    {showProgram && (
+      <span class="block text-[0.7rem] font-medium text-ink-500">{iim.program}</span>
+    )}
+  </span>
+</span>

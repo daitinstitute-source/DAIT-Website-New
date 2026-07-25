@@ -1,0 +1,39 @@
+/* ==========================================================================
+   Animations — scroll reveals, driven by GSAP ScrollTrigger (src/lib/gsap.ts).
+   All motion respects prefers-reduced-motion.
+   ========================================================================== */
+
+/* Elements tagged data-reveal start hidden; gsap.ts animates them in.
+   Fallback: if JS never runs, a CSS keyframe still reveals them so content
+   is never permanently invisible. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: reveal-fallback 0.01s linear 1.2s forwards;
+}
+
+/* Once GSAP takes over it adds .is-revealed and clears the fallback. */
+[data-reveal].is-revealed {
+  animation: none;
+}
+
+@keyframes reveal-fallback {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+/* Simple utility for GSAP stat counters — no layout shift */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+}

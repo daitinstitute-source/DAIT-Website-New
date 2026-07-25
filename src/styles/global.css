@@ -1,0 +1,231 @@
+@import "tailwindcss";
+@import "./animations.css";
+
+/* ==========================================================================
+   DAIT Institute — Design Tokens
+   Sourced from BRAND.md (DAIT Brand Guidelines 2025). Never hardcode hex in
+   components — use these tokens (e.g. bg-accent-500, text-ink-900).
+   ========================================================================== */
+
+@theme {
+  /* ---- Fonts (self-hosted via @fontsource, imported below) ---- */
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "Fira Code", monospace;
+
+  /* ---- Accent = DAIT Blue (primary brand + primary CTA / interactive) ---- */
+  --color-accent-50: #e8effe; /* tint: icon badges, chips, highlights */
+  --color-accent-100: #d6e2fc;
+  --color-accent-500: #1548a3; /* DAIT Blue — buttons, links */
+  --color-accent-600: #0e3480; /* hover / pressed (Deep Blue) */
+  --color-accent-700: #0b2a68;
+
+  /* ---- Orange = secondary / highlight (accent CTAs, attention) ---- */
+  --color-orange-50: #fde8dc;
+  --color-orange-100: #fcdfc4; /* brand-derived tints so highlights stay on-brand */
+  --color-orange-200: #f9c09c;
+  --color-orange-300: #f7a173;
+  --color-orange-400: #f4824a;
+  --color-orange-500: #f26321; /* DAIT Orange */
+  --color-orange-600: #d94e10; /* hover */
+
+  /* ---- Cyan = decorative only (hero gradient/animation) — never a CTA ---- */
+  --color-cyan-400: #00c6ff;
+
+  /* ---- Dark surfaces ---- */
+  --color-dark-950: #0d1117; /* dark section bg, hero (Near Black) */
+  --color-dark-900: #111722;
+  --color-dark-850: #0e3480; /* cards/panels on dark (Deep Blue) */
+
+  /* ---- Light surfaces ---- */
+  --color-surface-50: #f8faff; /* page background (tinted off-white) */
+  --color-surface-75: #ffffff; /* white — cards + alternating light sections */
+
+  /* ---- Ink (text on light) ---- */
+  --color-ink-900: #0d1117; /* headings */
+  --color-ink-600: #1f2937; /* body */
+  --color-ink-500: #6b7280; /* muted / captions */
+  --color-ink-400: #9ca3af; /* placeholders / disabled */
+
+  /* ---- Borders ---- */
+  --color-border: #e5e7eb;
+  --color-border-blue: #bfcfef;
+
+  /* ---- Radius ---- */
+  --radius-sm: 4px;
+  --radius-DEFAULT: 8px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* ---- Blue-tinted shadows ---- */
+  --shadow-sm: 0 1px 3px rgba(21, 72, 163, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 16px rgba(21, 72, 163, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 12px 40px rgba(21, 72, 163, 0.13), 0 4px 8px rgba(0, 0, 0, 0.06);
+
+  /* ---- Container ---- */
+  --breakpoint-content: 1100px;
+}
+
+/* Self-hosted fonts — no Google CDN (per BRAND.md) */
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+@import "@fontsource/poppins/800.css";
+@import "@fontsource/poppins/900.css";
+@import "@fontsource/dm-mono/400.css";
+@import "@fontsource/dm-mono/500.css";
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-surface-50); /* tinted, never pure white */
+    color: var(--color-ink-600);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-ink-900);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  a {
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  ::selection {
+    background: var(--color-accent-500);
+    color: #fff;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ==========================================================================
+   Reusable component classes (composed from tokens)
+   ========================================================================== */
+@layer components {
+  /* Page container */
+  .container-wide {
+    width: 100%;
+    max-width: var(--breakpoint-content);
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  /* Prose measure — body copy never exceeds this */
+  .measure {
+    max-width: 680px;
+  }
+
+  /* Section label / overline */
+  .overline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-orange-500);
+  }
+  .overline::before {
+    content: "";
+    width: 24px;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+  }
+  .overline--on-dark {
+    color: var(--color-orange-500);
+  }
+
+  /* Long-form article body (blog posts) — no typography plugin needed */
+  .article {
+    color: var(--color-ink-600);
+    line-height: 1.8;
+    font-size: 1.05rem;
+  }
+  .article h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-ink-900);
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .article h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-ink-900);
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .article p {
+    margin-bottom: 1.15rem;
+  }
+  .article ul,
+  .article ol {
+    margin: 0 0 1.15rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .article ul {
+    list-style: disc;
+  }
+  .article ol {
+    list-style: decimal;
+  }
+  .article strong {
+    color: var(--color-ink-900);
+    font-weight: 700;
+  }
+  .article a {
+    color: var(--color-accent-500);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .article a:hover {
+    color: var(--color-accent-600);
+  }
+
+  /* Card floating on tinted page bg */
+  .card {
+    background: var(--color-surface-75);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card--hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card--hover:hover {
+      transform: none;
+    }
+  }
+}

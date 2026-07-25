@@ -1,0 +1,201 @@
+---
+/**
+ * SyllabusTracks — the program curriculum, audience-aware. This section now also
+ * carries the fresher/professional choice (the old separate "Which describes you?"
+ * block is merged in here): each track's tab, curriculum, batch, fee and CTA.
+ * Foundation = base `syllabus` (freshers). Advanced = `professionalTrack`.
+ * Tabs + any [data-aud-show] element sync via the shared controller in ProgramLayout.
+ */
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+import Button from "../ui/Button.astro";
+import { siteConfig } from "../../config/site";
+
+interface Module {
+  module: string;
+  topics: string[];
+}
+interface Props {
+  foundation: Module[];
+  advanced?: Module[];
+  proTagline?: string;
+  workSkills?: string[];
+  advancedTools?: string[];
+  foundationDuration?: string;
+  foundationFee?: string;
+  proDuration?: string;
+  proFee?: string;
+  batchOptions?: string[];
+  primaryCtaLink?: string;
+}
+const {
+  foundation,
+  advanced = [],
+  proTagline,
+  workSkills = [],
+  advancedTools = [],
+  foundationDuration,
+  foundationFee,
+  proDuration,
+  proFee,
+  batchOptions = [],
+  primaryCtaLink = "/contact/",
+} = Astro.props;
+
+const hasAdvanced = advanced.length > 0;
+const launchLabel = siteConfig.pricing.launchLabel;
+
+const gradBatch =
+  batchOptions.find((b) => /weekday|mon|full-?time/i.test(b)) ?? batchOptions[0] ?? "";
+const proBatch =
+  batchOptions.find((b) => /weekend|evening|sat|sun/i.test(b)) ??
+  batchOptions[batchOptions.length - 1] ??
+  "";
+
+const tabBase =
+  "inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-bold transition-all bg-white text-ink-600 border-border hover:border-accent-400 aria-pressed:bg-accent-500 aria-pressed:text-white aria-pressed:border-accent-500 aria-pressed:shadow-sm";
+---
+
+<div id="syllabus">
+  <div class="max-w-3xl" data-reveal>
+    <SectionLabel>Curriculum</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+      {hasAdvanced ? (
+        <>Pick the track that <span class="text-orange-500">fits you</span></>
+      ) : (
+        <>Structured modules with <span class="text-orange-500">practical outcomes</span></>
+      )}
+    </h2>
+    {hasAdvanced && (
+      <p class="mt-4 text-ink-500 measure">
+        Fresh out of college? Start with the <strong>Foundation</strong> track. Already working in
+        the field? The <strong>Advanced</strong> track skips the basics and goes straight to the AI,
+        analytics and automation skills you'll use at work.
+      </p>
+    )}
+  </div>
+
+  {hasAdvanced && (
+    <div class="mt-8 flex flex-wrap gap-3" role="tablist" aria-label="Choose your track">
+      <button type="button" role="tab" data-aud-btn="graduates" aria-pressed="true" class={tabBase}>
+        <Icon name="lucide:graduation-cap" size={16} /> Foundation · Freshers
+      </button>
+      <button type="button" role="tab" data-aud-btn="professionals" aria-pressed="false" class={tabBase}>
+        <Icon name="lucide:rocket" size={16} /> Advanced · Professionals
+      </button>
+    </div>
+  )}
+
+  <!-- FOUNDATION TRACK -->
+  <div data-aud-show={hasAdvanced ? "graduates" : undefined}>
+    {hasAdvanced && (
+      <div class="mt-6 flex flex-col gap-4 rounded-2xl border border-accent-200 bg-accent-50/50 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-ink-700">
+          <span class="rounded-full bg-accent-500 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">Foundation · Freshers</span>
+          {foundationDuration && <span class="inline-flex items-center gap-1.5"><Icon name="lucide:clock" size={15} class="text-accent-600" /> {foundationDuration}</span>}
+          {foundationFee && (
+            <span class="inline-flex items-center gap-1.5">
+              <Icon name="lucide:tag" size={15} class="text-accent-600" /> <strong class="text-ink-900">{foundationFee}</strong>
+              <span class="text-xs font-bold text-orange-600">· {launchLabel}</span>
+            </span>
+          )}
+          {gradBatch && <span class="inline-flex items-center gap-1.5"><Icon name="lucide:calendar-days" size={15} class="text-accent-600" /> {gradBatch}</span>}
+        </div>
+        <Button href={primaryCtaLink} size="sm" class="shrink-0">Book free counselling</Button>
+      </div>
+    )}
+    <div class="mt-6 grid gap-6 lg:grid-cols-2">
+      {foundation.map((mod, i) => (
+        <div class="rounded-3xl border border-border bg-white p-6 shadow-sm" data-reveal>
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-sm font-black text-accent-600">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <h3 class="text-lg font-bold text-ink-900">{mod.module}</h3>
+          </div>
+          <ul class="mt-4 space-y-3 text-sm text-ink-600">
+            {mod.topics.map((topic) => (
+              <li class="flex gap-3">
+                <span class="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-accent-500" />
+                <span>{topic}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ADVANCED / UPSKILL TRACK -->
+  {hasAdvanced && (
+    <div data-aud-show="professionals" hidden>
+      <div class="mt-6 flex flex-col gap-4 rounded-2xl border border-orange-200 bg-orange-50/60 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-ink-700">
+          <span class="rounded-full bg-orange-500 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">Advanced · Professionals</span>
+          {proDuration && <span class="inline-flex items-center gap-1.5"><Icon name="lucide:clock" size={15} class="text-orange-600" /> {proDuration}</span>}
+          {proFee && (
+            <span class="inline-flex items-center gap-1.5">
+              <Icon name="lucide:tag" size={15} class="text-orange-600" /> <strong class="text-ink-900">{proFee}</strong>
+              <span class="text-xs font-bold text-orange-600">· {launchLabel}</span>
+            </span>
+          )}
+          {proBatch && <span class="inline-flex items-center gap-1.5"><Icon name="lucide:calendar-days" size={15} class="text-orange-600" /> {proBatch}</span>}
+        </div>
+        <Button href={primaryCtaLink} variant="secondary" size="sm" class="shrink-0">Book free counselling</Button>
+      </div>
+
+      {proTagline && <p class="mt-6 text-ink-600 measure">{proTagline}</p>}
+
+      <div class="mt-6 grid gap-6 lg:grid-cols-2">
+        {advanced.map((mod, i) => (
+          <div class="rounded-3xl border border-border bg-white p-6 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-sm font-black text-orange-600">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h3 class="text-lg font-bold text-ink-900">{mod.module}</h3>
+            </div>
+            <ul class="mt-4 space-y-3 text-sm text-ink-600">
+              {mod.topics.map((topic) => (
+                <li class="flex gap-3">
+                  <span class="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-orange-500" />
+                  <span>{topic}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      {workSkills.length > 0 && (
+        <div class="mt-8 rounded-3xl border border-orange-200 bg-orange-50/50 p-6 sm:p-8">
+          <h3 class="flex items-center gap-2 text-lg font-bold text-ink-900">
+            <Icon name="lucide:briefcase-business" size={20} class="text-orange-600" />
+            What you'll be able to do at work
+          </h3>
+          <ul class="mt-5 grid gap-3 sm:grid-cols-2">
+            {workSkills.map((skill) => (
+              <li class="flex items-start gap-3 text-ink-700">
+                <Icon name="lucide:check" size={18} class="mt-0.5 shrink-0 text-orange-500" />
+                <span class="text-sm leading-relaxed">{skill}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {advancedTools.length > 0 && (
+        <div class="mt-6">
+          <p class="text-xs font-bold uppercase tracking-wider text-ink-500">Advanced tools you'll add</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {advancedTools.map((tool) => (
+              <span class="rounded-full border border-border bg-white px-3 py-1.5 text-sm font-semibold text-ink-600">
+                {tool}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )}
+</div>

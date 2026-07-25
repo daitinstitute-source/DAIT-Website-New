@@ -1,0 +1,153 @@
+---
+/**
+ * ProgramAudienceToggle — the page-wide path selector for the two DAIT audiences.
+ * Buttons carry [data-aud-btn]; any element with [data-aud-show] shows/hides to
+ * match. A single delegated controller in ProgramLayout keeps the toggle AND the
+ * curriculum (SyllabusTracks) in sync — pick once, the whole page adapts.
+ * Styling is driven by aria-pressed so the controller only flips one attribute.
+ */
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+import Button from "../ui/Button.astro";
+import { siteConfig } from "../../config/site";
+
+const pricing = siteConfig.pricing;
+
+interface Props {
+  batchOptions: string[];
+  primaryCtaLink: string;
+  hasProfessionalTrack?: boolean;
+  foundationDuration: string;
+  foundationFee?: string;
+  proDuration?: string;
+  proFee?: string;
+}
+const {
+  batchOptions,
+  primaryCtaLink,
+  hasProfessionalTrack = false,
+  foundationDuration,
+  foundationFee,
+  proDuration,
+  proFee,
+} = Astro.props;
+
+const gradBatch =
+  batchOptions.find((b) => /weekday|mon|full-?time/i.test(b)) ?? batchOptions[0];
+const proBatch =
+  batchOptions.find((b) => /weekend|evening|sat|sun/i.test(b)) ??
+  batchOptions[batchOptions.length - 1];
+
+const panels = [
+  {
+    aud: "graduates",
+    tab: "I'm a fresh graduate",
+    icon: "lucide:graduation-cap",
+    title: "From your degree to your first job",
+    points: [
+      "Structured, beginner-friendly Foundation curriculum — no experience needed",
+      "Placement support: portfolio, resume, and mock interviews",
+      "Affordable fees with EMI options",
+    ],
+    batch: gradBatch,
+    duration: foundationDuration,
+    fee: foundationFee,
+    curriculumNote: "Foundation track",
+  },
+  {
+    aud: "professionals",
+    tab: "I'm a working professional",
+    icon: "lucide:briefcase",
+    title: "Upskill or switch careers — without pausing your job",
+    points: [
+      hasProfessionalTrack
+        ? "Advanced curriculum — skips the basics, goes deep on AI, analytics & automation"
+        : "Weekend & evening batches — learn while you earn",
+      "Career-switch tracks and salary-hike focused skills",
+      "Project-first learning you can apply at work from week one",
+    ],
+    batch: proBatch,
+    duration: (hasProfessionalTrack && proDuration) || foundationDuration,
+    fee: (hasProfessionalTrack && proFee) || foundationFee,
+    curriculumNote: hasProfessionalTrack ? "Advanced · Upskill track" : "Flexible track",
+  },
+];
+
+const tabBase =
+  "flex-1 min-w-[9rem] inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition-all bg-white text-ink-600 border-border hover:border-accent-400 aria-pressed:bg-accent-500 aria-pressed:text-white aria-pressed:border-accent-500 aria-pressed:shadow-sm";
+---
+
+<div>
+  <div class="max-w-2xl" data-reveal>
+    <SectionLabel>Which best describes you?</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">Two tracks, one goal: <span class="text-orange-500">a career in tech</span></h2>
+    <p class="mt-4 text-ink-500 measure">
+      Pick the one that fits you — the batch, curriculum, and outcomes below adapt to your situation.
+    </p>
+  </div>
+
+  <!-- Tabs (control the whole page via the shared controller) -->
+  <div class="mt-8 flex flex-wrap gap-3" role="tablist" aria-label="Choose your situation">
+    {panels.map((p, i) => (
+      <button type="button" role="tab" data-aud-btn={p.aud} aria-pressed={i === 0 ? "true" : "false"} class={tabBase}>
+        <Icon name={p.icon} size={18} />
+        {p.tab}
+      </button>
+    ))}
+  </div>
+
+  <!-- Panels -->
+  <div class="mt-6">
+    {panels.map((p, i) => (
+      <div data-aud-show={p.aud} hidden={i !== 0}>
+        <div class="grid gap-6 rounded-3xl border border-border bg-white p-6 sm:p-8 shadow-sm lg:grid-cols-[1.4fr_1fr] lg:items-center">
+          <div>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-accent-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-accent-600">
+              <Icon name="lucide:book-open" size={13} />
+              {p.curriculumNote}
+            </span>
+            <h3 class="mt-3 text-xl font-bold text-ink-900">{p.title}</h3>
+            <ul class="mt-5 space-y-3">
+              {p.points.map((pt) => (
+                <li class="flex items-start gap-3 text-ink-700">
+                  <Icon name="lucide:check" size={18} class="mt-0.5 shrink-0 text-orange-500" />
+                  <span class="text-sm leading-relaxed">{pt}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-accent-200 bg-accent-50/60 p-5">
+            <p class="text-xs font-bold uppercase tracking-wider text-accent-700">Best batch for you</p>
+            <p class="mt-2 flex items-center gap-2 font-bold text-ink-900">
+              <Icon name="lucide:calendar-days" size={18} class="text-accent-600" />
+              {p.batch}
+            </p>
+            <dl class="mt-3 space-y-2 border-t border-accent-200 pt-3 text-sm">
+              <div class="flex items-center justify-between">
+                <dt class="text-ink-500">Duration</dt>
+                <dd class="font-bold text-ink-900">{p.duration}</dd>
+              </div>
+              {p.fee && (
+                <div class="flex items-center justify-between">
+                  <dt class="text-ink-500">Fee</dt>
+                  <dd class="font-bold text-ink-900">{p.fee}</dd>
+                </div>
+              )}
+            </dl>
+            {p.fee && (
+              <p class="mt-2 flex items-center gap-1.5 text-[0.7rem] font-bold text-orange-600">
+                <Icon name="lucide:sparkles" size={12} />
+                {pricing.launchLabel}
+              </p>
+            )}
+            <div class="mt-4">
+              <Button href={primaryCtaLink} size="sm" class="w-full justify-center">
+                Book free counselling
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>

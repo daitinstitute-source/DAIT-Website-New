@@ -1,0 +1,40 @@
+---
+/**
+ * ImageFeature — a two-column image + content band. The image is existence-gated:
+ * it shows a real photo the moment one is saved at the given path, else a branded
+ * gradient panel with an icon (so nothing looks broken). Content goes in the slot.
+ */
+import { Icon } from "astro-icon/components";
+import { existingImage } from "../../lib/media";
+
+interface Props {
+  image?: string; // e.g. /images/content/classroom.jpg
+  imageAlt?: string;
+  reverse?: boolean; // image on the right
+  icon?: string; // fallback icon
+}
+const { image, imageAlt = "", reverse = false, icon = "lucide:graduation-cap" } = Astro.props;
+const src = existingImage(image);
+---
+
+<div class="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+  <div class={reverse ? "lg:order-2" : ""} data-reveal>
+    <div class="relative aspect-[4/3] overflow-hidden rounded-[24px] shadow-md ring-1 ring-border">
+      {
+        src ? (
+          <img src={src} alt={imageAlt} class="h-full w-full object-cover" loading="lazy" />
+        ) : (
+          <div
+            class="flex h-full w-full items-center justify-center bg-gradient-to-br from-accent-600 to-accent-500"
+            style="background-image: radial-gradient(circle at 30% 20%, rgba(255,255,255,.14), transparent 55%), radial-gradient(circle at 80% 90%, rgba(242,99,33,.28), transparent 55%);"
+          >
+            <Icon name={icon} size={72} class="text-white/40" />
+          </div>
+        )
+      }
+    </div>
+  </div>
+  <div class={reverse ? "lg:order-1" : ""} data-reveal data-reveal-delay="0.1">
+    <slot />
+  </div>
+</div>

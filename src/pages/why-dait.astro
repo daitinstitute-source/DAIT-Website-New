@@ -1,0 +1,112 @@
+---
+/**
+ * /why-dait — the Dhakne Education Group story: 25+ year family legacy,
+ * founder's journey, and the management team. DAIT's core trust page.
+ */
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionLabel from "../components/ui/SectionLabel.astro";
+import Button from "../components/ui/Button.astro";
+import IimBadge from "../components/ui/IimBadge.astro";
+import ImageFeature from "../components/sections/ImageFeature.astro";
+import VisionMission from "../components/sections/VisionMission.astro";
+import LegacyGroup from "../components/sections/LegacyGroup.astro";
+import FounderStory from "../components/sections/FounderStory.astro";
+import LeadershipTeam from "../components/sections/LeadershipTeam.astro";
+import CTABanner from "../components/sections/CTABanner.astro";
+import { siteConfig } from "../config/site";
+import { primaryCta } from "../data/navigation";
+
+const g = siteConfig.group;
+const years = new Date().getFullYear() - g.established;
+---
+
+<BaseLayout
+  title="Why DAIT — A Dhakne Education Group Institute"
+  description={`DAIT Institute is the newest venture of the Dhakne Education Group, educating Sambhaji Nagar since ${g.established}. Meet the family and founder behind it.`}
+  canonicalPath="/why-dait/"
+>
+  <!-- HERO (DARK) -->
+  <Section tone="dark" class="pt-24 pb-16">
+    <div class="max-w-3xl" data-reveal>
+      <nav class="text-sm text-white/70" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-white">Home</a>
+        <span class="mx-2">/</span>
+        <span class="text-white">Why DAIT</span>
+      </nav>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <span class="inline-flex items-center gap-2 rounded-full border border-accent-400/40 bg-accent-500/15 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-accent-200">
+          <Icon name="lucide:landmark" size={14} />
+          {g.name} · Since {g.established}
+        </span>
+        <IimBadge variant="dark" size="sm" />
+      </div>
+      <h1 class="mt-6 text-4xl sm:text-5xl font-black tracking-tight text-white">
+        {years}+ years of trust in Sambhaji Nagar — now in tech.
+      </h1>
+      <p class="mt-5 text-lg text-white/70 measure">
+        DAIT Institute isn't a new name that appeared overnight. It's the newest institution of the
+        Dhakne family — the same family Sambhaji Nagar has trusted with its children's education since
+        {" "}{g.established}. Now we're bringing that trust to IT, AI, and digital careers.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Button href={primaryCta.href}>{primaryCta.label}</Button>
+        <Button href="/programs/" variant="ghost-on-dark" icon="lucide:arrow-right">
+          Explore programs
+        </Button>
+      </div>
+    </div>
+  </Section>
+
+  <!-- LEGACY / GROUP (LIGHT) -->
+  <Section tone="white">
+    <LegacyGroup variant="full" />
+  </Section>
+
+  <!-- VISION & MISSION (DARK) -->
+  <Section tone="dark">
+    <VisionMission />
+  </Section>
+
+  <!-- LEARNING SPACE (image band) -->
+  <Section tone="surface">
+    <ImageFeature image="/images/content/campus.jpg" imageAlt="Students learning at DAIT Institute, Sambhaji Nagar" icon="lucide:school">
+      <SectionLabel>Where you'll learn</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+        A learning home in <span class="text-orange-500">Sambhaji Nagar</span>
+      </h2>
+      <p class="mt-4 text-ink-600 measure">
+        Small, mentor-led batches in a practical, project-first environment — the same care the Dhakne
+        family has brought to this city's classrooms since 1998.
+      </p>
+      <ul class="mt-5 space-y-3">
+        {[
+          "Hands-on labs and live projects",
+          "Personal attention in capped batches",
+          "Weekday and weekend/evening options",
+        ].map((point) => (
+          <li class="flex items-start gap-3 text-ink-700">
+            <Icon name="lucide:check" size={18} class="mt-0.5 shrink-0 text-orange-500" />
+            <span class="text-sm leading-relaxed">{point}</span>
+          </li>
+        ))}
+      </ul>
+    </ImageFeature>
+  </Section>
+
+  <!-- FOUNDER STORY (DARK) -->
+  <Section tone="dark">
+    <FounderStory />
+  </Section>
+
+  <!-- LEADERSHIP TEAM (LIGHT) -->
+  <Section tone="surface">
+    <LeadershipTeam />
+  </Section>
+
+  <!-- FINAL CTA -->
+  <Section tone="surface" class="!pt-0">
+    <CTABanner />
+  </Section>
+</BaseLayout>

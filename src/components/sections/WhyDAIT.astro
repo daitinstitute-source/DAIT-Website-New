@@ -1,0 +1,48 @@
+---
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+
+interface WhyDAITBenefit {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+interface Props {
+  benefits: WhyDAITBenefit[];
+}
+
+const { benefits } = Astro.props;
+---
+
+<div id="why-dait">
+  <div class="max-w-3xl" data-reveal>
+    <SectionLabel>Why DAIT</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">How we train <span class="text-orange-500">differently</span></h2>
+    <p class="mt-4 text-ink-600 measure">
+      Outcome-first, hands-on, and mentor-led — structured to make you hireable, not just certified.
+    </p>
+  </div>
+
+  {benefits && benefits.length > 0 ? (
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {benefits.map((benefit, i) => (
+        <div
+          class="rounded-3xl border border-border bg-white p-8 shadow-sm hover:shadow-md transition-shadow"
+          data-reveal
+          data-reveal-delay={(i * 0.1).toString()}
+        >
+          <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-100 text-accent-600">
+            <Icon name={benefit.icon} size={28} />
+          </div>
+          <h3 class="mt-4 text-lg font-bold text-ink-900">{benefit.title}</h3>
+          <p class="mt-3 text-ink-600 text-sm leading-relaxed">{benefit.description}</p>
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div class="mt-10 rounded-3xl border border-border border-dashed bg-surface-50 p-12 text-center">
+      <p class="text-ink-500">Default benefits will be shown here. Customize by adding whyDAIT field to your program.</p>
+    </div>
+  )}
+</div>

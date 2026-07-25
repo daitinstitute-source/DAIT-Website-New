@@ -1,0 +1,31 @@
+---
+/**
+ * Card — white surface floating on the tinted page background.
+ * `as` sets the element (default article); `href` makes the whole card a link.
+ * `hover` adds the lift/shadow interaction.
+ */
+interface Props {
+  as?: keyof HTMLElementTagNameMap;
+  href?: string;
+  hover?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  as = "article",
+  href,
+  hover = false,
+  class: className = "",
+  ...rest
+} = Astro.props;
+
+const Tag = (href ? "a" : as) as any;
+const cls = ["card p-7", hover && "card--hover", href && "block", className]
+  .filter(Boolean)
+  .join(" ");
+---
+
+<Tag class={cls} {...(href ? { href } : {})} {...rest}>
+  <slot />
+</Tag>

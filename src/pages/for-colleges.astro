@@ -1,0 +1,123 @@
+---
+/**
+ * /for-colleges — B2B landing for ICP-2 (colleges/TPOs). Workshops, bootcamps,
+ * FDPs, semester training and placement readiness. Own hero, offerings, form, CTA.
+ */
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionLabel from "../components/ui/SectionLabel.astro";
+import Button from "../components/ui/Button.astro";
+import EnquiryForm from "../components/forms/EnquiryForm.tsx";
+import HeroBackdrop from "../components/sections/HeroBackdrop.astro";
+import { siteConfig } from "../config/site";
+
+const primaryCtaLink = "#enquire";
+const waHref = `https://wa.me/${siteConfig.whatsapp.number}?text=${encodeURIComponent("Hi DAIT Institute, I'm from a college and would like to discuss training/placements.")}`;
+
+const offerings = [
+  { icon: "lucide:presentation", title: "1-Day AI Workshops", desc: "High-impact, hands-on sessions on AI tools, digital marketing or coding for your students." },
+  { icon: "lucide:calendar-days", title: "3-Day Skill Bootcamps", desc: "Intensive practical bootcamps that give students a real, portfolio-ready project." },
+  { icon: "lucide:badge-check", title: "30-Day Add-on Certifications", desc: "Certificate programs that run alongside the semester and boost employability." },
+  { icon: "lucide:graduation-cap", title: "Semester Training Programs", desc: "Structured, semester-long practical training aligned to current hiring needs." },
+  { icon: "lucide:users", title: "Faculty Development (FDP)", desc: "Upskill your faculty on AI, modern tools and industry-current teaching methods." },
+  { icon: "lucide:briefcase", title: "Placement-Readiness Training", desc: "Aptitude, resume, LinkedIn, mock interviews and project reviews before placements." },
+];
+
+const why = [
+  "Curriculum matched to what employers hire for today",
+  "Delivered on-campus, online, or hybrid",
+  "Hands-on, project-first — not slide-only lectures",
+  "Backed by the Dhakne Education Group — trusted locally since 1998",
+];
+---
+
+<BaseLayout
+  title="AI & IT Training for Colleges | DAIT Institute"
+  description="Partner with DAIT Institute for practical AI & IT training, bootcamps, FDPs, semester programs and placement-readiness for your students in Sambhaji Nagar."
+  canonicalPath="/for-colleges/"
+  keywords={["college training partner", "campus workshops Sambhaji Nagar", "placement training", "FDP AI"]}
+>
+  <!-- HERO -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 text-white">
+    <HeroBackdrop name="colleges" />
+    <div aria-hidden="true" class="pointer-events-none absolute -right-24 -top-28 h-[24rem] w-[24rem] rounded-full" style="background: radial-gradient(circle, rgba(242,99,33,.3), transparent 65%);"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0" style="background: radial-gradient(120% 85% at 12% -10%, rgba(255,255,255,.14), transparent 46%);"></div>
+    <div class="container-wide relative pt-24 pb-16 lg:pt-28 lg:pb-20">
+      <div class="max-w-3xl" data-reveal>
+        <nav class="text-sm text-white/70" aria-label="Breadcrumb">
+          <a href="/" class="hover:text-white">Home</a><span class="mx-2">/</span><span class="text-white">For Colleges</span>
+        </nav>
+        <p class="mt-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-white">
+          <Icon name="lucide:school" size={14} /> For colleges & TPOs
+        </p>
+        <h1 class="mt-5 text-4xl sm:text-5xl lg:text-[3.4rem] font-black leading-[1.05] tracking-tight text-white">
+          Industry-aligned AI & IT training for your <span class="text-orange-400">students</span>
+        </h1>
+        <p class="mt-5 max-w-xl text-lg sm:text-xl font-medium leading-relaxed text-white/90">
+          Strengthen employability and placements with hands-on workshops, bootcamps, semester
+          programs and faculty development — delivered on your campus or online.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Button href={primaryCtaLink} variant="secondary" iconLeft="lucide:calendar-check">Request a workshop</Button>
+          <Button href={waHref} variant="ghost-on-dark" iconLeft="simple-icons:whatsapp" external>WhatsApp us</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFFERINGS -->
+  <Section tone="surface">
+    <div class="max-w-2xl" data-reveal>
+      <SectionLabel>What we offer</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">Programs for <span class="text-orange-500">campuses</span></h2>
+    </div>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {offerings.map((o, i) => (
+        <div class="card card--hover p-6" data-reveal data-reveal-delay={(i * 0.06).toString()}>
+          <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-50 text-accent-600"><Icon name={o.icon} size={24} /></span>
+          <h3 class="mt-5 text-lg font-bold text-ink-900">{o.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-ink-500">{o.desc}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- WHY + FORM -->
+  <Section tone="white" id="enquire">
+    <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+      <div data-reveal>
+        <SectionLabel>Why partner with DAIT</SectionLabel>
+        <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">Employable students, <span class="text-orange-500">measurable results</span></h2>
+        <ul class="mt-6 space-y-3">
+          {why.map((w) => (
+            <li class="flex items-start gap-3 text-ink-700">
+              <Icon name="lucide:check" size={18} class="mt-0.5 shrink-0 text-orange-500" />
+              <span class="text-sm leading-relaxed">{w}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Button href={`tel:${siteConfig.phone.replace(/\s/g, "")}`} variant="outline" iconLeft="lucide:phone">Call {siteConfig.phone}</Button>
+        </div>
+      </div>
+      <div data-reveal data-reveal-delay="0.1">
+        <EnquiryForm client:visible programSlug="college-partnership" programTitle="College Partnership" />
+      </div>
+    </div>
+  </Section>
+
+  <!-- CTA -->
+  <Section tone="surface">
+    <div class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 p-8 sm:p-12 text-white shadow-2xl" data-reveal>
+      <div aria-hidden="true" class="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full" style="background: radial-gradient(circle, rgba(242,99,33,.4), transparent 65%);"></div>
+      <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div class="max-w-2xl">
+          <h2 class="text-3xl sm:text-4xl font-black leading-[1.1] text-white">Let's plan a <span class="text-orange-300">pilot workshop</span> for your campus</h2>
+          <p class="mt-3 text-white/85 measure">Tell us your department, batch size and goals — we'll propose a program that fits your calendar.</p>
+        </div>
+        <Button href={primaryCtaLink} class="shrink-0 !border-white !bg-white !text-accent-600 hover:!bg-white/90">Request a workshop</Button>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>

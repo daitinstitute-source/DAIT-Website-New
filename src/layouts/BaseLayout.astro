@@ -1,0 +1,276 @@
+---
+/**
+ * BaseLayout — HTML shell, typed SEO head, self-hosted fonts, GA4 (env-gated),
+ * site-wide EducationalOrganization JSON-LD, Header, Footer, WhatsApp island.
+ *
+ * SEOProps let each page override the defaults. No astro-seo package — native head.
+ */
+import "../styles/global.css";
+import type { Thing, WithContext } from "schema-dts";
+import { siteConfig, whatsappLink } from "../config/site";
+import { seoDefaults, educationalOrganizationSchema, localBusinessSchema } from "../data/seo-defaults";
+import { canonicalUrl, absoluteUrl } from "../lib/seo";
+import Header from "../components/layout/Header.astro";
+import Footer from "../components/layout/Footer.astro";
+import JsonLd from "../components/seo/JsonLd.astro";
+import WhatsAppButton from "../components/forms/WhatsAppButton.tsx";
+
+export interface SEOProps {
+  title: string;
+  description?: string;
+  /** Path used for canonical; defaults to current URL. */
+  canonicalPath?: string;
+  ogImage?: string;
+  ogType?: "website" | "article";
+  noindex?: boolean;
+  /** Whether to append " | DAIT Institute" (default true). */
+  brandedTitle?: boolean;
+  keywords?: string[];
+}
+
+interface Props extends SEOProps {
+  /** Extra JSON-LD blocks (Course, FAQPage, BreadcrumbList…). */
+  jsonLd?: WithContext<Thing>[];
+  /** Set false on the dark hero pages if you want a transparent header. */
+  headerSolid?: boolean;
+  mainClass?: string;
+}
+
+const {
+  title,
+  description = seoDefaults.defaultDescription,
+  canonicalPath,
+  ogImage = seoDefaults.defaultOgImage,
+  ogType = "website",
+  noindex = false,
+  brandedTitle = true,
+  keywords = [],
+  jsonLd = [],
+  headerSolid = true,
+  mainClass = "",
+} = Astro.props;
+
+const fullTitle = brandedTitle ? seoDefaults.titlePattern(title) : title;
+const canonical = canonicalUrl(canonicalPath ?? Astro.url.pathname);
+const ogImageUrl = absoluteUrl(ogImage);
+const waHref = whatsappLink();
+
+// Launch gate: until the site is opened for indexing, force noindex/nofollow on
+// every page (blocks Google/Bing AND AI answer engines from listing the site).
+const blockIndexing = !siteConfig.allowIndexing || noindex;
+
+// Analytics (GTM/GA4/Pixel) only fire once the site is live — keeps pre-launch
+// QA traffic out of the real reports.
+const trackingEnabled = siteConfig.allowIndexing;
+const gtm = trackingEnabled ? siteConfig.analytics.gtmId : "";
+const ga4 = trackingEnabled ? siteConfig.analytics.ga4Id : "";
+const metaPixel = trackingEnabled ? siteConfig.analytics.metaPixelId : "";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Google Tag Manager (loads GA4 + any other tags from the container) -->
+    {
+      gtm && (
+        <script is:inline define:vars={{ gtm }}>
+          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',gtm);`}
+        </script>
+      )
+    }
+
+    <!-- First-party engagement tracking: records the visitor's main source,
+         landing page, pages viewed, time on site and new/returning status for
+         the session, so the enquiry form can attach them as hidden fields. -->
+    <script is:inline>
+      (function () {
+        try {
+          var SKEY = "dait_sess";
+          var VKEY = "dait_visitor";
+
+          function classify(ref) {
+            if (!ref) return "Direct";
+            var h;
+            try { h = new URL(ref).hostname.replace(/^www\./, ""); } catch (e) { return "Direct"; }
+            if (h === location.hostname) return "Direct";
+            if (/(^|\.)google\./.test(h)) return "Google";
+            if (/bing\.|duckduckgo\.|yahoo\./.test(h)) return "Search (" + h + ")";
+            if (/facebook\.|(^|\.)fb\.|instagram\./.test(h)) return "Facebook/Instagram";
+            if (/youtube\.|youtu\.be/.test(h)) return "YouTube";
+            if (/linkedin\./.test(h)) return "LinkedIn";
+            if (/t\.co|twitter\.|x\.com/.test(h)) return "Twitter/X";
+            if (/whatsapp/.test(h)) return "WhatsApp";
+            return "Referral: " + h;
+          }
+
+          function track() {
+            var s = null;
+            try { s = JSON.parse(sessionStorage.getItem(SKEY) || "null"); } catch (e) {}
+            if (!s) {
+              var v = null;
+              try { v = JSON.parse(localStorage.getItem(VKEY) || "null"); } catch (e) {}
+              if (!v) v = { firstSeen: Date.now(), visits: 0 };
+              v.visits += 1;
+              try { localStorage.setItem(VKEY, JSON.stringify(v)); } catch (e) {}
+              s = {
+                start: Date.now(),
+                pages: 0,
+                landing: location.pathname,
+                referrer: document.referrer || "",
+                source: classify(document.referrer),
+                visit: v.visits,
+              };
+            }
+            s.pages += 1;
+            s.last = Date.now();
+            try { sessionStorage.setItem(SKEY, JSON.stringify(s)); } catch (e) {}
+          }
+
+          track();
+          // Count subsequent navigations too (if View Transitions are ever enabled).
+          document.addEventListener("astro:after-swap", track);
+        } catch (e) {}
+      })();
+    </script>
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {keywords.length > 0 && <meta name="keywords" content={keywords.join(", ")} />}
+    <link rel="canonical" href={canonical} />
+    {
+      blockIndexing && (
+        <>
+          <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
+          <meta name="googlebot" content="noindex, nofollow" />
+        </>
+      )
+    }
+    <meta name="theme-color" content="#1548A3" />
+
+    <!-- Favicons -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180x180.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content={siteConfig.name} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content={seoDefaults.locale} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content={seoDefaults.twitterCard} />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- Site-wide organization + local-business schema (hyperlocal SEO) -->
+    <JsonLd schema={educationalOrganizationSchema()} />
+    <JsonLd schema={localBusinessSchema()} />
+    {jsonLd.map((s) => <JsonLd schema={s} />)}
+
+    <!-- GA4 (only when configured) -->
+    {
+      ga4 && (
+        <>
+          <script
+            is:inline
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}
+          />
+          <script is:inline define:vars={{ ga4 }}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", ga4);
+          </script>
+        </>
+      )
+    }
+
+    <!-- Meta (Facebook) Pixel — only when configured -->
+    {
+      metaPixel && (
+        <>
+          <script is:inline define:vars={{ metaPixel }}>
+            !(function (f, b, e, v, n, t, s) {
+              if (f.fbq) return;
+              n = f.fbq = function () {
+                n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+              };
+              if (!f._fbq) f._fbq = n;
+              n.push = n;
+              n.loaded = !0;
+              n.version = "2.0";
+              n.queue = [];
+              t = b.createElement(e);
+              t.async = !0;
+              t.src = v;
+              s = b.getElementsByTagName(e)[0];
+              s.parentNode.insertBefore(t, s);
+            })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+            fbq("init", metaPixel);
+            fbq("track", "PageView");
+          </script>
+          <noscript>
+            <img
+              height="1"
+              width="1"
+              style="display:none"
+              alt=""
+              src={`https://www.facebook.com/tr?id=${metaPixel}&ev=PageView&noscript=1`}
+            />
+          </noscript>
+        </>
+      )
+    }
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {
+      gtm && (
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${gtm}`}
+            height="0"
+            width="0"
+            style="display:none;visibility:hidden"
+            title="gtm"
+          />
+        </noscript>
+      )
+    }
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-3 focus:left-3 focus:bg-accent-500 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
+      >Skip to content</a
+    >
+
+    <Header solid={headerSolid} />
+
+    <main id="main" class={`flex-1 ${mainClass}`}>
+      <slot />
+    </main>
+
+    <Footer />
+
+    <WhatsAppButton href={waHref} client:load />
+
+    <!-- Scroll reveals + counters -->
+    <script>
+      import { initAnimations } from "../lib/gsap";
+      initAnimations();
+      document.addEventListener("astro:after-swap", initAnimations);
+    </script>
+  </body>
+</html>

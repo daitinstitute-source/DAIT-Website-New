@@ -1,0 +1,44 @@
+---
+/**
+ * StickNav — sticky in-page section nav under the header. Scrolls horizontally
+ * on overflow with NO visible scrollbar/arrows; soft edge-fade hints more items.
+ */
+interface Props {
+  sections: Array<{ id: string; label: string }>;
+}
+
+const { sections } = Astro.props;
+---
+
+<nav
+  class="sticky top-[88px] z-30 border-b border-border/60 bg-white/95 backdrop-blur"
+  aria-label="Program sections"
+>
+  <div class="sticknav-mask container-wide">
+    <div class="sticknav-scroll flex gap-2 overflow-x-auto py-3 sm:gap-2.5">
+      {sections.map((section) => (
+        <a
+          href={`#${section.id}`}
+          class="whitespace-nowrap rounded-full border border-border/60 px-4 py-2 text-sm font-semibold text-ink-500 transition hover:border-accent-500 hover:bg-accent-50 hover:text-accent-600"
+        >
+          {section.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
+
+<style>
+  .sticknav-scroll {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  .sticknav-scroll::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+  /* Fade the edges so cut-off chips hint that the list scrolls. */
+  .sticknav-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 3%, #000 97%, transparent);
+  }
+</style>

@@ -1,0 +1,59 @@
+---
+/**
+ * /thank-you — post-submit confirmation. Conversion tracking fires here
+ * (GA4 event below, gated on a configured GA4 id). noindex — not a landing page.
+ */
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import Button from "../components/ui/Button.astro";
+import { siteConfig, whatsappLink } from "../config/site";
+
+const waHref = whatsappLink("Hi DAIT Institute, I just submitted an enquiry and would like to chat.");
+const ga4 = siteConfig.analytics.ga4Id;
+---
+
+<BaseLayout
+  title="Thank you"
+  description="Your enquiry has been received. The DAIT Institute team will reach out shortly."
+  canonicalPath="/thank-you/"
+  noindex={true}
+>
+  <Section tone="dark" class="pt-28 pb-24">
+    <div class="mx-auto max-w-2xl text-center" data-reveal>
+      <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/20 text-accent-300 ring-1 ring-accent-500/40">
+        <Icon name="lucide:check" size={32} />
+      </span>
+      <h1 class="mt-8 text-4xl sm:text-5xl font-black tracking-tight text-white">
+        Enquiry received — thank you!
+      </h1>
+      <p class="mt-5 text-lg text-white/70">
+        A DAIT advisor will call you back soon with cohort details, fees, and the right track for
+        your goals. Prefer to talk right now?
+      </p>
+
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        {waHref && (
+          <Button href={waHref} external iconLeft="simple-icons:whatsapp">Chat on WhatsApp</Button>
+        )}
+        <Button href={`tel:${siteConfig.phone.replace(/\s/g, "")}`} variant="ghost-on-dark" iconLeft="lucide:phone">
+          Call {siteConfig.phone}
+        </Button>
+      </div>
+
+      <div class="mt-12 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/50">
+        <a href="/programs/" class="hover:text-white transition">Browse all programs</a>
+        <span aria-hidden="true">·</span>
+        <a href="/" class="hover:text-white transition">Back to home</a>
+      </div>
+    </div>
+  </Section>
+
+  {ga4 && (
+    <script is:inline define:vars={{ ga4 }}>
+      if (window.gtag) {
+        window.gtag("event", "generate_lead", { event_category: "enquiry", send_to: ga4 });
+      }
+    </script>
+  )}
+</BaseLayout>

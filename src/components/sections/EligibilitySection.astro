@@ -1,0 +1,72 @@
+---
+/**
+ * EligibilitySection — "Who can join" admissions block (upGrad-informed).
+ * Renders eligibility + prerequisites + optional batch size. The parent only
+ * mounts this when at least `eligibility` has entries, so no empty-state needed.
+ */
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+
+interface Props {
+  eligibility: string[];
+  prerequisites?: string[];
+  batchSize?: string;
+}
+
+const { eligibility, prerequisites = [], batchSize } = Astro.props;
+---
+
+<div id="eligibility">
+  <div class="max-w-3xl" data-reveal>
+    <SectionLabel>Who can join</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">Is this program <span class="text-orange-500">right for you?</span></h2>
+    <p class="mt-4 text-ink-600 measure">
+      Built for both fresh graduates starting out and working professionals switching or upskilling —
+      no prior experience required.
+    </p>
+  </div>
+
+  <div class="mt-10 grid gap-6 lg:grid-cols-2">
+    <!-- Eligibility -->
+    <div class="rounded-3xl border border-border bg-white p-8 shadow-sm" data-reveal>
+      <div class="flex items-center gap-3">
+        <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-100 text-accent-600">
+          <Icon name="lucide:user-check" size={22} />
+        </span>
+        <h3 class="text-xl font-bold text-ink-900">You're a good fit if</h3>
+      </div>
+      <ul class="mt-6 space-y-3">
+        {eligibility.map((item) => (
+          <li class="flex items-start gap-3 text-ink-700">
+            <Icon name="lucide:check" size={18} class="mt-0.5 shrink-0 text-orange-500" />
+            <span class="text-sm leading-relaxed">{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Prerequisites + batch size -->
+    <div class="rounded-3xl border border-border bg-surface-50 p-8" data-reveal data-reveal-delay="0.1">
+      <div class="flex items-center gap-3">
+        <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-100 text-accent-600">
+          <Icon name="lucide:list-checks" size={22} />
+        </span>
+        <h3 class="text-xl font-bold text-ink-900">What you need</h3>
+      </div>
+      <ul class="mt-6 space-y-3">
+        {prerequisites.map((item) => (
+          <li class="flex items-start gap-3 text-ink-700">
+            <Icon name="lucide:dot" size={18} class="mt-0.5 shrink-0 text-accent-500" />
+            <span class="text-sm leading-relaxed">{item}</span>
+          </li>
+        ))}
+      </ul>
+      {batchSize && (
+        <div class="mt-6 flex items-center gap-3 rounded-2xl border border-accent-200 bg-accent-50 p-4">
+          <Icon name="lucide:users" size={20} class="shrink-0 text-accent-600" />
+          <p class="text-sm font-semibold text-accent-700">{batchSize}</p>
+        </div>
+      )}
+    </div>
+  </div>
+</div>

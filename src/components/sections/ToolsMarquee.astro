@@ -1,0 +1,89 @@
+---
+/**
+ * ToolsMarquee — an auto-scrolling strip of tool/tech logos, shown right under
+ * the hero. Known tools render a Simple Icons logo; unknown ones fall back to a
+ * clean text chip (so the build never breaks on a missing icon). Monochrome per
+ * BRAND.md. Pauses on hover and for reduced-motion users.
+ */
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  tools: string[];
+  label?: string;
+}
+const { tools, label = "Tools & platforms you'll master" } = Astro.props;
+
+// Only confident, existing Simple Icons slugs. Anything else → text chip.
+const ICONS: Record<string, string> = {
+  "Google Ads": "googleads",
+  "Meta Ads": "meta",
+  "Meta Advantage+": "meta",
+  WordPress: "wordpress",
+  "Canva AI": "canva",
+  Canva: "canva",
+  Semrush: "semrush",
+  ChatGPT: "openai",
+  GA4: "googleanalytics",
+  "Server-side GTM": "googletagmanager",
+  BigQuery: "googlebigquery",
+  HubSpot: "hubspot",
+  Mailchimp: "mailchimp",
+  "Zapier / Make": "zapier",
+  React: "react",
+  "Node.js": "nodedotjs",
+  MongoDB: "mongodb",
+  "GitHub Copilot": "github",
+  Python: "python",
+  Tableau: "tableau",
+};
+
+const items = tools.map((name) => ({ name, slug: ICONS[name] ?? "" }));
+// Two passes for a seamless loop.
+const loop = [...items, ...items];
+---
+
+<div class="marquee-wrap" data-reveal>
+  <p class="text-center text-xs font-bold uppercase tracking-[0.15em] text-ink-500">{label}</p>
+  <div class="marquee-mask mt-5 overflow-hidden">
+    <div class="marquee flex w-max items-center">
+      {loop.map((item, i) => (
+        <span class="mx-6 inline-flex items-center gap-2.5 whitespace-nowrap text-ink-500" aria-hidden={i >= items.length ? "true" : undefined}>
+          {item.slug ? (
+            <Icon name={`simple-icons:${item.slug}`} size={26} class="text-ink-400" />
+          ) : (
+            <span class="h-2 w-2 rounded-full bg-orange-400" />
+          )}
+          <span class="text-sm font-semibold text-ink-600">{item.name}</span>
+        </span>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+  .marquee {
+    animation: marquee 32s linear infinite;
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  .marquee-wrap:hover .marquee {
+    animation-play-state: paused;
+  }
+  .marquee-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      animation: none;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+</style>

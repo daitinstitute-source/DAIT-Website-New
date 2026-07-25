@@ -1,0 +1,120 @@
+---
+import { getCollection, render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import type { WithContext, Course, BreadcrumbList, FAQPage, Thing } from "schema-dts";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProgramLayout from "../../layouts/ProgramLayout.astro";
+import { siteConfig } from "../../config/site";
+import { canonicalUrl } from "../../lib/seo";
+
+export const getStaticPaths = (async () => {
+  const programs = await getCollection("programs");
+  return programs
+    .filter((program) => !program.data.draft)
+    .map((program) => ({
+      params: { slug: program.id },
+      props: { program },
+    }));
+}) satisfies GetStaticPaths;
+
+const { program } = Astro.props;
+const { Content } = await render(program);
+const data = program.data;
+const url = canonicalUrl(`/programs/${program.id}/`);
+
+// Map our modes to schema.org course modes.
+const modeMap: Record<string, string> = {
+  classroom: "Onsite",
+  online: "Online",
+  hybrid: "Blended",
+};
+
+// Optional price parsed from the display fee string (e.g. "₹12,000" -> 12000).
+const priceDigits = data.fee?.replace(/[^\d]/g, "") ?? "";
+
+const courseSchema: WithContext<Course> = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: data.title,
+  description: data.tagline,
+  url,
+  provider: {
+    "@type": "EducationalOrganization",
+    name: siteConfig.name,
+    sameAs: siteConfig.url,
+  },
+  ...(data.certification ? { educationalCredentialAwarded: data.certification } : {}),
+  hasCourseInstance: [
+    {
+      "@type": "CourseInstance",
+      courseMode: data.mode.map((m) => modeMap[m] ?? m),
+      courseWorkload: data.duration,
+      ...(data.nextBatchDate
+        ? { startDate: new Date(data.nextBatchDate).toISOString().slice(0, 10) }
+        : {}),
+      location: {
+        "@type": "Place",
+        name: siteConfig.centers[0]?.name ?? siteConfig.name,
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: siteConfig.centers[0]?.city,
+          addressRegion: siteConfig.centers[0]?.state,
+          postalCode: siteConfig.centers[0]?.postalCode,
+          addressCountry: "IN",
+        },
+      },
+      ...(priceDigits
+        ? {
+            offers: {
+              "@type": "Offer",
+              price: priceDigits,
+              priceCurrency: "INR",
+              category: "Tuition",
+              url,
+            },
+          }
+        : {}),
+    },
+  ],
+};
+
+const breadcrumbSchema: WithContext<BreadcrumbList> = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: canonicalUrl("/") },
+    { "@type": "ListItem", position: 2, name: "Programs", item: canonicalUrl("/programs/") },
+    { "@type": "ListItem", position: 3, name: data.title, item: url },
+  ],
+};
+
+const schemas: WithContext<Thing>[] = [courseSchema, breadcrumbSchema];
+
+if (data.faqs.length > 0) {
+  const faqSchema: WithContext<FAQPage> = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: data.faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: { "@type": "Answer", text: faq.a },
+    })),
+  };
+  schemas.push(faqSchema);
+}
+---
+
+<BaseLayout
+  title={`${data.title} Course in ${siteConfig.centers[0]?.city ?? "Sambhaji Nagar"} | DAIT Institute`}
+  description={data.tagline}
+  canonicalPath={`/programs/${program.id}/`}
+  brandedTitle={false}
+  keywords={[`${data.title} course`, `${data.title} course in ${siteConfig.centers[0]?.city ?? "Sambhaji Nagar"}`, "IT training Sambhaji Nagar", "AI course Sambhaji Nagar"]}
+  jsonLd={schemas}
+>
+  <ProgramLayout program={program}>
+    <div class="prose prose-slate max-w-none">
+      <Content />
+    </div>
+  </ProgramLayout>
+</BaseLayout>

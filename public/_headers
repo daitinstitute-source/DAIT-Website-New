@@ -1,0 +1,6 @@
+# ⛔ PRE-LAUNCH: server-level noindex on Cloudflare Pages for EVERY response
+# (belt-and-suspenders with robots.txt + the per-page meta tag).
+# On the owner's green signal, DELETE this file (or the block below) and set
+# siteConfig.allowIndexing = true.
+/*
+  X-Robots-Tag: noindex, nofollow, noarchive, nosnippet

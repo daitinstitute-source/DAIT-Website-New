@@ -1,0 +1,15 @@
+---
+/**
+ * SectionLabel — the orange overline used above section headings.
+ * The orange dash + uppercase label. Decorative highlight role only.
+ */
+interface Props {
+  onDark?: boolean;
+  class?: string;
+}
+const { onDark = false, class: className = "" } = Astro.props;
+---
+
+<p class={`overline ${onDark ? "overline--on-dark" : ""} ${className}`}>
+  <slot />
+</p>

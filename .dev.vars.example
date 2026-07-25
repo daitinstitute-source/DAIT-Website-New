@@ -1,0 +1,12 @@
+# Local Brevo credentials for testing the lead pipeline.
+# Copy this file to `.dev.vars` (git-ignored) and fill in real values.
+# `npm run test:brevo` reads these and fires a real test lead through Brevo.
+#
+# These are the SAME variable names you set in Cloudflare Pages → Settings →
+# Environment variables for production. See LEADS-SETUP.md for where each comes from.
+
+BREVO_API_KEY=                  # Brevo → SMTP & API → API Keys (starts with xkeysib-)
+LEADS_TO_EMAIL=                 # Inbox that receives new-lead alerts (your admissions inbox)
+LEADS_FROM_EMAIL=               # A VERIFIED Brevo sender, e.g. no-reply@daitinstitute.com
+LEADS_FROM_NAME=DAIT Institute  # Sender display name (optional)
+BREVO_LIST_ID=                  # Brevo → Contacts → Lists → your "Website Leads" list ID (a number)

@@ -1,0 +1,115 @@
+---
+/**
+ * FounderStory — the "Meet the founder" section (DARK). Photo card with a
+ * floating IIM badge + name overlay, and a content column: label, headline,
+ * pull-quote, bio, 2×2 credential cards, and industry-experience pills.
+ * Reused on the homepage, /why-dait, and the program-page mentor block (via `label`).
+ * Reads entirely from siteConfig.founder.
+ */
+import { Icon } from "astro-icon/components";
+import IimBadge from "../ui/IimBadge.astro";
+import { siteConfig } from "../../config/site";
+
+interface Props {
+  label?: string;
+}
+const { label = "Meet the founder" } = Astro.props;
+
+const f = siteConfig.founder;
+const hasPhoto = Boolean(f.name && f.photo);
+---
+
+<div class="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 lg:items-center">
+  <!-- Photo card -->
+  <div class="relative order-1 max-w-sm mx-auto lg:mx-0" data-reveal>
+    <div class="relative aspect-[4/5] overflow-hidden rounded-[24px] ring-1 ring-white/10 shadow-2xl">
+      {
+        hasPhoto ? (
+          <img
+            src={f.photo}
+            alt={`${f.name}, ${f.role}`}
+            class="h-full w-full object-cover"
+            width="480"
+            height="600"
+          />
+        ) : (
+          <div
+            class="h-full w-full flex flex-col items-center justify-center gap-4 bg-dark-850/40"
+            style="background-image: radial-gradient(circle at 30% 20%, rgba(0,198,255,.18), transparent 55%), radial-gradient(circle at 80% 90%, rgba(242,99,33,.22), transparent 55%);"
+          >
+            <img src={siteConfig.logo.icon} alt="" class="h-20 w-20 opacity-90" width="80" height="80" />
+            <p class="text-xs uppercase tracking-widest text-white/50">Founder photo</p>
+          </div>
+        )
+      }
+      <!-- Name overlay -->
+      <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/45 to-transparent p-5 pt-16">
+        <p class="text-lg font-black text-white">{f.name}</p>
+        <p class="text-sm text-white/70">{f.role}</p>
+      </div>
+    </div>
+    <!-- Floating IIM badge -->
+    <div class="absolute right-3 top-4 sm:-right-4">
+      <IimBadge variant="dark" showProgram />
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="order-2">
+    <span class="inline-flex items-center gap-2 rounded-full border border-accent-400/40 bg-accent-500/10 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-accent-200">
+      <span class="h-1.5 w-1.5 rounded-full bg-accent-400"></span>
+      {label}
+    </span>
+
+    <h2 class="mt-5 text-3xl sm:text-4xl lg:text-[2.6rem] font-black leading-[1.1] text-white">
+      Learn from someone who has <span class="text-orange-400">actually done it</span>
+    </h2>
+
+    {f.quote && (
+      <blockquote class="mt-6 border-l-2 border-orange-500 pl-4 text-lg font-medium italic text-white/85">
+        “{f.quote}”
+      </blockquote>
+    )}
+
+    <div class="mt-6 space-y-4 measure text-white/70">
+      {f.bio.map((p) => <p set:html={p} />)}
+    </div>
+
+    <!-- Credential cards -->
+    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+      {
+        f.highlights.map((h, i) => (
+          <div
+            class="rounded-2xl bg-white/5 ring-1 ring-white/10 p-4"
+            data-reveal
+            data-reveal-delay={(i * 0.08).toString()}
+          >
+            <div class="flex items-center gap-3">
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-500/15 text-accent-300">
+                <Icon name={h.icon} size={20} />
+              </span>
+              <div class="min-w-0">
+                <p class="font-extrabold leading-tight text-white">{h.value}</p>
+                <p class="text-xs leading-snug text-white/60">{h.label}</p>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Industry pills -->
+    <div class="mt-7">
+      <p class="text-xs font-bold uppercase tracking-wider text-white/45">
+        Industry experience across
+      </p>
+      <ul class="mt-3 flex flex-wrap gap-2">
+        {
+          f.domains.map((d) => (
+            <li class="rounded-full bg-white/10 px-3.5 py-1.5 text-sm text-white/80">{d}</li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</div>

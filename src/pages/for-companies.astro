@@ -1,0 +1,123 @@
+---
+/**
+ * /for-companies — B2B landing for ICP-3 (companies/agencies). Corporate training,
+ * internship pipeline and hire-ready talent. Own hero, offerings, form, CTA.
+ */
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionLabel from "../components/ui/SectionLabel.astro";
+import Button from "../components/ui/Button.astro";
+import EnquiryForm from "../components/forms/EnquiryForm.tsx";
+import HeroBackdrop from "../components/sections/HeroBackdrop.astro";
+import { siteConfig } from "../config/site";
+
+const primaryCtaLink = "#enquire";
+const waHref = `https://wa.me/${siteConfig.whatsapp.number}?text=${encodeURIComponent("Hi DAIT Institute, I represent a company and would like to discuss training/hiring.")}`;
+
+const offerings = [
+  { icon: "lucide:users-round", title: "Employee Upskilling", desc: "Custom cohorts that bring your team up to speed on AI, data, cloud or digital marketing." },
+  { icon: "lucide:megaphone", title: "AI Marketing Workshops", desc: "Practical sessions on AI-powered campaigns, automation and analytics for your marketing team." },
+  { icon: "lucide:layout-template", title: "WordPress / CMS Training", desc: "Hands-on training so your team can build and manage sites and platforms in-house." },
+  { icon: "lucide:git-branch", title: "Internship Pipeline", desc: "A steady flow of trained interns, screened and project-ready, for your teams." },
+  { icon: "lucide:user-check", title: "Hire Job-Ready Talent", desc: "Access our pool of graduates trained on the exact tools and workflows you use." },
+  { icon: "lucide:settings-2", title: "Custom Corporate Training", desc: "A program built around your stack, goals and timelines — on-site or online." },
+];
+
+const why = [
+  "Trained on the current tools companies actually hire for",
+  "Practical, project-based — productive from day one",
+  "Flexible delivery: on-site, online or hybrid",
+  "Local partner you can meet — Sambhaji Nagar, since 1998",
+];
+---
+
+<BaseLayout
+  title="Corporate Training & Hiring | DAIT Institute"
+  description="Upskill your team or hire job-ready talent with DAIT Institute — corporate training, AI workshops, WordPress/CMS training and an internship pipeline in Sambhaji Nagar."
+  canonicalPath="/for-companies/"
+  keywords={["corporate training Sambhaji Nagar", "hire trained talent", "internship pipeline", "AI upskilling"]}
+>
+  <!-- HERO -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 text-white">
+    <HeroBackdrop name="companies" />
+    <div aria-hidden="true" class="pointer-events-none absolute -right-24 -top-28 h-[24rem] w-[24rem] rounded-full" style="background: radial-gradient(circle, rgba(242,99,33,.3), transparent 65%);"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0" style="background: radial-gradient(120% 85% at 12% -10%, rgba(255,255,255,.14), transparent 46%);"></div>
+    <div class="container-wide relative pt-24 pb-16 lg:pt-28 lg:pb-20">
+      <div class="max-w-3xl" data-reveal>
+        <nav class="text-sm text-white/70" aria-label="Breadcrumb">
+          <a href="/" class="hover:text-white">Home</a><span class="mx-2">/</span><span class="text-white">For Companies</span>
+        </nav>
+        <p class="mt-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-white">
+          <Icon name="lucide:building-2" size={14} /> For companies & agencies
+        </p>
+        <h1 class="mt-5 text-4xl sm:text-5xl lg:text-[3.4rem] font-black leading-[1.05] tracking-tight text-white">
+          Corporate training & <span class="text-orange-400">job-ready talent</span>
+        </h1>
+        <p class="mt-5 max-w-xl text-lg sm:text-xl font-medium leading-relaxed text-white/90">
+          Upskill your team on the tools that matter, or hire trained talent that's productive from
+          day one — with flexible, practical programs built around your business.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Button href={primaryCtaLink} variant="secondary" iconLeft="lucide:handshake">Talk to us</Button>
+          <Button href={waHref} variant="ghost-on-dark" iconLeft="simple-icons:whatsapp" external>WhatsApp us</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFFERINGS -->
+  <Section tone="surface">
+    <div class="max-w-2xl" data-reveal>
+      <SectionLabel>What we offer</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">Training & <span class="text-orange-500">hiring</span> for teams</h2>
+    </div>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {offerings.map((o, i) => (
+        <div class="card card--hover p-6" data-reveal data-reveal-delay={(i * 0.06).toString()}>
+          <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-50 text-accent-600"><Icon name={o.icon} size={24} /></span>
+          <h3 class="mt-5 text-lg font-bold text-ink-900">{o.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-ink-500">{o.desc}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- WHY + FORM -->
+  <Section tone="white" id="enquire">
+    <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+      <div data-reveal>
+        <SectionLabel>Why DAIT</SectionLabel>
+        <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">Talent that's <span class="text-orange-500">productive from day one</span></h2>
+        <ul class="mt-6 space-y-3">
+          {why.map((w) => (
+            <li class="flex items-start gap-3 text-ink-700">
+              <Icon name="lucide:check" size={18} class="mt-0.5 shrink-0 text-orange-500" />
+              <span class="text-sm leading-relaxed">{w}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Button href={`tel:${siteConfig.phone.replace(/\s/g, "")}`} variant="outline" iconLeft="lucide:phone">Call {siteConfig.phone}</Button>
+        </div>
+      </div>
+      <div data-reveal data-reveal-delay="0.1">
+        <EnquiryForm client:visible programSlug="corporate" programTitle="Corporate Training / Hiring" />
+      </div>
+    </div>
+  </Section>
+
+  <!-- CTA -->
+  <Section tone="surface">
+    <div class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 p-8 sm:p-12 text-white shadow-2xl" data-reveal>
+      <div aria-hidden="true" class="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full" style="background: radial-gradient(circle, rgba(242,99,33,.4), transparent 65%);"></div>
+      <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div class="max-w-2xl">
+          <h2 class="text-3xl sm:text-4xl font-black leading-[1.1] text-white">Need trained talent or a <span class="text-orange-300">custom program?</span></h2>
+          <p class="mt-3 text-white/85 measure">Tell us your team, tools and goals — we'll put together a training or hiring plan that fits.</p>
+        </div>
+        <Button href={primaryCtaLink} class="shrink-0 !border-white !bg-white !text-accent-600 hover:!bg-white/90">Talk to us</Button>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>

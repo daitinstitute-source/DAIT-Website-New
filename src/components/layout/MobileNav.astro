@@ -1,0 +1,96 @@
+---
+/**
+ * MobileNav — off-canvas panel (slides in from right). Toggled by Header's
+ * script. Lists main nav + all program areas + primary CTA.
+ */
+import { Icon } from "astro-icon/components";
+import { siteConfig, whatsappLink } from "../../config/site";
+import { mainNav, programAreas, primaryCta } from "../../data/navigation";
+import Button from "../ui/Button.astro";
+
+const waHref = whatsappLink();
+---
+
+<div
+  id="mobile-nav"
+  aria-hidden="true"
+  aria-label="Mobile menu"
+  class="lg:hidden fixed inset-0 z-50 bg-dark-950/50 translate-x-full transition-transform duration-300"
+>
+  <div
+    class="absolute right-0 top-0 h-full w-[86%] max-w-sm bg-surface-75 shadow-lg flex flex-col"
+  >
+    <div class="flex items-center justify-between h-[68px] px-5 border-b border-border">
+      <img
+        src={siteConfig.logo.horizontalLight}
+        alt="DAIT Institute"
+        height="36"
+        class="h-9 w-auto"
+        width="170"
+      />
+      <button
+        type="button"
+        id="mobile-nav-close"
+        class="inline-flex items-center justify-center h-10 w-10 rounded-lg text-ink-900 hover:bg-accent-50"
+        aria-label="Close menu"
+      >
+        <Icon name="lucide:x" size={24} />
+      </button>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto px-5 py-5" aria-label="Mobile">
+      <ul class="space-y-1">
+        {
+          mainNav
+            .filter((i) => !i.comingSoon)
+            .map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class="block py-2.5 text-base font-bold text-ink-900"
+                >
+                  {item.label}
+                </a>
+                {item.dropdown && (
+                  <ul class="pl-3 pb-2 space-y-0.5 border-l-2 border-border">
+                    {programAreas.map((area) => (
+                      <li>
+                        <a
+                          href={`/programs/#${area.slug}`}
+                          class="flex items-center gap-2.5 py-2 text-sm text-ink-600 hover:text-accent-600"
+                        >
+                          <Icon
+                            name={area.icon}
+                            size={16}
+                            class="text-accent-500"
+                          />
+                          {area.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))
+        }
+      </ul>
+    </nav>
+
+    <div class="px-5 py-5 border-t border-border space-y-3">
+      <Button href={primaryCta.href} class="w-full">{primaryCta.label}</Button>
+      {
+        waHref && (
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center justify-center gap-2 w-full py-3 rounded-lg border-2 border-[#25D366] text-[#128C7E] font-bold text-sm"
+          >
+            <Icon name="simple-icons:whatsapp" size={18} />
+            Chat on WhatsApp
+          </a>
+        )
+      }
+    </div>
+  </div>
+</div>

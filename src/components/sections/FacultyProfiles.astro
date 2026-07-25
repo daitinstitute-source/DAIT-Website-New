@@ -1,0 +1,79 @@
+---
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+
+interface Faculty {
+  name: string;
+  role: string;
+  experience: string;
+  expertise: string[];
+  linkedinUrl?: string;
+}
+
+interface Props {
+  faculty: Faculty[];
+}
+
+const { faculty } = Astro.props;
+---
+
+<div id="faculty">
+  <div class="max-w-3xl" data-reveal>
+    <SectionLabel>Meet your mentors</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">Learn from industry practitioners</h2>
+    <p class="mt-4 text-ink-600 measure">
+      Our instructors are active professionals with real-world experience, not just trainers. They bring current industry practices directly into the classroom.
+    </p>
+  </div>
+
+  {faculty && faculty.length > 0 ? (
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {faculty.map((instructor, i) => (
+        <div
+          class="group rounded-3xl border border-border bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+          data-reveal
+          data-reveal-delay={(i * 0.1).toString()}
+        >
+          <!-- Placeholder Avatar -->
+          <div class="flex h-32 w-32 items-center justify-center rounded-2xl bg-gradient-to-br from-accent-100 to-accent-50 mx-auto">
+            <Icon name="lucide:user" size={48} class="text-accent-400" />
+          </div>
+
+          <div class="mt-6 text-center">
+            <h3 class="text-lg font-bold text-ink-900">{instructor.name}</h3>
+            <p class="mt-1 text-sm font-medium text-accent-600">{instructor.role}</p>
+            <p class="mt-2 text-xs text-ink-500">{instructor.experience}</p>
+          </div>
+
+          <!-- Expertise -->
+          {instructor.expertise && instructor.expertise.length > 0 && (
+            <div class="mt-4 flex flex-wrap gap-2 justify-center">
+              {instructor.expertise.slice(0, 3).map((skill) => (
+                <span class="rounded-full bg-surface-50 px-2 py-1 text-xs font-medium text-ink-600">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <!-- LinkedIn Link -->
+          {instructor.linkedinUrl && (
+            <a
+              href={instructor.linkedinUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="mt-6 flex items-center justify-center gap-2 rounded-xl bg-accent-50 py-3 text-accent-600 font-medium hover:bg-accent-100 transition"
+            >
+              <Icon name="lucide:linkedin" size={18} />
+              View Profile
+            </a>
+          )}
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div class="mt-10 rounded-3xl border border-border border-dashed bg-surface-50 p-12 text-center">
+      <p class="text-ink-500">Faculty profiles coming soon. Share your instructor details during counselling!</p>
+    </div>
+  )}
+</div>

@@ -1,0 +1,15 @@
+---
+import type { Thing, WithContext } from "schema-dts";
+import { jsonLd } from "../../lib/seo";
+
+interface Props {
+  schema: WithContext<Thing>;
+}
+const { schema } = Astro.props;
+---
+
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={jsonLd(schema)}
+/>

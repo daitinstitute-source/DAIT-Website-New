@@ -1,0 +1,189 @@
+---
+import { getCollection, render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import type { WithContext, BlogPosting } from "schema-dts";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/ui/Section.astro";
+import Button from "../../components/ui/Button.astro";
+import { siteConfig, whatsappLink } from "../../config/site";
+import { canonicalUrl, absoluteUrl } from "../../lib/seo";
+import { existingImage } from "../../lib/media";
+import { programAreas } from "../../data/navigation";
+
+export const getStaticPaths = (async () => {
+  const posts = await getCollection("blog");
+  return posts
+    .filter((p) => !p.data.draft)
+    .map((p) => ({ params: { slug: p.id }, props: { post: p } }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const d = post.data;
+const url = canonicalUrl(`/blog/${post.id}/`);
+const cover = existingImage(d.image);
+const fmt = (date: Date) =>
+  new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(new Date(date));
+
+// Sidebar data: promote courses, read-next posts, categories.
+const promoPrograms = (await getCollection("programs"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+const allPosts = (await getCollection("blog")).filter((p) => !p.data.draft);
+const relatedPosts = allPosts
+  .filter((p) => p.id !== post.id)
+  .sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime())
+  .slice(0, 3);
+const categories = [...new Set(allPosts.map((p) => p.data.category))];
+const areaShort = (slug: string) => programAreas.find((a) => a.slug === slug)?.short ?? slug;
+const waHref = whatsappLink("Hi DAIT Institute, I read your blog and would like to know more about your programs.");
+
+const schema: WithContext<BlogPosting> = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: d.title,
+  description: d.description,
+  datePublished: new Date(d.publishDate).toISOString(),
+  dateModified: new Date(d.updatedDate ?? d.publishDate).toISOString(),
+  author: { "@type": "Organization", name: d.author },
+  publisher: {
+    "@type": "Organization",
+    name: siteConfig.name,
+    logo: { "@type": "ImageObject", url: absoluteUrl(siteConfig.logo.horizontalLight) },
+  },
+  ...(cover ? { image: absoluteUrl(cover) } : {}),
+  mainEntityOfPage: url,
+  url,
+  keywords: d.tags.join(", "),
+};
+---
+
+<BaseLayout
+  title={`${d.title} | DAIT Institute Blog`}
+  description={d.description}
+  canonicalPath={`/blog/${post.id}/`}
+  ogType="article"
+  ogImage={cover}
+  keywords={d.tags}
+  jsonLd={[schema]}
+>
+  <!-- HEADER -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 text-white">
+    <div aria-hidden="true" class="pointer-events-none absolute -right-24 -top-28 h-[22rem] w-[22rem] rounded-full" style="background: radial-gradient(circle, rgba(242,99,33,.28), transparent 65%);"></div>
+    <div class="container-wide relative pt-24 pb-14 lg:pt-28 lg:pb-16">
+      <div class="max-w-[760px]" data-reveal>
+        <nav class="text-sm text-white/70" aria-label="Breadcrumb">
+          <a href="/" class="hover:text-white">Home</a><span class="mx-2">/</span>
+          <a href="/blog/" class="hover:text-white">Blog</a><span class="mx-2">/</span>
+          <span class="text-white">{d.category}</span>
+        </nav>
+        <span class="mt-6 inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">{d.category}</span>
+        <h1 class="mt-4 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-[1.1] text-white">{d.title}</h1>
+        <div class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/75">
+          <span class="inline-flex items-center gap-1.5"><Icon name="lucide:user" size={15} /> {d.author}</span>
+          <span class="inline-flex items-center gap-1.5"><Icon name="lucide:calendar" size={15} /> {fmt(d.publishDate)}</span>
+          <span class="inline-flex items-center gap-1.5"><Icon name="lucide:clock" size={15} /> {d.readMinutes} min read</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BODY: article + sidebar -->
+  <Section tone="surface">
+    <div class="grid gap-10 lg:grid-cols-[1fr_320px] lg:gap-12">
+      <!-- MAIN -->
+      <div>
+        {cover && (
+          <img src={cover} alt={d.imageAlt ?? d.title} class="mb-8 aspect-[16/9] w-full rounded-3xl object-cover shadow-sm" width="900" height="506" loading="eager" />
+        )}
+        <article class="article" data-reveal>
+          <Content />
+        </article>
+
+        <!-- tags + share back -->
+        <div class="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+          <div class="flex flex-wrap gap-2">
+            {d.tags.map((t) => (
+              <span class="rounded-full bg-surface-75 border border-border px-3 py-1 text-xs font-semibold text-ink-500">#{t}</span>
+            ))}
+          </div>
+          <a href="/blog/" class="inline-flex items-center gap-1.5 text-sm font-bold text-accent-600 hover:gap-2.5 transition-all">
+            <Icon name="lucide:arrow-left" size={15} /> All articles
+          </a>
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <!-- CTA card -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-accent-600 to-accent-500 p-6 text-white shadow-lg">
+          <div aria-hidden="true" class="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full" style="background: radial-gradient(circle, rgba(242,99,33,.4), transparent 65%);"></div>
+          <h2 class="relative text-lg font-bold">Ready to start your career?</h2>
+          <p class="relative mt-1 text-sm text-white/85">Book a free counselling call — no commitment.</p>
+          <div class="relative mt-4 flex flex-col gap-2">
+            <Button href="/contact/" size="sm" class="w-full justify-center !border-white !bg-white !text-accent-600 hover:!bg-white/90">Book free counselling</Button>
+            {waHref && (
+              <a href={waHref} target="_blank" rel="noopener noreferrer" class="inline-flex w-full items-center justify-center gap-2 rounded-lg border-2 border-white/40 px-4 py-2 text-sm font-bold text-white hover:bg-white/10">
+                <Icon name="simple-icons:whatsapp" size={16} /> WhatsApp us
+              </a>
+            )}
+          </div>
+        </div>
+
+        <!-- Explore courses -->
+        <div class="rounded-3xl border border-border bg-white p-6 shadow-sm">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-ink-500">Explore our courses</h2>
+          <ul class="mt-4 space-y-2">
+            {promoPrograms.map((p) => (
+              <li>
+                <a href={`/programs/${p.id}/`} class="group flex items-center gap-3 rounded-xl p-2 -mx-2 transition hover:bg-accent-50">
+                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-accent-600 group-hover:bg-accent-500 group-hover:text-white transition-colors">
+                    <Icon name={programAreas.find((a) => a.slug === p.data.area)?.icon ?? "lucide:book"} size={17} />
+                  </span>
+                  <span>
+                    <span class="block text-sm font-bold text-ink-900 group-hover:text-accent-600">{p.data.title}</span>
+                    <span class="block text-xs text-ink-400">{areaShort(p.data.area)}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <a href="/programs/" class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-accent-600 hover:gap-2.5 transition-all">
+            All programs <Icon name="lucide:arrow-right" size={15} />
+          </a>
+        </div>
+
+        <!-- Categories -->
+        {categories.length > 0 && (
+          <div class="rounded-3xl border border-border bg-white p-6 shadow-sm">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-ink-500">Categories</h2>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {categories.map((c) => (
+                <a href="/blog/" class="rounded-full bg-surface-50 border border-border px-3 py-1.5 text-xs font-semibold text-ink-600 hover:border-accent-400 hover:text-accent-600 transition">{c}</a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Read next -->
+        {relatedPosts.length > 0 && (
+          <div class="rounded-3xl border border-border bg-white p-6 shadow-sm">
+            <h2 class="text-xs font-bold uppercase tracking-wider text-ink-500">Read next</h2>
+            <ul class="mt-4 space-y-4">
+              {relatedPosts.map((p) => (
+                <li>
+                  <a href={`/blog/${p.id}/`} class="group block">
+                    <span class="block text-sm font-bold text-ink-900 leading-snug group-hover:text-accent-600 transition-colors">{p.data.title}</span>
+                    <span class="mt-1 block text-xs text-ink-400">{p.data.readMinutes} min read</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </aside>
+    </div>
+  </Section>
+</BaseLayout>

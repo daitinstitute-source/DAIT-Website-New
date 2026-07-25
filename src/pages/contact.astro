@@ -1,0 +1,219 @@
+---
+/**
+ * /contact — enquiry + direct channels. Target of the site-wide primary CTA
+ * ("Book Free Career Counselling") and the nav Contact link.
+ *
+ * Blueprint (DAIT-BUILD-SPEC "Contact Page"):
+ *   1. Compact dark hero — reassurance (free, no obligation)
+ *   2. Two-column light — EnquiryForm island (with program picker) + direct channels
+ *   3. FAQ strip — common admission questions
+ *   4. ContactPage + ContactPoint JSON-LD
+ */
+import type { ContactPage, FAQPage, WithContext } from "schema-dts";
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionLabel from "../components/ui/SectionLabel.astro";
+import Button from "../components/ui/Button.astro";
+import EnquiryForm from "../components/forms/EnquiryForm.tsx";
+import { siteConfig, whatsappLink } from "../config/site";
+
+// Program picker options — live from the collection, non-draft, ordered.
+const programs = (await getCollection("programs"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99))
+  .map((p) => ({ slug: p.id, title: p.data.title }));
+
+const center = siteConfig.centers[0];
+const telHref = `tel:${siteConfig.phone.replace(/\s/g, "")}`;
+const waHref = whatsappLink();
+
+const faqs = [
+  {
+    q: "Do I need a technical background to join?",
+    a: "No. Our beginner tracks start from fundamentals — plenty of our learners come from non-IT degrees or non-coding backgrounds. In your free counselling call we'll recommend the right starting point for you.",
+  },
+  {
+    q: "I'm working full-time. Are there cohorts that fit my schedule?",
+    a: "Yes. Every program runs weekday cohorts for full-time learners and weekend/evening cohorts for working professionals, so you can upskill without leaving your job.",
+  },
+  {
+    q: "What are the fees, and are EMI options available?",
+    a: "Fees vary by program and are shared on the program page or in your advisor call. We offer flexible instalment options — ask your advisor for the current plans.",
+  },
+  {
+    q: "Do you provide placement support?",
+    a: "Yes — mentorship, portfolio and resume reviews, interview preparation, and access to hiring opportunities are part of our programs. We stay invested after the course ends.",
+  },
+  {
+    q: "Is the counselling call really free?",
+    a: "Completely free and no obligation. It's a conversation to understand your goals and map the right path — whether or not you enrol with us.",
+  },
+];
+
+// ContactPage + ContactPoint JSON-LD (org details come from the site-wide schema).
+const contactSchema: WithContext<ContactPage> = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "@id": `${siteConfig.url}/contact/#contactpage`,
+  name: "Contact DAIT Institute",
+  description:
+    "Book a free career counselling call with DAIT Institute — enquiry form, WhatsApp, phone, and centre address in Sambhaji Nagar.",
+  url: `${siteConfig.url}/contact/`,
+  mainEntity: {
+    "@type": "EducationalOrganization",
+    "@id": `${siteConfig.url}/#organization`,
+    name: siteConfig.name,
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "admissions",
+      telephone: siteConfig.phone,
+      email: siteConfig.email,
+      areaServed: "IN",
+      availableLanguage: ["en", "hi", "mr"],
+    },
+  },
+};
+
+const faqSchema: WithContext<FAQPage> = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": `${siteConfig.url}/contact/#faq`,
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const channelCard =
+  "flex items-start gap-4 rounded-2xl border border-border bg-white p-5 transition hover:border-accent-500 hover:shadow-sm";
+const iconWrap =
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-600";
+---
+
+<BaseLayout
+  title="Contact | Book Free Career Counselling"
+  description="Talk to a DAIT Institute career advisor — free and no obligation. Enquire about cohorts, fees, and the right program for you in Sambhaji Nagar. Call, WhatsApp, or visit our centre."
+  canonicalPath="/contact/"
+  keywords={["DAIT Institute contact", "career counselling Sambhaji Nagar", "IT course enquiry"]}
+  jsonLd={[contactSchema, faqSchema]}
+>
+  <!-- 1 · COMPACT HERO -->
+  <Section tone="dark" class="pt-24 pb-16">
+    <div class="max-w-3xl" data-reveal>
+      <SectionLabel>Contact</SectionLabel>
+      <h1 class="mt-4 text-4xl sm:text-5xl font-black tracking-tight text-white">
+        Talk to a career advisor
+      </h1>
+      <p class="mt-5 text-lg text-white/70 max-w-2xl">
+        Free, no obligation. Tell us your background and goals — whether you've just graduated or
+        you're advancing mid-career — and we'll map the right program, cohort and fees for you.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        {waHref && (
+          <Button href={waHref} external iconLeft="simple-icons:whatsapp">Chat on WhatsApp</Button>
+        )}
+        <Button href={telHref} variant="ghost-on-dark" iconLeft="lucide:phone">
+          Call {siteConfig.phone}
+        </Button>
+      </div>
+    </div>
+  </Section>
+
+  <!-- 2 · FORM + DIRECT CHANNELS -->
+  <Section tone="surface">
+    <div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+      <!-- Left — enquiry form island -->
+      <div data-reveal>
+        <EnquiryForm client:visible programs={programs} />
+      </div>
+
+      <!-- Right — direct channels -->
+      <div class="space-y-4" data-reveal data-reveal-delay="0.1">
+        <div>
+          <SectionLabel>Prefer to reach us directly?</SectionLabel>
+          <p class="mt-3 text-ink-600 measure">
+            Pick whichever is easiest — we usually reply within working hours.
+          </p>
+        </div>
+
+        {waHref && (
+          <a href={waHref} target="_blank" rel="noopener noreferrer" class={channelCard}>
+            <span class={iconWrap}><Icon name="simple-icons:whatsapp" size={20} /></span>
+            <span>
+              <span class="block font-bold text-ink-900">WhatsApp</span>
+              <span class="block text-sm text-ink-500">Quick questions, fastest reply</span>
+            </span>
+          </a>
+        )}
+
+        <a href={telHref} class={channelCard}>
+          <span class={iconWrap}><Icon name="lucide:phone" size={20} /></span>
+          <span>
+            <span class="block font-bold text-ink-900">Call us</span>
+            <span class="block text-sm text-ink-500">{siteConfig.phone}</span>
+          </span>
+        </a>
+
+        <a href={`mailto:${siteConfig.email}`} class={channelCard}>
+          <span class={iconWrap}><Icon name="lucide:mail" size={20} /></span>
+          <span>
+            <span class="block font-bold text-ink-900">Email</span>
+            <span class="block text-sm text-ink-500">{siteConfig.email}</span>
+          </span>
+        </a>
+
+        <!-- Centre address card -->
+        <div class="rounded-2xl border border-border bg-white p-5">
+          <div class="flex items-start gap-4">
+            <span class={iconWrap}><Icon name="lucide:map-pin" size={20} /></span>
+            <div>
+              <p class="font-bold text-ink-900">{center.name}</p>
+              <p class="mt-1 text-sm text-ink-500">
+                {center.addressLines.join(", ")}{center.addressLines.length ? ", " : ""}
+                {center.city}, {center.state}{center.postalCode ? ` ${center.postalCode}` : ""}
+              </p>
+              <p class="mt-2 inline-flex items-center gap-1.5 text-sm text-ink-500">
+                <Icon name="lucide:clock" size={14} class="text-accent-600" />
+                {center.hours}
+              </p>
+              {center.mapUrl && (
+                <a
+                  href={center.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-accent-600 hover:text-accent-700"
+                >
+                  <Icon name="lucide:navigation" size={15} />
+                  View on Google Maps
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- 3 · FAQ STRIP -->
+  <Section tone="white">
+    <div class="max-w-3xl" data-reveal>
+      <SectionLabel>Before you enquire</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">Common admission questions</h2>
+    </div>
+    <div class="mt-10 grid gap-4 lg:grid-cols-2">
+      {faqs.map((faq, i) => (
+        <div
+          class="rounded-2xl border border-border bg-surface-50 p-6 hover:shadow-md transition-shadow"
+          data-reveal
+          data-reveal-delay={(i * 0.05).toString()}
+        >
+          <p class="font-bold text-ink-900">{faq.q}</p>
+          <p class="mt-3 text-sm text-ink-600 leading-relaxed">{faq.a}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+</BaseLayout>

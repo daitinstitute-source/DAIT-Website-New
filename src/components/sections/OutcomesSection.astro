@@ -1,0 +1,82 @@
+---
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+
+interface CareerOutcome {
+  category: string;
+  items: string[];
+  note?: string;
+}
+
+interface Props {
+  outcomes: CareerOutcome[];
+}
+
+const { outcomes } = Astro.props;
+
+const categoryIcons: Record<string, string> = {
+  "Job Roles": "lucide:briefcase",
+  "Skills": "lucide:zap",
+  "Skills You'll Master": "lucide:zap",
+  "Salary Range": "lucide:trending-up",
+  "Where Graduates Work": "lucide:building-2",
+  "Where This Leads": "lucide:building-2",
+  "Tools": "lucide:wrench",
+  "Certifications": "lucide:award",
+};
+---
+
+<div id="outcomes">
+  <div class="max-w-3xl" data-reveal>
+    <SectionLabel>Career outcomes</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">What you can <span class="text-orange-500">achieve</span></h2>
+    <p class="mt-4 text-ink-600 measure">
+      Concrete roles, skills, and opportunities that await you after completing the program.
+    </p>
+  </div>
+
+  {outcomes && outcomes.length > 0 ? (
+    <div class="mt-10 grid gap-6 lg:grid-cols-3">
+      {outcomes.map((outcome, i) => (
+        <div
+          class="rounded-3xl border border-border bg-white p-8 shadow-sm"
+          data-reveal
+          data-reveal-delay={(i * 0.1).toString()}
+        >
+          <!-- Header -->
+          <div class="flex items-center gap-3">
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-100 text-accent-600">
+              <Icon
+                name={categoryIcons[outcome.category] || "lucide:star"}
+                size={24}
+              />
+            </span>
+            <h3 class="text-xl font-bold text-ink-900">{outcome.category}</h3>
+          </div>
+
+          <!-- Items List -->
+          <ul class="mt-6 space-y-3">
+            {outcome.items.map((item) => (
+              <li class="flex items-start gap-3 text-ink-700">
+                <span class="mt-1.5 flex h-2 w-2 shrink-0 rounded-full bg-accent-500" />
+                <span class="text-sm leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
+
+          <!-- Optional source / disclaimer note -->
+          {outcome.note && (
+            <p class="mt-5 flex items-start gap-2 border-t border-border pt-4 text-xs leading-relaxed text-ink-500">
+              <Icon name="lucide:info" size={14} class="mt-0.5 shrink-0" />
+              <span>{outcome.note}</span>
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div class="mt-10 rounded-3xl border border-border border-dashed bg-surface-50 p-12 text-center">
+      <p class="text-ink-500">Career outcomes will be shared during your counselling call.</p>
+    </div>
+  )}
+</div>

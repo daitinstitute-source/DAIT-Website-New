@@ -1,0 +1,127 @@
+---
+/**
+ * /blog — content hub. Featured latest post + grid, upGrad-style cards with
+ * branded gradient banners (no stock images) and category tags.
+ */
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/ui/Section.astro";
+import HeroBackdrop from "../../components/sections/HeroBackdrop.astro";
+import { existingImage } from "../../lib/media";
+
+const posts = (await getCollection("blog"))
+  .filter((p) => !p.data.draft)
+  .sort(
+    (a, b) =>
+      new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime(),
+  );
+
+const [featured, ...rest] = posts;
+const featuredCover = featured ? existingImage(featured.data.image) : undefined;
+
+const fmt = (d: Date) =>
+  new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(new Date(d));
+
+const catIcon: Record<string, string> = {
+  "Career Guide": "lucide:compass",
+  "AI & Skills": "lucide:sparkles",
+};
+const iconFor = (c: string) => catIcon[c] ?? "lucide:newspaper";
+---
+
+<BaseLayout
+  title="Blog — Career Guides & AI Skills | DAIT Institute"
+  description="Practical career guides, AI-skill tips and how-tos from DAIT Institute — for students and working professionals in Sambhaji Nagar."
+  canonicalPath="/blog/"
+  keywords={["DAIT blog", "digital marketing career guide", "AI skills", "career advice Sambhaji Nagar"]}
+>
+  <!-- HEADER -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 text-white">
+    <HeroBackdrop />
+    <div aria-hidden="true" class="pointer-events-none absolute -right-24 -top-28 h-[22rem] w-[22rem] rounded-full" style="background: radial-gradient(circle, rgba(242,99,33,.3), transparent 65%);"></div>
+    <div class="container-wide relative pt-24 pb-14 lg:pt-28 lg:pb-16">
+      <div class="max-w-3xl" data-reveal>
+        <nav class="text-sm text-white/70" aria-label="Breadcrumb">
+          <a href="/" class="hover:text-white">Home</a><span class="mx-2">/</span><span class="text-white">Blog</span>
+        </nav>
+        <h1 class="mt-5 text-4xl sm:text-5xl font-black tracking-tight text-white">
+          Career guides & <span class="text-orange-400">AI skills</span>
+        </h1>
+        <p class="mt-4 max-w-xl text-lg text-white/90">
+          Practical advice for students and professionals — careers, skills, and how to get hired in the AI era.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Section tone="surface">
+    {featured && (
+      <a href={`/blog/${featured.id}/`} class="card card--hover group grid overflow-hidden lg:grid-cols-2" data-reveal>
+        <div class="relative flex min-h-[220px] flex-col justify-between overflow-hidden p-7 text-white">
+          {featuredCover ? (
+            <>
+              <img src={featuredCover} alt={featured.data.imageAlt ?? ""} class="absolute inset-0 h-full w-full object-cover" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-black/20"></div>
+            </>
+          ) : (
+            <>
+              <div class="absolute inset-0 bg-gradient-to-br from-accent-600 to-accent-500"></div>
+              <div aria-hidden="true" class="pointer-events-none absolute -right-10 -top-10 opacity-15">
+                <Icon name={iconFor(featured.data.category)} size={150} />
+              </div>
+            </>
+          )}
+          <div class="relative flex items-center gap-3">
+            <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider">Featured</span>
+            <span class="rounded-full bg-orange-500 px-3 py-1 text-xs font-bold">{featured.data.category}</span>
+          </div>
+          <p class="relative text-sm text-white/80">{featured.data.readMinutes} min read · {fmt(featured.data.publishDate)}</p>
+        </div>
+        <div class="flex flex-col justify-center p-7 sm:p-9">
+          <h2 class="text-2xl font-black text-ink-900 transition-colors group-hover:text-accent-600">{featured.data.title}</h2>
+          <p class="mt-3 text-ink-500 leading-relaxed">{featured.data.description}</p>
+          <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-accent-600 transition-all group-hover:gap-2.5">
+            Read article <Icon name="lucide:arrow-right" size={16} />
+          </span>
+        </div>
+      </a>
+    )}
+
+    {rest.length > 0 && (
+      <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {rest.map((post, i) => {
+          const cover = existingImage(post.data.image);
+          return (
+          <a href={`/blog/${post.id}/`} class="card card--hover group flex flex-col overflow-hidden" data-reveal data-reveal-delay={(i * 0.06).toString()}>
+            <div class="relative flex h-32 items-end overflow-hidden p-5 text-white">
+              {cover ? (
+                <>
+                  <img src={cover} alt={post.data.imageAlt ?? ""} class="absolute inset-0 h-full w-full object-cover" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20"></div>
+                </>
+              ) : (
+                <>
+                  <div class="absolute inset-0 bg-gradient-to-br from-accent-600 to-accent-500"></div>
+                  <div aria-hidden="true" class="pointer-events-none absolute -right-6 -top-6 opacity-15">
+                    <Icon name={iconFor(post.data.category)} size={96} />
+                  </div>
+                </>
+              )}
+              <span class="relative rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold uppercase tracking-wider">{post.data.category}</span>
+            </div>
+            <div class="flex flex-1 flex-col p-6">
+              <p class="text-xs text-ink-400">{post.data.readMinutes} min read · {fmt(post.data.publishDate)}</p>
+              <h3 class="mt-2 text-lg font-bold text-ink-900 transition-colors group-hover:text-accent-600">{post.data.title}</h3>
+              <p class="mt-2 flex-1 text-sm leading-relaxed text-ink-500">{post.data.description}</p>
+              <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-accent-600 transition-all group-hover:gap-2.5">
+                Read <Icon name="lucide:arrow-right" size={15} />
+              </span>
+            </div>
+          </a>
+          );
+        })}
+      </div>
+    )}
+  </Section>
+</BaseLayout>

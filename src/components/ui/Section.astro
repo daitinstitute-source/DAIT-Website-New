@@ -1,0 +1,53 @@
+---
+/**
+ * Section — page section wrapper enforcing the dark/light rhythm and the
+ * 1100px container. `tone` sets the background; text colours flip on dark.
+ *   surface : tinted off-white (default light)
+ *   white   : white light section (alternate)
+ *   dark    : DAIT near-black dark section
+ * `full` renders the background full-bleed but keeps content in the container.
+ */
+type Tone = "surface" | "white" | "dark";
+interface Props {
+  tone?: Tone;
+  id?: string;
+  as?: keyof HTMLElementTagNameMap;
+  class?: string;
+  containerClass?: string;
+}
+const {
+  tone = "surface",
+  id,
+  as = "section",
+  class: className = "",
+  containerClass = "",
+} = Astro.props as Props;
+
+const Tag = as as any;
+const toneKey: Tone = tone;
+const tones: Record<Tone, string> = {
+  surface: "bg-surface-50 text-ink-600",
+  white: "bg-surface-75 text-ink-600",
+  dark: "bg-dark-950 text-white/80",
+};
+const isDark = tone === "dark";
+---
+
+<Tag
+  id={id}
+  class={`relative py-16 sm:py-20 lg:py-24 ${tones[toneKey]} ${className}`}
+  data-section-tone={tone}
+>
+  {
+    isDark && (
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-0 opacity-[0.05]"
+        style="background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0); background-size: 32px 32px;"
+      />
+    )
+  }
+  <div class={`container-wide relative ${containerClass}`}>
+    <slot />
+  </div>
+</Tag>

@@ -1,0 +1,463 @@
+---
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import Section from "../components/ui/Section.astro";
+import HeroBackdrop from "../components/sections/HeroBackdrop.astro";
+import SectionLabel from "../components/ui/SectionLabel.astro";
+import Button from "../components/ui/Button.astro";
+import { programAreas, primaryCta } from "../data/navigation";
+import { siteConfig } from "../config/site";
+import StickNav from "../components/sections/StickNav.astro";
+import ToolsMarquee from "../components/sections/ToolsMarquee.astro";
+import SyllabusTracks from "../components/sections/SyllabusTracks.astro";
+import EligibilitySection from "../components/sections/EligibilitySection.astro";
+import BatchEnrollment from "../components/sections/BatchEnrollment.astro";
+import FacultyProfiles from "../components/sections/FacultyProfiles.astro";
+import FounderStory from "../components/sections/FounderStory.astro";
+import TestimonialCarousel from "../components/sections/TestimonialCarousel.astro";
+import FoundingCohort from "../components/sections/FoundingCohort.astro";
+import OutcomesSection from "../components/sections/OutcomesSection.astro";
+import CareerSupport from "../components/sections/CareerSupport.astro";
+import ProgramComparison from "../components/sections/ProgramComparison.astro";
+import WhyDAIT from "../components/sections/WhyDAIT.astro";
+import ImageFeature from "../components/sections/ImageFeature.astro";
+import OtherCourses from "../components/sections/OtherCourses.astro";
+import EnquiryForm from "../components/forms/EnquiryForm.tsx";
+
+interface Props {
+  program: {
+    id: string;
+    data: {
+      title: string;
+      tagline: string;
+      area: string;
+      duration: string;
+      mode: string[];
+      level: string;
+      audience: string[];
+      batchOptions: string[];
+      fee?: string;
+      highlights: string[];
+      tools: string[];
+      syllabus: Array<{ module: string; topics: string[] }>;
+      professionalTrack?: {
+        tagline?: string;
+        duration?: string;
+        fee?: string;
+        syllabus: Array<{ module: string; topics: string[] }>;
+        workSkills?: string[];
+        tools?: string[];
+      };
+      eligibility?: string[];
+      prerequisites?: string[];
+      batchSize?: string;
+      outcomes: string[];
+      certification?: string;
+      faqs: Array<{ q: string; a: string }>;
+      nextBatchDate?: Date;
+      faculty?: Array<{ name: string; role: string; experience: string; expertise: string[]; linkedinUrl?: string }>;
+      testimonials?: Array<{ name: string; jobTitle: string; company: string; quote: string; rating?: number; salaryHike?: string }>;
+      whyDAIT?: Array<{ title: string; description: string; icon: string }>;
+      careerOutcomes?: Array<{ category: string; items: string[]; note?: string }>;
+    };
+  };
+}
+
+const { program } = Astro.props;
+const data = program.data;
+const area = programAreas.find((item) => item.slug === data.area);
+
+// Other programs for the "Explore other courses" slider.
+const otherPrograms = (await getCollection("programs"))
+  .filter((p) => p.id !== program.id && !p.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+const primaryCtaLink = primaryCta.href;
+
+// Hero value bullets — first four highlights, shown as quick proof points.
+const heroBullets = data.highlights.slice(0, 4);
+const city = siteConfig.centers[0]?.city ?? "Sambhaji Nagar";
+
+// Heading treatment: last 1–2 words of the title get the orange highlight.
+const titleWords = data.title.split(" ");
+const titleAccent = titleWords.slice(titleWords.length > 2 ? -2 : -1).join(" ");
+const titleLead = titleWords
+  .slice(0, titleWords.length > 2 ? -2 : -1)
+  .join(" ");
+const nextBatch = data.nextBatchDate
+  ? new Intl.DateTimeFormat("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(new Date(data.nextBatchDate))
+  : undefined;
+
+// Real, verifiable content gates (honest-by-default: show founder/founding-cohort
+// blocks until real faculty/testimonials exist in the MDX).
+const hasFaculty = (data.faculty?.length ?? 0) > 0;
+const hasTestimonials = (data.testimonials?.length ?? 0) > 0;
+const hasEligibility = (data.eligibility?.length ?? 0) > 0;
+// Tools strip = base + advanced tools, de-duped.
+const proTools = Array.from(
+  new Set([...data.tools, ...(data.professionalTrack?.tools ?? [])]),
+);
+
+// Sticky nav sections (labels adapt to what content exists)
+const navSections = [
+  { id: "syllabus", label: "Curriculum" },
+  ...(hasEligibility ? [{ id: "eligibility", label: "Who can join" }] : []),
+  { id: "faculty", label: hasFaculty ? "Faculty" : "Your mentor" },
+  { id: "outcomes", label: "Career path" },
+  { id: "career-support", label: "Career support" },
+  { id: "why-dait", label: "Why DAIT" },
+  { id: "compare", label: "Compare" },
+  { id: "testimonials", label: hasTestimonials ? "Student stories" : "Founding cohort" },
+  { id: "enrollment", label: "Enroll now" },
+  { id: "faq", label: "FAQs" },
+];
+
+// Default WhyDAIT benefits if none provided
+const defaultWhyDAIT = [
+  {
+    title: "1:1 Mentorship",
+    description: "Get dedicated guidance from instructors beyond the classroom. Career counselling, resume reviews, and interview prep included.",
+    icon: "lucide:handshake",
+  },
+  {
+    title: "Industry Projects",
+    description: "Work on real-world capstone projects that go straight into your portfolio. Learn by building, not just watching.",
+    icon: "lucide:briefcase-business",
+  },
+  {
+    title: "Job Board Access",
+    description: "Get exclusive access to job postings and internship opportunities from our hiring partners.",
+    icon: "lucide:briefcase",
+  },
+  {
+    title: "Flexible Batches",
+    description: "Weekday and weekend options. Learn at your pace with recordings and peer study groups.",
+    icon: "lucide:clock",
+  },
+  {
+    title: "Lifetime Community",
+    description: "Stay connected with alumni and current learners. Network, share leads, and grow together.",
+    icon: "lucide:users",
+  },
+  {
+    title: "Career Support",
+    description: "Post-course mentoring, salary negotiation support, and job placement assistance. We stay invested in your success.",
+    icon: "lucide:trending-up",
+  },
+];
+---
+
+<!-- HERO SECTION — blue gradient, two columns (content + callback form) -->
+<section class="relative overflow-hidden bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 text-white">
+  <HeroBackdrop name={program.id} overlay="dark" />
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0); background-size: 30px 30px;"></div>
+  <div aria-hidden="true" class="pointer-events-none absolute -right-24 -top-28 h-[26rem] w-[26rem] rounded-full" style="background: radial-gradient(circle, rgba(242,99,33,.35), transparent 65%);"></div>
+  <div aria-hidden="true" class="pointer-events-none absolute -left-24 bottom-[-8rem] h-[24rem] w-[24rem] rounded-full" style="background: radial-gradient(circle, rgba(0,198,255,.20), transparent 65%);"></div>
+  <!-- Light translucent wash for depth (upGrad-style) -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0" style="background: radial-gradient(120% 85% at 12% -10%, rgba(255,255,255,.16), transparent 46%);"></div>
+  <div aria-hidden="true" class="pointer-events-none absolute inset-x-0 bottom-0 h-24" style="background: linear-gradient(to top, rgba(255,255,255,.06), transparent);"></div>
+
+  <div class="container-wide relative pt-24 pb-16 lg:pt-28 lg:pb-20">
+    <div class="grid gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:gap-12 lg:items-center">
+      <!-- LEFT: content -->
+      <div data-reveal>
+        <nav class="text-sm text-white/70" aria-label="Breadcrumb">
+          <a href="/" class="hover:text-white">Home</a>
+          <span class="mx-2">/</span>
+          <a href="/programs/" class="hover:text-white">Programs</a>
+          <span class="mx-2">/</span>
+          <span class="text-white">{data.title}</span>
+        </nav>
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+          <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+            {area?.label ?? data.area}
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-white/25 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/85">
+            <span class="h-1.5 w-1.5 rounded-full bg-orange-400"></span>
+            Now enrolling
+          </span>
+        </div>
+        <h1 class="mt-6 text-4xl sm:text-5xl lg:text-[3.4rem] font-black leading-[1.04] tracking-tight text-white">
+          {titleLead && <>{titleLead} </>}<span class="text-orange-400">{titleAccent}</span> Course in {city}
+        </h1>
+        <p class="mt-5 max-w-xl text-lg sm:text-xl font-medium leading-relaxed text-white/90">
+          {data.tagline}
+        </p>
+        <ul class="mt-7 grid max-w-xl gap-2.5 sm:grid-cols-2">
+          {heroBullets.map((b) => (
+            <li class="flex items-start gap-2.5 text-sm text-white/90">
+              <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange-500/25 text-orange-300">
+                <Icon name="lucide:check" size={13} />
+              </span>
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="mt-7 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-sm text-white/85">
+          <Icon name="lucide:landmark" size={15} class="text-orange-300" />
+          A {siteConfig.group.name} institute · since {siteConfig.group.established}
+        </div>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href={`https://wa.me/${siteConfig.whatsapp.number}?text=${encodeURIComponent(`Hi DAIT Institute, I want to know more about ${data.title}`)}`} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-lg border-2 border-white/45 bg-white/10 px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:border-white hover:bg-white/20">
+            <Icon name="simple-icons:whatsapp" size={17} /> WhatsApp us
+          </a>
+          <a href={`tel:${siteConfig.phone.replace(/\s/g, "")}`} class="inline-flex items-center gap-2 rounded-lg border-2 border-white/45 px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:border-white hover:bg-white/10">
+            <Icon name="lucide:phone" size={17} /> {siteConfig.phone}
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT: callback form with urgency ribbon -->
+      <div data-reveal data-reveal-delay="0.1" class="relative">
+        {nextBatch && (
+          <div class="absolute -top-3 left-6 z-10 rounded-full bg-orange-500 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg">
+            Next batch {nextBatch} · limited seats
+          </div>
+        )}
+        <EnquiryForm client:load programSlug={program.id} programTitle={data.title} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS MARQUEE — logos strip directly below the hero -->
+<Section tone="white" class="!py-9">
+  <ToolsMarquee tools={proTools} />
+</Section>
+
+<!-- STICKY NAVIGATION -->
+<StickNav sections={navSections} />
+
+<!-- SYLLABUS (Foundation + optional Advanced/Upskill track) -->
+<Section tone="surface">
+  <SyllabusTracks
+    foundation={data.syllabus}
+    advanced={data.professionalTrack?.syllabus ?? []}
+    proTagline={data.professionalTrack?.tagline}
+    workSkills={data.professionalTrack?.workSkills ?? []}
+    advancedTools={data.professionalTrack?.tools ?? []}
+    foundationDuration={data.duration}
+    foundationFee={data.fee}
+    proDuration={data.professionalTrack?.duration}
+    proFee={data.professionalTrack?.fee}
+    batchOptions={data.batchOptions}
+    primaryCtaLink={primaryCtaLink}
+  />
+</Section>
+
+<!-- ELIGIBILITY / WHO CAN JOIN -->
+{hasEligibility && (
+  <Section tone="white">
+    <EligibilitySection
+      eligibility={data.eligibility ?? []}
+      prerequisites={data.prerequisites ?? []}
+      batchSize={data.batchSize}
+    />
+  </Section>
+)}
+
+<!-- FACULTY (real profiles) OR FOUNDER-AS-MENTOR (honest default) -->
+{hasFaculty ? (
+  <Section tone="white">
+    <FacultyProfiles faculty={data.faculty ?? []} />
+  </Section>
+) : (
+  <Section tone="dark" id="faculty">
+    <FounderStory label="Your mentor" />
+  </Section>
+)}
+
+<!-- CAREER OUTCOMES -->
+<Section tone="surface">
+  <OutcomesSection outcomes={data.careerOutcomes || [
+    {
+      category: "Job Roles",
+      items: data.outcomes || []
+    }
+  ]} />
+</Section>
+
+<!-- 360° CAREER SUPPORT -->
+<Section tone="white" id="career-support">
+  <CareerSupport />
+</Section>
+
+<!-- WHY DAIT BENEFITS -->
+<Section tone="surface">
+  <WhyDAIT benefits={data.whyDAIT || defaultWhyDAIT} />
+</Section>
+
+<!-- COMPARISON — what makes this program stand out -->
+<Section tone="white" id="compare">
+  <ProgramComparison programTitle={data.title} />
+</Section>
+
+<!-- HOW YOU'LL LEARN (image band) -->
+<Section tone="surface">
+  <ImageFeature image="/images/content/classroom.jpg" imageAlt="Hands-on, in-classroom learning at DAIT Institute" reverse icon="lucide:monitor-play">
+    <SectionLabel>How you'll learn</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+      Learn by <span class="text-orange-500">building</span>, not just watching
+    </h2>
+    <p class="mt-4 text-ink-600 measure">
+      Every module is hands-on: you practise on live projects with real tools, get feedback from your
+      mentor, and walk away with work you can show employers.
+    </p>
+    <ul class="mt-5 space-y-3">
+      {[
+        "Live projects and a portfolio, not just theory",
+        "Small batches with direct mentor feedback",
+        "Current, AI-first tools used in real teams",
+      ].map((point) => (
+        <li class="flex items-start gap-3 text-ink-700">
+          <Icon name="lucide:check" size={18} class="mt-0.5 shrink-0 text-orange-500" />
+          <span class="text-sm leading-relaxed">{point}</span>
+        </li>
+      ))}
+    </ul>
+  </ImageFeature>
+</Section>
+
+<!-- TESTIMONIALS (real) OR FOUNDING-COHORT (honest default) -->
+<Section tone="dark">
+  {hasTestimonials ? (
+    <TestimonialCarousel testimonials={data.testimonials ?? []} />
+  ) : (
+    <FoundingCohort primaryCtaLink={primaryCtaLink} />
+  )}
+</Section>
+
+<!-- BATCH ENROLLMENT -->
+<Section tone="surface">
+  <BatchEnrollment
+    batchOptions={data.batchOptions}
+    nextBatchDate={nextBatch}
+    fee={data.fee}
+    duration={data.duration}
+    primaryCtaLink={primaryCtaLink}
+  />
+</Section>
+
+<!-- BOOK A VISIT — slim band with a compact (name + phone) form -->
+<Section tone="white" id="enquire">
+  <div class="rounded-3xl border border-border bg-surface-50 p-8 sm:p-10" data-reveal>
+    <div class="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
+      <div>
+        <SectionLabel>Book a visit</SectionLabel>
+        <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+          Visit our centre <span class="text-orange-500">in Sambhaji Nagar</span>
+        </h2>
+        <p class="mt-4 text-ink-600 measure">
+          Meet the team, see the classroom, and get your questions answered in person — no obligation.
+          Leave your number and we'll fix a time that suits you.
+        </p>
+        <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+          <a
+            href={`https://wa.me/${siteConfig.whatsapp.number}?text=${encodeURIComponent(`Hi DAIT Institute, I'd like to visit for ${data.title}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 font-bold text-accent-600 hover:text-accent-700"
+          >
+            <Icon name="simple-icons:whatsapp" size={16} /> WhatsApp us
+          </a>
+          <a href={`tel:${siteConfig.phone.replace(/\s/g, "")}`} class="inline-flex items-center gap-1.5 font-bold text-accent-600 hover:text-accent-700">
+            <Icon name="lucide:phone" size={16} /> {siteConfig.phone}
+          </a>
+        </div>
+      </div>
+      <div>
+        <p class="mb-3 text-sm font-bold uppercase tracking-wider text-ink-500">Schedule your visit</p>
+        <EnquiryForm compact client:visible programSlug={program.id} programTitle={data.title} />
+      </div>
+    </div>
+  </div>
+</Section>
+
+<!-- FAQ SECTION -->
+<Section tone="surface" id="faq">
+  <div class="max-w-3xl" data-reveal>
+    <SectionLabel>Common questions</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">Got questions? <span class="text-orange-500">We have answers.</span></h2>
+  </div>
+  <div class="mt-10 grid gap-4 lg:grid-cols-2">
+    {data.faqs.map((faq, i) => (
+      <div
+        class="rounded-2xl border border-border bg-surface-50 p-6 hover:shadow-md transition-shadow"
+        data-reveal
+        data-reveal-delay={(i * 0.05).toString()}
+      >
+        <p class="font-bold text-ink-900">{faq.q}</p>
+        <p class="mt-3 text-sm text-ink-600 leading-relaxed">{faq.a}</p>
+      </div>
+    ))}
+  </div>
+</Section>
+
+<!-- OTHER COURSES SLIDER -->
+{otherPrograms.length > 0 && (
+  <Section tone="white">
+    <OtherCourses programs={otherPrograms} />
+  </Section>
+)}
+
+<!-- FINAL CTA -->
+<Section tone="surface">
+  <div class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 p-8 sm:p-12 text-white shadow-2xl" data-reveal>
+    <div aria-hidden="true" class="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full" style="background: radial-gradient(circle, rgba(242,99,33,.4), transparent 65%);"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0); background-size: 28px 28px;"></div>
+    <div class="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+      <div class="max-w-2xl">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold uppercase tracking-widest text-white">
+          <span class="h-1.5 w-1.5 rounded-full bg-orange-400"></span>
+          Free · No obligation
+        </span>
+        <h2 class="mt-5 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-[1.1] text-white">
+          Ready to launch your <span class="text-orange-300">{area?.label ?? "tech"}</span> career?
+        </h2>
+        <p class="mt-4 text-white/85 measure">
+          Book a free counselling call — we'll recommend the right track, batch, and fee plan for your
+          background and goals. No commitment required.
+        </p>
+      </div>
+      <div class="flex shrink-0 flex-col gap-3 sm:flex-row lg:flex-col">
+        <Button
+          href={primaryCtaLink}
+          iconLeft="lucide:phone-call"
+          class="!bg-white !border-white !text-accent-600 hover:!bg-white/90 hover:!border-white/90"
+        >
+          Book free counselling
+        </Button>
+        <Button
+          href={`https://wa.me/${siteConfig.whatsapp.number}?text=${encodeURIComponent(`Hi DAIT Institute, I want to know more about ${data.title}`)}`}
+          variant="ghost-on-dark"
+          iconLeft="simple-icons:whatsapp"
+          external
+        >
+          WhatsApp us
+        </Button>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<slot />
+
+<!-- Shared audience controller: any [data-aud-btn] click toggles every
+     [data-aud-show] element and syncs all toggles (top selector + syllabus tabs). -->
+<script>
+  const setAudience = (aud: string) => {
+    document.querySelectorAll<HTMLElement>("[data-aud-btn]").forEach((btn) => {
+      btn.setAttribute("aria-pressed", btn.dataset.audBtn === aud ? "true" : "false");
+    });
+    document.querySelectorAll<HTMLElement>("[data-aud-show]").forEach((el) => {
+      el.hidden = el.dataset.audShow !== aud;
+    });
+  };
+  document.addEventListener("click", (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLElement>("[data-aud-btn]");
+    if (btn?.dataset.audBtn) setAudience(btn.dataset.audBtn);
+  });
+</script>
