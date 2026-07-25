@@ -21,7 +21,10 @@ const programs = [
     .sort((a, b) => a.data.order - b.data.order)
     .map((p) => ({ slug: p.id, title: p.data.title })),
   { slug: "for-colleges", title: "For colleges — campus partnership" },
-  { slug: "for-companies", title: "For companies — hire & upskill" },
+  // Companies option appears only while that track is live — see siteConfig.display.
+  ...(siteConfig.display.showForCompanies
+    ? [{ slug: "for-companies", title: "For companies — hire & upskill" }]
+    : []),
 ];
 
 // Honest proof only — legacy, curriculum, outcomes. No fabricated numbers.

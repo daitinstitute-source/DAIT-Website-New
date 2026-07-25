@@ -226,6 +226,14 @@ export const siteConfig = {
   display: {
     showFees: false,
     showNextBatchDate: false,
+    // The B2B "For Companies" track is parked until the offering is settled.
+    // This flag hides its nav item, the homepage path card, and the hero
+    // callback-form option. The PAGE itself is disabled separately, by the
+    // leading underscore in src/pages/_for-companies.astro (Astro skips
+    // underscore-prefixed files), so restoring the track means BOTH:
+    //   1. set this to true, and
+    //   2. rename _for-companies.astro back to for-companies.astro
+    showForCompanies: false,
   },
 
   // Reserved for Phase 4 portal (separate app).
