@@ -6,6 +6,78 @@ import sitemap from "@astrojs/sitemap";
 import icon from "astro-icon";
 import tailwindcss from "@tailwindcss/vite";
 
+/**
+ * Dev-only bridge for the lead pipeline.
+ *
+ * `/api/leads` lives in `functions/api/leads.ts` — a Cloudflare Pages Function.
+ * `astro dev` never reads that directory, so the on-page forms used to 404 locally
+ * and every lead was lost until you deployed. This plugin runs the SAME function
+ * inside the dev server, with credentials read from `.dev.vars`, so submitting a
+ * form on localhost:4321 files a real contact + deal in Brevo.
+ *
+ * `apply: "serve"` — dev only. Production is untouched: Cloudflare Pages still runs
+ * the function straight from `functions/`.
+ */
+/** @returns {import("vite").Plugin} */
+function devLeadsApi() {
+  return {
+    name: "dait:dev-leads-api",
+    apply: "serve",
+    /** @param {import("vite").ViteDevServer} server */
+    configureServer(server) {
+      server.middlewares.use(
+        /**
+         * \@param {import("node:http").IncomingMessage} req
+         * \@param {import("node:http").ServerResponse} res
+         * \@param {(err?: unknown) => void} next
+         */
+        async (req, res, next) => {
+        const path = (req.url || "").split("?")[0];
+        if (path !== "/api/leads") return next();
+        if (req.method !== "POST") return next();
+
+        try {
+          /** @type {Buffer[]} */
+          const chunks = [];
+          for await (const chunk of req) chunks.push(chunk);
+          const body = Buffer.concat(chunks).toString("utf8");
+
+          // The real handler + the same env vars Cloudflare would inject.
+          const mod = await server.ssrLoadModule("/functions/api/leads.ts");
+          const { loadEnv } = await server.ssrLoadModule("/scripts/_env.mjs");
+          const env = loadEnv();
+
+          if (!env.BREVO_API_KEY) {
+            console.warn(
+              "\n[leads] BREVO_API_KEY missing in .dev.vars — the lead will be logged, not sent to Brevo.\n",
+            );
+          }
+
+          const response = await mod.onRequestPost({
+            request: new Request("http://localhost/api/leads", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body,
+            }),
+            env,
+          });
+
+          const text = await response.text();
+          console.log(`[leads] ${response.status} ${text}`);
+          res.statusCode = response.status;
+          res.setHeader("content-type", "application/json");
+          res.end(text);
+        } catch (err) {
+          console.error("[leads] dev handler error:", err);
+          res.statusCode = 500;
+          res.setHeader("content-type", "application/json");
+          res.end(JSON.stringify({ ok: false, error: String(err) }));
+        }
+      });
+    },
+  };
+}
+
 // https://astro.build/config
 export default defineConfig({
   // Static output. Per-route SSR opt-in later via `export const prerender = false`
@@ -14,6 +86,6 @@ export default defineConfig({
   site: process.env.PUBLIC_SITE_URL || "https://daitinstitute.com",
   integrations: [react(), mdx(), sitemap(), icon()],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), devLeadsApi()],
   },
 });

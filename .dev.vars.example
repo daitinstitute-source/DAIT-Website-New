@@ -10,3 +10,5 @@ LEADS_TO_EMAIL=                 # Inbox that receives new-lead alerts (your admi
 LEADS_FROM_EMAIL=               # A VERIFIED Brevo sender, e.g. no-reply@daitinstitute.com
 LEADS_FROM_NAME=DAIT Institute  # Sender display name (optional)
 BREVO_LIST_ID=                  # Brevo → Contacts → Lists → your "Website Leads" list ID (a number)
+BREVO_PIPELINE_ID=              # CRM pipeline deals go into — run `npm run brevo:pipelines` to get it
+BREVO_STAGE_ID=                 # Stage new leads land in (usually "New") — same command
