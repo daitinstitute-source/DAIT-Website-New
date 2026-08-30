@@ -9,14 +9,16 @@ import tailwindcss from "@tailwindcss/vite";
 /**
  * Dev-only bridge for the lead pipeline.
  *
- * `/api/leads` lives in `functions/api/leads.ts` — a Cloudflare Pages Function.
- * `astro dev` never reads that directory, so the on-page forms used to 404 locally
- * and every lead was lost until you deployed. This plugin runs the SAME function
- * inside the dev server, with credentials read from `.dev.vars`, so submitting a
- * form on localhost:4321 files a real contact + deal in Brevo.
+ * `/api/leads` is a serverless function, and `astro dev` serves none, so the forms
+ * used to 404 locally and no lead could be tested without deploying. This plugin runs
+ * the SAME pipeline the deployed function runs (src/lib/leads.ts) inside the dev
+ * server, with credentials read from `.dev.vars`, so submitting a form on
+ * localhost:4321 files a real contact + deal in Brevo.
  *
- * `apply: "serve"` — dev only. Production is untouched: Cloudflare Pages still runs
- * the function straight from `functions/`.
+ * Calling the shared module rather than one host's adapter is deliberate: dev then
+ * behaves identically whether the site deploys to Vercel or Cloudflare.
+ *
+ * `apply: "serve"` — dev only, production is untouched.
  */
 /** @returns {import("vite").Plugin} */
 function devLeadsApi() {
@@ -42,8 +44,8 @@ function devLeadsApi() {
           for await (const chunk of req) chunks.push(chunk);
           const body = Buffer.concat(chunks).toString("utf8");
 
-          // The real handler + the same env vars Cloudflare would inject.
-          const mod = await server.ssrLoadModule("/functions/api/leads.ts");
+          // The real pipeline + the same env vars the host would inject.
+          const { handleLead } = await server.ssrLoadModule("/src/lib/leads.ts");
           const { loadEnv } = await server.ssrLoadModule("/scripts/_env.mjs");
           const env = loadEnv();
 
@@ -53,18 +55,20 @@ function devLeadsApi() {
             );
           }
 
-          const response = await mod.onRequestPost({
-            request: new Request("http://localhost/api/leads", {
-              method: "POST",
-              headers: { "content-type": "application/json" },
-              body,
-            }),
-            env,
-          });
+          let lead;
+          try {
+            lead = JSON.parse(body);
+          } catch {
+            res.statusCode = 400;
+            res.setHeader("content-type", "application/json");
+            res.end(JSON.stringify({ ok: false, error: "Invalid JSON" }));
+            return;
+          }
 
-          const text = await response.text();
-          console.log(`[leads] ${response.status} ${text}`);
-          res.statusCode = response.status;
+          const { status, body: payload } = await handleLead(lead, env);
+          const text = JSON.stringify(payload);
+          console.log(`[leads] ${status} ${text}`);
+          res.statusCode = status;
           res.setHeader("content-type", "application/json");
           res.end(text);
         } catch (err) {

@@ -1,6 +1,6 @@
 # Lead pipeline + CRM — setup (Brevo)
 
-Every form on the site POSTs to `/api/leads` (a Cloudflare Pages Function). Once the
+Every form on the site POSTs to `/api/leads`. Once the
 Brevo env vars are set, each submission automatically:
 
 1. **Emails you** the new lead (to `LEADS_TO_EMAIL`)
@@ -69,8 +69,10 @@ npm run brevo:pipelines
 It prints the `BREVO_PIPELINE_ID` and a `BREVO_STAGE_ID` for each stage. Use the **first
 stage** ("New") — that's where new enquiries land.
 
-### 7. Add the env vars in Cloudflare Pages
-Cloudflare dashboard → your Pages project → **Settings → Environment variables** (Production):
+### 7. Add the env vars where the site is hosted
+
+The site deploys to **Vercel**, so: Vercel dashboard → your project → **Settings →
+Environment Variables** → add each of these to **Production** *and* **Preview**:
 
 ```
 BREVO_API_KEY     = xkeysib-…
@@ -81,7 +83,16 @@ BREVO_LIST_ID     = 3
 BREVO_PIPELINE_ID = …          # from npm run brevo:pipelines
 BREVO_STAGE_ID    = …          # the "New" stage
 ```
-Redeploy after saving.
+Redeploy after saving — env vars only apply to builds made after they are set.
+
+> **Where the endpoint lives.** `/api/leads` is a Vercel serverless function at
+> `api/leads.ts`. Vercel builds every file in that top-level directory on its own,
+> separately from the Astro build, so the site stays `output: "static"`.
+>
+> A Cloudflare Pages version is kept at `functions/api/leads.ts`. Both are thin
+> adapters over `src/lib/leads.ts`, which holds the whole pipeline — so switching
+> host means setting env vars there, not rewriting anything. Vercel ignores
+> `functions/` and Cloudflare ignores `api/`; whichever host is live picks up its own.
 
 > If `BREVO_PIPELINE_ID` / `BREVO_STAGE_ID` are missing, everything else still works —
 > deals are just skipped, and leads appear only under **Contacts**.
