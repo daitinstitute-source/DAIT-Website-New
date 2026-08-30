@@ -8,7 +8,7 @@
  * Kept even though the site currently deploys to Vercel, so that moving back to
  * Cloudflare Pages stays a hosting decision rather than a rewrite.
  */
-import { handleLead, type Env, type LeadPayload } from "../../src/lib/leads";
+import { handleLead, type Env, type LeadPayload } from "../../src/lib/leads.js";
 
 interface Context {
   request: Request;

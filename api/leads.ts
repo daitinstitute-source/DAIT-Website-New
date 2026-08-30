@@ -14,7 +14,7 @@
  * Env vars must be set in the Vercel dashboard: Project > Settings >
  * Environment Variables. See LEADS-SETUP.md.
  */
-import { handleLead, type Env, type LeadPayload } from "../src/lib/leads";
+import { handleLead, type Env, type LeadPayload } from "../src/lib/leads.js";
 
 /** Just enough of Vercel's Node handler signature to stay dependency-free. */
 interface Req {
