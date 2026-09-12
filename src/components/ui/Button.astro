@@ -40,12 +40,12 @@ const {
 } = Astro.props;
 
 const base =
-  "inline-flex items-center justify-center gap-2 font-bold rounded-lg border-2 transition-all duration-200 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50 disabled:pointer-events-none motion-safe:hover:-translate-y-0.5";
+  "inline-flex max-w-full items-center justify-center gap-2 text-center font-bold rounded-lg border-2 transition-all duration-200 whitespace-normal sm:whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 disabled:opacity-50 disabled:pointer-events-none motion-safe:hover:-translate-y-0.5";
 
 const sizes: Record<Size, string> = {
   sm: "px-4 py-2 text-sm rounded-md",
-  md: "px-6 py-3 text-[0.9rem]",
-  lg: "px-8 py-4 text-base rounded-[10px]",
+  md: "px-5 sm:px-6 py-3 text-[0.9rem]",
+  lg: "px-6 sm:px-8 py-3.5 sm:py-4 text-base rounded-[10px]",
 };
 
 const variants: Record<Variant, string> = {

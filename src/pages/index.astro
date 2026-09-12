@@ -1,9 +1,10 @@
 ---
 /**
- * Homepage — 9 sections per DAIT-BUILD-SPEC, alternating dark/light:
- * 1 Hero (D) · 2 Trust strip (L) · 3 Program areas (L) · 4 Founder/Why (D)
- * 5 Featured programs (L) · 6 Audience split (L) · 7 Testimonials (D)
- * 8 Upcoming batches (L) · 9 Final CTA (L→blue) · Footer (D)
+ * Homepage — alternating dark/light rhythm (see BRAND.md).
+ * 1 Hero (D) · 2 Choose your path (L) · 3 Which describes you (L)
+ * 4 DAIT Difference (L) · 5 Learning Model (D) · 6 Legacy (L)
+ * 7 Founder story (D) · 8 Featured programs (L) · 9 Upcoming batches (L)
+ * 10 Blog (L) · 11 Final CTA (L) · Footer (D)
  */
 import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
@@ -16,19 +17,17 @@ import PathSelector from "../components/sections/PathSelector.astro";
 import LegacyGroup from "../components/sections/LegacyGroup.astro";
 import FounderStory from "../components/sections/FounderStory.astro";
 import AudienceSplit from "../components/sections/AudienceSplit.astro";
-import TestimonialStrip from "../components/sections/TestimonialStrip.astro";
+import DaitDifference from "../components/sections/DaitDifference.astro";
+import LearningModel from "../components/sections/LearningModel.astro";
 import ProgramCard from "../components/sections/ProgramCard.astro";
 import CTABanner from "../components/sections/CTABanner.astro";
 import { siteConfig } from "../config/site";
-import { programAreas, primaryCta } from "../data/navigation";
+import { primaryCta } from "../data/navigation";
 
 // Programs collection (empty until Phase 2 — everything degrades gracefully).
 const allPrograms = (await getCollection("programs")).filter(
   (p) => !p.data.draft,
 );
-const countByArea = (slug: string) =>
-  allPrograms.filter((p) => p.data.area === slug).length;
-
 const featured = allPrograms
   .filter((p) => p.data.featured)
   .sort((a, b) => a.data.order - b.data.order)
@@ -63,60 +62,30 @@ const fmtDate = (d: Date) =>
   description={siteConfig.description}
   canonicalPath="/"
 >
-  <!-- ── 1 · Hero (statement) ──────────────────────────── -->
+  <!-- ── 1 · Hero (statement) ─────────────────────────────── -->
   <Hero />
 
-  <!-- ── 2 · Choose your path (3 audiences) ────────────── -->
+  <!-- ── 2 · Choose your path (3 audiences) ───────────────── -->
   <Section tone="surface">
     <PathSelector />
   </Section>
 
-  <!-- ── 3 · Legacy trust bar (LIGHT) — Dhakne Education Group since 1998 ── -->
-  <Section tone="white" class="!py-8">
-    <LegacyGroup variant="bar" />
+  <!-- ── 3 · Which describes you? (LIGHT) — graduate vs professional ─── -->
+  <Section tone="white">
+    <AudienceSplit />
   </Section>
 
-  <!-- ── 3 · Program areas (LIGHT) — 4 cards ───────────── -->
-  <Section tone="surface" id="areas">
-    <div class="max-w-2xl" data-reveal>
-      <SectionLabel>Our disciplines</SectionLabel>
-      <h2 class="mt-3 text-3xl sm:text-4xl">Four career tracks, built around <span class="text-orange-500">industry demand</span></h2>
-      <p class="mt-4 text-ink-500 measure">
-        Each track is structured around live projects and the tools employers hire for — with
-        Foundation paths for freshers and Advanced tracks for working professionals.
-      </p>
-    </div>
-
-    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      {
-        programAreas.map((area, i) => {
-          const n = countByArea(area.slug);
-          return (
-            <a
-              href={`/programs/#${area.slug}`}
-              class="card card--hover p-6 flex flex-col group"
-              data-reveal
-              data-reveal-delay={(i * 0.08).toString()}
-            >
-              <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-50 text-accent-600 group-hover:bg-accent-500 group-hover:text-white transition-colors">
-                <Icon name={area.icon} size={24} />
-              </span>
-              <h3 class="mt-5 text-lg text-ink-900">{area.label}</h3>
-              <p class="mt-2 text-sm text-ink-500 leading-relaxed flex-1">
-                {area.description}
-              </p>
-              <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-accent-600 group-hover:gap-2.5 transition-all">
-                {n > 0 ? `${n} program${n > 1 ? "s" : ""}` : "Explore"}
-                <Icon name="lucide:arrow-right" size={16} />
-              </span>
-            </a>
-          );
-        })
-      }
-    </div>
+  <!-- ── 4 · The DAIT Difference (LIGHT) — six pillars ────── -->
+  <Section tone="surface">
+    <DaitDifference />
   </Section>
 
-  <!-- ── Legacy · Dhakne Education Group (LIGHT) ───────── -->
+  <!-- ── 5 · The DAIT Learning Model (DARK) ───────────────── -->
+  <Section tone="dark">
+    <LearningModel />
+  </Section>
+
+  <!-- ── 6 · Legacy · Dhakne Education Group (LIGHT) ──────── -->
   <Section tone="white">
     <LegacyGroup variant="full" />
     <div class="mt-8" data-reveal>
@@ -126,12 +95,12 @@ const fmtDate = (d: Date) =>
     </div>
   </Section>
 
-  <!-- ── 4 · Why DAIT / Founder story (DARK) ───────────── -->
+  <!-- ── 7 · Why DAIT / Founder story (DARK) ──────────────── -->
   <Section tone="dark">
     <FounderStory />
   </Section>
 
-  <!-- ── 5 · Featured programs (LIGHT) ─────────────────── -->
+  <!-- ── 8 · Featured programs (LIGHT) ────────────────────── -->
   <Section tone="white">
     <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
       <div class="max-w-2xl">
@@ -152,7 +121,7 @@ const fmtDate = (d: Date) =>
         </div>
       ) : (
         <div
-          class="mt-10 card p-8 sm:p-10 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+          class="mt-10 card p-6 sm:p-10 flex flex-col sm:flex-row items-start sm:items-center gap-6"
           data-reveal
         >
           <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
@@ -174,17 +143,7 @@ const fmtDate = (d: Date) =>
     }
   </Section>
 
-  <!-- ── 6 · Audience split (LIGHT) ────────────────────── -->
-  <Section tone="surface">
-    <AudienceSplit />
-  </Section>
-
-  <!-- ── 7 · Testimonials / outcomes (DARK) ────────────── -->
-  <Section tone="dark">
-    <TestimonialStrip />
-  </Section>
-
-  <!-- ── 8 · Upcoming batches (LIGHT) ──────────────────── -->
+  <!-- ── 9 · Upcoming batches (LIGHT) ─────────────────────── -->
   <Section tone="white">
     <div class="max-w-2xl" data-reveal>
       <SectionLabel>Upcoming cohorts</SectionLabel>
@@ -241,7 +200,7 @@ const fmtDate = (d: Date) =>
         </div>
       ) : (
         <div
-          class="mt-8 card p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6"
+          class="mt-8 card p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6"
           data-reveal
         >
           <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">
@@ -265,7 +224,7 @@ const fmtDate = (d: Date) =>
     }
   </Section>
 
-  <!-- ── Latest from the blog (LIGHT) ──────────────────── -->
+  <!-- ── 10 · Latest from the blog (LIGHT) ────────────────── -->
   {
     latestPosts.length > 0 && (
       <Section tone="surface">
@@ -295,7 +254,7 @@ const fmtDate = (d: Date) =>
     )
   }
 
-  <!-- ── 9 · Final CTA (LIGHT bg, blue banner) ─────────── -->
+  <!-- ── 11 · Final CTA (LIGHT bg, blue banner) ───────────── -->
   <Section tone="surface">
     <CTABanner />
   </Section>

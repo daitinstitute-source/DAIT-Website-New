@@ -58,7 +58,7 @@ const audiences = paths.length === 3 ? "Learners, colleges and companies" : "Lea
 
   <div class={`mt-10 grid gap-6 ${gridCols}`}>
     {paths.map((p, i) => (
-      <a href={p.href} class="card card--hover group flex flex-col p-7" data-reveal data-reveal-delay={(i * 0.08).toString()}>
+      <a href={p.href} class="card card--hover group flex flex-col p-6 sm:p-7" data-reveal data-reveal-delay={(i * 0.08).toString()}>
         <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-50 text-accent-600 transition-colors group-hover:bg-accent-500 group-hover:text-white">
           <Icon name={p.icon} size={24} />
         </span>
