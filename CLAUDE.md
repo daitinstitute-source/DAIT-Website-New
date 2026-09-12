@@ -14,7 +14,7 @@
 **Legal Entity:** DAIT Institute — Dhakne's Digital AI & IT Training Institute
 **Location:** Sambhaji Nagar, Maharashtra, India · info@daitinstitute.com
 **What it is:** DAIT Institute's marketing + admissions website — an IT training institute offering career programs in Software Development, Data Science & AI, Cloud/DevOps/Security, and Digital Marketing / non-coding IT.
-**Hosting:** Cloudflare Pages (`output: "static"` — pages are static; API routes use `export const prerender = false`)
+**Hosting:** Vercel (`output: "static"`). The lead API is a Vercel serverless function in the top-level `api/` directory, which Vercel builds independently of the Astro build. A Cloudflare Pages adapter is kept in `functions/` so the host stays swappable — see "Lead Pipeline" below.
 **Primary CTA:** "Book Free Career Counselling" -> `/contact`
 **Secondary CTA:** WhatsApp click-to-chat (floating button, site-wide)
 
@@ -48,7 +48,7 @@ Two distinct audiences. Every program page and the homepage must speak to BOTH:
 | Icons | astro-icon + Lucide + Simple Icons | Lucide for UI, Simple Icons for tech/tool logos (monochrome only) |
 | Images | `astro:assets` (built-in) | `import { Image } from 'astro:assets'` |
 | Search | astro-pagefind | Add when program count grows (Phase 3) |
-| Forms / Leads | Native form -> `/api/leads` Cloudflare Function | Stores nothing on-page; emails the lead + POSTs to optional CRM webhook. See "Lead Pipeline" below |
+| Forms / Leads | Native form -> `/api/leads` serverless function | Stores nothing on-page; emails the lead + files it in Brevo CRM. Pipeline logic in `src/lib/leads.ts`, host adapters are thin. See "Lead Pipeline" below |
 | WhatsApp | Click-to-chat (`wa.me` link) | Floating button; WhatsApp Business API automation comes later via a BSP |
 | Analytics | GA4 (+ Meta Pixel when ads start) | Free, integrates with Google Ads — institutes run paid campaigns |
 | Fonts | @fontsource | Per BRAND.md — self-hosted, no Google Fonts CDN |
@@ -110,7 +110,7 @@ Every lead flows through ONE standard shape so email/WhatsApp automation can plu
 
 ```
 Form (contact page / program page / popup)
-  -> POST /api/leads  (Cloudflare Function, prerender = false)
+  -> POST /api/leads  (serverless function; logic in src/lib/leads.ts)
       1. Validate + honeypot spam check
       2. Email the lead to LEADS_TO_EMAIL (via Resend or Brevo transactional API)
       3. If LEAD_WEBHOOK_URL is set -> forward JSON payload (future CRM/automation hook)
@@ -143,7 +143,7 @@ Form (contact page / program page / popup)
 | Future feature | Architectural decision made NOW |
 |---|---|
 | Student & teacher login portals | **Separate app** at `portal.<domain>`. The marketing site stays static — do NOT add auth to this repo. Header reserves a "Student Login" link slot pointing to the portal subdomain. |
-| Backend (batches, attendance, fees) | Lives with the portal app, not this repo. This repo's only server code is thin `/api/*` Cloudflare Functions. |
+| Backend (batches, attendance, fees) | Lives with the portal app, not this repo. This repo's only server code is the thin `/api/*` functions. |
 | Marketing automation | Already wired: standard lead payload + `LEAD_WEBHOOK_URL`. Choosing the BSP/email tool is a config change, not a rebuild. |
 | Blog / SEO content | `src/content/blog/` collection — directory exists from day 1, pages added Phase 3. |
 | Placements page, testimonials | `src/content/placements/` collection later; homepage testimonial section reads from it. |

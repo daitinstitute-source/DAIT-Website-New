@@ -2,45 +2,24 @@
  * test-brevo.mjs — validate the Brevo lead-pipeline integration locally.
  *
  *   npm run test:brevo              → sends a sample lead to Brevo
- *   npm run test:brevo -- you@x.com → also auto-replies to that address
+ *   npm run test:brevo -- you@x.com → uses that address as the test lead's email
  *
  * Reads credentials from `.dev.vars` (copy `.dev.vars.example` → `.dev.vars`).
  * This mirrors the fetch calls in functions/api/leads.ts so you can confirm your
  * API key, verified sender and list all work WITHOUT deploying — needed because
  * Cloudflare's local runtime (workerd) doesn't run on Windows ARM64.
  *
- * It performs three real Brevo calls:
- *   1. Institute alert email   → LEADS_TO_EMAIL
- *   2. Applicant auto-reply    → the email you pass as an arg (optional)
- *   3. Contact upsert + list   → the automation trigger
+ * It performs these real Brevo calls:
+ *   1. Institute alert email    → LEADS_TO_EMAIL
+ *   2. Contact upsert + list    → the automation trigger
+ *   3. CRM deal for that lead   → the card you work in Brevo → Deals
+ *   4. Phone-only lead          → proves ext_id keying (no email = still in the CRM)
+ *
+ * NO mail is ever sent to the enquirer - only you (LEADS_TO_EMAIL) receive email.
  */
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
+import { loadEnv } from "./_env.mjs";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, "..");
-
-// ---- tiny .dev.vars parser (KEY=value lines, ignores # comments) ----
-function loadEnv(file) {
-  let raw;
-  try {
-    raw = readFileSync(resolve(ROOT, file), "utf8");
-  } catch {
-    return {};
-  }
-  const out = {};
-  for (const line of raw.split(/\r?\n/)) {
-    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
-    if (!m) continue;
-    let val = m[2].replace(/\s+#.*$/, "").trim(); // strip trailing inline comment
-    val = val.replace(/^["']|["']$/g, ""); // strip surrounding quotes
-    out[m[1]] = val;
-  }
-  return out;
-}
-
-const env = { ...loadEnv(".dev.vars"), ...loadEnv(".env") };
+const env = loadEnv();
 const applicantEmail = process.argv[2] || "";
 
 // ---- helpers mirrored from functions/api/leads.ts ----
@@ -68,17 +47,26 @@ async function brevoEmail(to, subject, htmlContent, replyTo) {
   return res;
 }
 
+const HEADERS = () => ({
+  "api-key": env.BREVO_API_KEY,
+  "content-type": "application/json",
+  accept: "application/json",
+});
+
+/** Mirrors upsertContact() in leads.ts — email-keyed, or ext_id for phone-only. */
 async function upsertContact(lead) {
+  const phone = normalisePhone(lead.phone);
+  const identity = lead.email ? { email: lead.email } : { ext_id: phone };
   const res = await fetch("https://api.brevo.com/v3/contacts", {
     method: "POST",
-    headers: { "api-key": env.BREVO_API_KEY, "content-type": "application/json", accept: "application/json" },
+    headers: HEADERS(),
     body: JSON.stringify({
-      email: lead.email,
+      ...identity,
       updateEnabled: true,
       attributes: {
         FIRSTNAME: firstName(lead.name),
-        SMS: normalisePhone(lead.phone),
-        WHATSAPP: normalisePhone(lead.phone),
+        SMS: phone,
+        WHATSAPP: phone,
         PROGRAM: lead.programInterest,
         AUDIENCE: lead.audienceType,
         SOURCE: lead.source,
@@ -87,11 +75,41 @@ async function upsertContact(lead) {
         PAGES_VIEWED: lead.pagesViewed ?? 1,
         TIME_ON_SITE: lead.timeOnSite ?? "",
         VISITOR: lead.visitor ?? "new",
+        ...(lead.extra ?? {}),
       },
       ...(env.BREVO_LIST_ID ? { listIds: [Number(env.BREVO_LIST_ID)] } : {}),
     }),
   });
-  return res;
+  if (!res.ok && res.status !== 204) return { res, id: null };
+
+  let id = null;
+  if (res.status === 201) id = (await res.json().catch(() => ({})))?.id ?? null;
+  if (!id) {
+    const ident = lead.email ?? phone;
+    const look = await fetch(
+      `https://api.brevo.com/v3/contacts/${encodeURIComponent(ident)}?identifierType=${lead.email ? "email_id" : "ext_id"}`,
+      { headers: HEADERS() },
+    );
+    if (look.ok) id = (await look.json().catch(() => ({})))?.id ?? null;
+  }
+  return { res, id };
+}
+
+/** Mirrors createDeal() in leads.ts. */
+async function createDeal(lead, contactId) {
+  return fetch("https://api.brevo.com/v3/crm/deals", {
+    method: "POST",
+    headers: HEADERS(),
+    body: JSON.stringify({
+      name: `${lead.name} — ${lead.programInterest}`,
+      attributes: {
+        pipeline: env.BREVO_PIPELINE_ID,
+        deal_stage: env.BREVO_STAGE_ID,
+        deal_description: `Phone: ${normalisePhone(lead.phone)}\nEmail: ${lead.email || "—"}\nProgram: ${lead.programInterest}\n\n(Automated integration test — safe to delete.)`,
+      },
+      ...(contactId ? { linkedContactsIds: [contactId] } : {}),
+    }),
+  });
 }
 
 // ---- pretty logging ----
@@ -135,6 +153,8 @@ const lead = {
   visitor: "returning",
 };
 
+console.log(`${c.d}Pipeline:${c.x} ${env.BREVO_PIPELINE_ID || "(not set — deals will be skipped)"}\n`);
+
 let ok = true;
 
 // 1. Institute alert
@@ -149,36 +169,56 @@ try {
   else { ok = false; fail(`Institute alert failed (HTTP ${res.status}) ${c.d}${await bodyText(res)}${c.x}`); }
 } catch (e) { ok = false; fail(`Institute alert error: ${e.message}`); }
 
-// 2. Applicant auto-reply (only if you passed a real address)
-if (applicantEmail) {
-  try {
-    const res = await brevoEmail(
-      { email: applicantEmail, name: lead.name },
-      "We've received your enquiry — DAIT Institute (TEST)",
-      `<p style="font-family:sans-serif">Hi ${esc(firstName(lead.name))}, this is the auto-reply your applicants will get.</p>`,
-    );
-    if (res.ok) pass(`Auto-reply sent → ${applicantEmail}`);
-    else { ok = false; fail(`Auto-reply failed (HTTP ${res.status}) ${c.d}${await bodyText(res)}${c.x}`); }
-  } catch (e) { ok = false; fail(`Auto-reply error: ${e.message}`); }
-} else {
-  skip("Auto-reply — pass an email to test it:  npm run test:brevo -- you@example.com");
-}
-
-// 3. Contact upsert (+ list = automation trigger)
+// 2. Contact upsert (+ list = automation trigger)
+let contactId = null;
 try {
-  const res = await upsertContact(lead);
-  if (res.ok) {
-    pass(`Contact upserted${env.BREVO_LIST_ID ? ` into list ${env.BREVO_LIST_ID} (automation will trigger)` : " (no list set)"}`);
+  const { res, id } = await upsertContact(lead);
+  contactId = id;
+  if (res.ok || res.status === 204) {
+    pass(`Contact upserted${env.BREVO_LIST_ID ? ` into list ${env.BREVO_LIST_ID} (automation will trigger)` : " (no list set)"}${id ? ` ${c.d}id=${id}${c.x}` : ""}`);
   } else {
     ok = false;
     fail(`Contact upsert failed (HTTP ${res.status}) ${c.d}${await bodyText(res)}${c.x}`);
   }
 } catch (e) { ok = false; fail(`Contact upsert error: ${e.message}`); }
 
+// 3. CRM deal — the card you actually work in Brevo → Deals
+if (env.BREVO_PIPELINE_ID && env.BREVO_STAGE_ID) {
+  try {
+    const res = await createDeal(lead, contactId);
+    if (res.ok) pass(`CRM deal created${contactId ? " and linked to the contact" : " (unlinked — no contact id)"}`);
+    else { ok = false; fail(`Deal creation failed (HTTP ${res.status}) ${c.d}${await bodyText(res)}${c.x}`); }
+  } catch (e) { ok = false; fail(`Deal creation error: ${e.message}`); }
+} else {
+  skip("CRM deal — set BREVO_PIPELINE_ID and BREVO_STAGE_ID (run: npm run brevo:pipelines)");
+}
+
+// 4. Phone-only lead — the case that used to vanish entirely
+try {
+  const phoneOnly = {
+    ...lead,
+    name: "Test PhoneOnly",
+    email: "",
+    phone: `+9190000${String(Date.now()).slice(-5)}`,
+  };
+  const { res, id } = await upsertContact(phoneOnly);
+  if (res.ok || res.status === 204) {
+    pass(`Phone-only contact created via ext_id ${c.d}${phoneOnly.phone}${c.x}`);
+    if (env.BREVO_PIPELINE_ID && env.BREVO_STAGE_ID) {
+      const d = await createDeal(phoneOnly, id);
+      if (d.ok) pass("Phone-only lead also became a CRM deal");
+      else { ok = false; fail(`Phone-only deal failed (HTTP ${d.status}) ${c.d}${await bodyText(d)}${c.x}`); }
+    }
+  } else {
+    ok = false;
+    fail(`Phone-only contact failed (HTTP ${res.status}) ${c.d}${await bodyText(res)}${c.x}`);
+  }
+} catch (e) { ok = false; fail(`Phone-only contact error: ${e.message}`); }
+
 console.log("");
 if (ok) {
-  console.log(`${c.g}All Brevo calls succeeded.${c.x} Check ${env.LEADS_TO_EMAIL} for the alert${applicantEmail ? `, ${applicantEmail} for the auto-reply` : ""}, and Brevo → Contacts for the test contact.\n`);
+  console.log(`${c.g}All Brevo calls succeeded.${c.x} Check ${env.LEADS_TO_EMAIL} for the alert, Brevo → Contacts for the test contacts, and Brevo → Deals for the test cards.\n`);
 } else {
-  console.log(`${c.r}Some calls failed.${c.x} Most common causes: wrong API key, sender not verified in Brevo, or a bad LIST_ID. See LEADS-SETUP.md.\n`);
+  console.log(`${c.r}Some calls failed.${c.x} Most common causes: wrong API key, sender not verified in Brevo, a bad LIST_ID, or pipeline/stage ids that don't match (run: npm run brevo:pipelines). See LEADS-SETUP.md.\n`);
   process.exit(1);
 }

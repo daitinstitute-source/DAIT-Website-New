@@ -219,7 +219,7 @@ const defaultWhyDAIT = [
             Next batch {nextBatch} · limited seats
           </div>
         )}
-        <EnquiryForm client:load programSlug={program.id} programTitle={data.title} />
+        <EnquiryForm client:load formId="Program hero" programSlug={program.id} programTitle={data.title} />
       </div>
     </div>
   </div>
@@ -372,7 +372,7 @@ const defaultWhyDAIT = [
       </div>
       <div>
         <p class="mb-3 text-sm font-bold uppercase tracking-wider text-ink-500">Schedule your visit</p>
-        <EnquiryForm compact client:visible programSlug={program.id} programTitle={data.title} />
+        <EnquiryForm compact client:visible formId="Program page footer" programSlug={program.id} programTitle={data.title} />
       </div>
     </div>
   </div>
