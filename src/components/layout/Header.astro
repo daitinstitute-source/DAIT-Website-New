@@ -119,9 +119,15 @@ const isActive = (href: string) =>
 
     <!-- CTA + mobile toggle -->
     <div class="flex items-center gap-2">
-      <Button href={primaryCta.href} size="sm" iconLeft="lucide:phone-call" class="hidden sm:inline-flex">
-        Free Counselling
-      </Button>
+      {/* Wrapper owns the visibility: passing `hidden` straight to Button is a
+         no-op, because Button's own base sets inline-flex and Tailwind emits
+         .inline-flex after .hidden, so it wins at equal specificity. The full
+         CTA still reaches phone users via MobileNav. */}
+      <span class="hidden sm:inline-flex">
+        <Button href={primaryCta.href} size="sm" iconLeft="lucide:phone-call">
+          Free Counselling
+        </Button>
+      </span>
       <button
         type="button"
         id="mobile-nav-toggle"
