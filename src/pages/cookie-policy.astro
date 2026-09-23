@@ -1,0 +1,109 @@
+---
+/**
+ * /cookie-policy — what this site stores in the visitor's browser.
+ *
+ * Kept deliberately specific rather than boilerplate: the named keys below are
+ * the ones actually set in BaseLayout.astro (dait_sess / dait_visitor). The
+ * Google and Meta entries depend on siteConfig.analytics + allowIndexing. If
+ * any of those change, update this page and /privacy-policy together.
+ */
+import LegalLayout from "../layouts/LegalLayout.astro";
+import { siteConfig } from "../config/site";
+---
+
+<LegalLayout
+  title="Cookie Policy"
+  description="What DAIT Institute stores in your browser, why, and how to control or clear it — including analytics cookies and our own first-party attribution keys."
+  canonicalPath="/cookie-policy/"
+  updated="2026-09-23"
+  intro="A plain-English list of what this website stores in your browser, what each item is for, and how to remove it."
+>
+  <h2>The short version</h2>
+  <p>
+    We don't use cookies to build advertising profiles of you, and we don't sell anything about your
+    browsing. What we store falls into two groups: a couple of small items we set ourselves to
+    understand how people find us, and analytics from Google.
+  </p>
+
+  <h2>What we set ourselves</h2>
+  <p>
+    These are stored using your browser's own storage rather than traditional cookies. They stay on
+    your device and are only sent to us if you choose to submit an enquiry form — they help us
+    understand which pages and campaigns lead to enquiries.
+  </p>
+  <ul>
+    <li>
+      <strong><code>dait_sess</code></strong> (session storage) — the page you landed on, how many
+      pages you've viewed in this visit, where you were referred from, and which visit number this
+      is. <strong>Cleared automatically when you close the tab.</strong>
+    </li>
+    <li>
+      <strong><code>dait_visitor</code></strong> (local storage) — the date you first visited and a
+      count of how many times you've visited. <strong>Stays until you clear your browser data.</strong>
+    </li>
+  </ul>
+  <p>
+    Neither contains your name, phone number, email address or any other detail that identifies you
+    personally.
+  </p>
+
+  <h2>Analytics</h2>
+  <p>
+    We use <strong>Google Analytics</strong>, loaded through Google Tag Manager, to see how many
+    people visit, which pages they read and which programs get the most interest. This sets
+    Google's own cookies, typically:
+  </p>
+  <ul>
+    <li><strong><code>_ga</code></strong> and <strong><code>_ga_&lt;id&gt;</code></strong> — distinguish one visitor from another (up to 2 years)</li>
+    <li><strong><code>_gid</code></strong> — distinguishes visitors over a short period (24 hours)</li>
+  </ul>
+  <p>
+    This tells us patterns, not identities. Google's handling of this data is governed by its own
+    privacy terms, and you can opt out of Google Analytics across all websites using
+    <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">Google's browser add-on</a>.
+  </p>
+
+  <h2>Advertising</h2>
+  <p>
+    When we are running campaigns on Facebook or Instagram, a <strong>Meta advertising pixel</strong>
+    may be active on this site and set cookies such as <code>_fbp</code>. These let us measure
+    whether an ad led to an enquiry, and show relevant ads to people who have visited us. If we are
+    not running campaigns, this is switched off entirely.
+  </p>
+
+  <h2>WhatsApp</h2>
+  <p>
+    Our WhatsApp button is a normal link — it opens WhatsApp and sets nothing on this site. Once you
+    are in WhatsApp, Meta's own terms apply to that conversation.
+  </p>
+
+  <h2>How to control this</h2>
+  <ul>
+    <li>
+      <strong>Clear our first-party items</strong> — clearing site data for this website in your
+      browser settings removes <code>dait_sess</code> and <code>dait_visitor</code> immediately.
+    </li>
+    <li>
+      <strong>Block cookies</strong> — every major browser lets you block or delete cookies, either
+      for all sites or just this one. Look under Settings → Privacy.
+    </li>
+    <li>
+      <strong>Opt out of Google Analytics</strong> — use the browser add-on linked above.
+    </li>
+    <li>
+      <strong>Browse privately</strong> — a private or incognito window discards all of this when
+      you close it.
+    </li>
+  </ul>
+  <p>
+    Blocking any of the above will not stop you using this website. Every page, program detail and
+    enquiry form works exactly the same without them.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    If we add or remove anything that stores data in your browser, we will update this page and the
+    "last updated" date above. For the wider picture of what we do with enquiry information, see our
+    <a href="/privacy-policy/">Privacy Policy</a>.
+  </p>
+</LegalLayout>

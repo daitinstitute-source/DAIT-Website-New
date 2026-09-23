@@ -98,3 +98,9 @@ export const footerQuickLinks: NavItem[] = [
   { label: "Contact", href: "/contact/" },
   { label: "Book Counselling", href: "/contact/" },
 ];
+
+/** Legal links — footer bottom bar. Add terms/refund pages here when they exist. */
+export const legalLinks: NavItem[] = [
+  { label: "Privacy Policy", href: "/privacy-policy/" },
+  { label: "Cookie Policy", href: "/cookie-policy/" },
+];

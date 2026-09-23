@@ -1,0 +1,72 @@
+---
+/**
+ * LegalLayout — shared shell for policy pages (privacy, cookies, and any
+ * terms/refund pages added later). Dark header band + prose body using the
+ * shared `.article` typography, so legal copy matches the rest of the site
+ * without each page re-styling headings and lists.
+ */
+import BaseLayout from "./BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import { siteConfig } from "../config/site";
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  /** ISO date (YYYY-MM-DD) shown as "Last updated". */
+  updated: string;
+  /** Short lead paragraph under the title. */
+  intro: string;
+}
+const { title, description, canonicalPath, updated, intro } =
+  Astro.props as Props;
+
+const fmt = new Intl.DateTimeFormat("en-IN", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+}).format(new Date(updated));
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalPath={canonicalPath}
+>
+  <!-- HEADER (DARK) -->
+  <Section tone="dark" class="pt-24 pb-12 lg:pt-28 lg:pb-14">
+    <div class="max-w-3xl" data-reveal>
+      <nav class="text-sm text-white/70" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-white">Home</a>
+        <span class="mx-2">/</span>
+        <span class="text-white">{title}</span>
+      </nav>
+      <h1
+        class="mt-6 text-3xl sm:text-4xl lg:text-[2.7rem] font-black leading-[1.1] text-white"
+      >
+        {title}
+      </h1>
+      <p class="mt-4 text-white/70 measure">{intro}</p>
+      <p class="mt-5 text-sm text-white/50">Last updated: {fmt}</p>
+    </div>
+  </Section>
+
+  <!-- BODY (LIGHT) -->
+  <Section tone="surface">
+    <article class="article max-w-[760px]" data-reveal>
+      <slot />
+    </article>
+
+    <p class="mt-10 max-w-[760px] border-t border-border pt-6 text-sm text-ink-500">
+      Questions about this page? Email
+      <a
+        href={`mailto:${siteConfig.email}`}
+        class="font-semibold text-accent-600 hover:text-accent-500">{siteConfig.email}</a
+      > or call
+      <a
+        href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}
+        class="font-semibold text-accent-600 hover:text-accent-500">{siteConfig.phone}</a
+      >.
+    </p>
+  </Section>
+</BaseLayout>

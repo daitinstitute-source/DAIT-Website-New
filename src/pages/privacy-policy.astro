@@ -1,0 +1,171 @@
+---
+/**
+ * /privacy-policy — how DAIT handles enquiry data.
+ *
+ * Written against what the site ACTUALLY does: the enquiry form posts the
+ * standard lead payload to /api/leads (src/lib/leads.ts), which emails the
+ * institute and files the contact in Brevo. Attribution comes from the
+ * first-party sessionStorage/localStorage keys set in BaseLayout. If any of
+ * that changes, update this page and /cookie-policy in the same commit.
+ */
+import LegalLayout from "../layouts/LegalLayout.astro";
+import { siteConfig } from "../config/site";
+
+const centre = siteConfig.centers[0];
+const address = [
+  centre.name,
+  ...centre.addressLines,
+  `${centre.city}, ${centre.state}${centre.postalCode ? " " + centre.postalCode : ""}`,
+].join(", ");
+---
+
+<LegalLayout
+  title="Privacy Policy"
+  description="How DAIT Institute collects, uses and protects the personal information you share through our enquiry forms, WhatsApp and website."
+  canonicalPath="/privacy-policy/"
+  updated="2026-09-23"
+  intro="This policy explains what we collect when you enquire about a program, why we collect it, who we share it with, and the choices you have."
+>
+  <h2>Who we are</h2>
+  <p>
+    This website is operated by <strong>{siteConfig.legalName}</strong> ("DAIT Institute", "we",
+    "us"), an IT training institute based in {centre.city}, {centre.state}, India.
+  </p>
+  <p>
+    <strong>Address:</strong> {address}<br />
+    <strong>Email:</strong> <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a><br />
+    <strong>Phone:</strong> <a href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}>{siteConfig.phone}</a>
+  </p>
+
+  <h2>What we collect</h2>
+
+  <h3>Information you give us</h3>
+  <p>
+    When you submit an enquiry form, request a callback, or message us on WhatsApp, we collect:
+  </p>
+  <ul>
+    <li>Your <strong>name</strong> and <strong>phone number</strong> (required, so an advisor can call you back)</li>
+    <li>Your <strong>email address</strong> (optional)</li>
+    <li>The <strong>program you're interested in</strong>, if you select one</li>
+    <li>Whether you describe yourself as a <strong>graduate/student or a working professional</strong>, so we recommend the right track</li>
+    <li>Any <strong>message</strong> you choose to write</li>
+  </ul>
+  <p>
+    We do not ask for identity documents, financial details or payment information through this
+    website. Please don't send those via the enquiry form or WhatsApp.
+  </p>
+
+  <h3>Information collected automatically</h3>
+  <p>
+    So we know which of our pages and campaigns actually help people find us, your browser stores a
+    small amount of information on your own device and sends it along if you later submit an
+    enquiry:
+  </p>
+  <ul>
+    <li>The page you landed on and how many pages you viewed</li>
+    <li>The website or search engine that referred you (for example Google, Facebook or WhatsApp)</li>
+    <li>Campaign tags (UTM parameters) if you arrived from an advertisement or a link we shared</li>
+    <li>How many times you have visited, and when you first visited</li>
+  </ul>
+  <p>
+    The exact keys used are listed in our <a href="/cookie-policy/">Cookie Policy</a>. We also use
+    Google Analytics to understand overall traffic patterns — that is covered there too.
+  </p>
+
+  <h2>Why we use it</h2>
+  <ul>
+    <li><strong>To respond to your enquiry</strong> — a counselling call, course details, batch timings and fees</li>
+    <li><strong>To recommend the right program</strong> for your background and goals</li>
+    <li><strong>To send you information you asked for</strong>, such as a curriculum or admission details</li>
+    <li><strong>To improve the website</strong> — understanding which pages and programs people look for</li>
+  </ul>
+  <p>
+    We process this information on the basis of your consent, given when you submit a form or
+    message us. You can withdraw that consent at any time (see <a href="#your-rights">Your rights</a>).
+  </p>
+  <p>
+    <strong>We do not sell your personal information</strong>, and we do not share it with other
+    institutes or training providers.
+  </p>
+
+  <h2>Who we share it with</h2>
+  <p>
+    We share information only with the service providers that help us run the website and respond
+    to enquiries:
+  </p>
+  <ul>
+    <li>
+      <strong>Brevo</strong> — stores your enquiry in our contact records and sends our
+      notification and response emails. Brevo is based in the European Union.
+    </li>
+    <li>
+      <strong>Google</strong> — Google Analytics and Google Tag Manager, for website traffic
+      measurement.
+    </li>
+    <li>
+      <strong>Meta (WhatsApp, and Facebook/Instagram advertising)</strong> — if you contact us on
+      WhatsApp, that conversation happens on Meta's platform under Meta's own privacy terms. If we
+      are running advertising, a Meta advertising pixel may also be active.
+    </li>
+    <li><strong>Vercel</strong> — hosts this website and serves its pages.</li>
+  </ul>
+  <p>
+    Some of these providers operate outside India, which means your information may be processed
+    abroad. We share only what is needed for the purpose described above.
+  </p>
+  <p>
+    We may also disclose information where the law requires it, or to establish or defend a legal
+    claim.
+  </p>
+
+  <h2>How long we keep it</h2>
+  <p>
+    We keep enquiry records for as long as needed to respond and to maintain our admissions
+    records — normally up to <strong>three years</strong> from your last contact with us, unless
+    you ask us to delete them sooner or we are required to keep them longer. Analytics data is
+    retained according to the settings in Google Analytics.
+  </p>
+
+  <h2 id="your-rights">Your rights</h2>
+  <p>
+    Under India's Digital Personal Data Protection Act, 2023, you can ask us to:
+  </p>
+  <ul>
+    <li><strong>Access</strong> the personal information we hold about you</li>
+    <li><strong>Correct</strong> anything that is inaccurate or incomplete</li>
+    <li><strong>Delete</strong> your information, where we have no continuing need for it</li>
+    <li><strong>Withdraw your consent</strong> and stop receiving calls or messages from us</li>
+  </ul>
+  <p>
+    To do any of these, email <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a> from the
+    address you contacted us with, or call <a href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}>{siteConfig.phone}</a>.
+    We will respond as quickly as we can, and in any case within the timelines the law requires.
+  </p>
+  <p>
+    If you are not satisfied with how we have handled your request, you may raise a grievance with
+    us at the same address, and you have the right to complain to the Data Protection Board of
+    India.
+  </p>
+
+  <h2>Security</h2>
+  <p>
+    Enquiries are submitted over an encrypted (HTTPS) connection and stored with the providers
+    listed above. We limit access to enquiry records to the people who need it to contact you. No
+    system is completely secure, so we cannot guarantee absolute security, but we take these
+    safeguards seriously.
+  </p>
+
+  <h2>Children</h2>
+  <p>
+    Our programs are intended for adults and for students at or above college entry age. We do not
+    knowingly collect personal information from children under 18 without the consent of a parent
+    or guardian. If you believe a child has submitted information to us, contact us and we will
+    delete it.
+  </p>
+
+  <h2>Changes to this policy</h2>
+  <p>
+    If we change how we handle personal information, we will update this page and change the "last
+    updated" date above.
+  </p>
+</LegalLayout>

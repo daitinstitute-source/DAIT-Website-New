@@ -9,6 +9,7 @@ import {
   programAreas,
   footerQuickLinks,
   studentLogin,
+  legalLinks,
 } from "../../data/navigation";
 
 const year = new Date().getFullYear();
@@ -196,10 +197,19 @@ const hasPhone = Boolean(siteConfig.phone);
     </div>
 
     <div
-      class="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/40"
+      class="mt-8 pt-6 border-t border-white/10 flex flex-col gap-4 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between"
     >
-      <p>© {year} {siteConfig.name}. All rights reserved.</p>
-      <p>{siteConfig.legalName} · {siteConfig.centers[0].city}</p>
+      <p class="text-center sm:text-left">© {year} {siteConfig.name}. All rights reserved.</p>
+      <nav aria-label="Legal" class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        {
+          legalLinks.map((l) => (
+            <a href={l.href} class="hover:text-white/80 transition-colors">
+              {l.label}
+            </a>
+          ))
+        }
+      </nav>
+      <p class="text-center sm:text-right">{siteConfig.legalName} · {siteConfig.centers[0].city}</p>
     </div>
   </div>
 </footer>
