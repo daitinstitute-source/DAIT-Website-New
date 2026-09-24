@@ -77,6 +77,23 @@ import { siteConfig } from "../config/site";
     are in WhatsApp, Meta's own terms apply to that conversation.
   </p>
 
+  <h2>Your choice</h2>
+  <p>
+    The first time you visit, we ask before loading anything from Google or Meta. Choose
+    <strong>Essential only</strong> and none of it ever loads. You can change your mind at any
+    time:
+  </p>
+  <p>
+    <button
+      type="button"
+      id="reset-cookie-choice"
+      class="inline-flex items-center justify-center rounded-lg border-2 border-accent-500 px-5 py-2 text-sm font-bold text-accent-600 transition-colors hover:bg-accent-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600"
+    >
+      Change my cookie choice
+    </button>
+    <span id="reset-cookie-note" class="ml-3 text-sm text-ink-500" hidden>Choice cleared — reloading…</span>
+  </p>
+
   <h2>How to control this</h2>
   <ul>
     <li>
@@ -106,4 +123,17 @@ import { siteConfig } from "../config/site";
     "last updated" date above. For the wider picture of what we do with enquiry information, see our
     <a href="/privacy-policy/">Privacy Policy</a>.
   </p>
+<script is:inline>
+  (function () {
+    var btn = document.getElementById("reset-cookie-choice");
+    var note = document.getElementById("reset-cookie-note");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      try { localStorage.removeItem("dait_consent"); } catch (e) {}
+      if (note) note.hidden = false;
+      setTimeout(function () { location.reload(); }, 600);
+    });
+  })();
+</script>
+
 </LegalLayout>

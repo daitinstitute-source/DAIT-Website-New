@@ -14,6 +14,7 @@ import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 import JsonLd from "../components/seo/JsonLd.astro";
 import WhatsAppButton from "../components/forms/WhatsAppButton.tsx";
+import CookieConsent from "../components/layout/CookieConsent.astro";
 
 export interface SEOProps {
   title: string;
@@ -74,11 +75,56 @@ const metaPixel = trackingEnabled ? siteConfig.analytics.metaPixelId : "";
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Google Tag Manager (loads GA4 + any other tags from the container) -->
+    <!-- Consent gate: Google/Meta tags are injected ONLY after the visitor
+         accepts (see components/layout/CookieConsent.astro). Nothing
+         third-party touches the page before that. -->
     {
-      gtm && (
-        <script is:inline define:vars={{ gtm }}>
-          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',gtm);`}
+      (gtm || ga4 || metaPixel) && (
+        <script is:inline define:vars={{ gtm, ga4, metaPixel }}>
+          (function () {
+            var KEY = "dait_consent";
+            var loaded = false;
+            function el(tag, attrs) {
+              var n = document.createElement(tag);
+              for (var k in attrs) n[k] = attrs[k];
+              return n;
+            }
+            function loadTags() {
+              if (loaded) return;
+              loaded = true;
+              window.dataLayer = window.dataLayer || [];
+              function gtag() { window.dataLayer.push(arguments); }
+              if (gtm) {
+                window.dataLayer.push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+                document.head.appendChild(el("script", { async: true, src: "https://www.googletagmanager.com/gtm.js?id=" + gtm }));
+              }
+              if (ga4) {
+                document.head.appendChild(el("script", { async: true, src: "https://www.googletagmanager.com/gtag/js?id=" + ga4 }));
+                gtag("js", new Date());
+                gtag("config", ga4);
+              }
+              if (metaPixel) {
+                !(function (f, b, e, v, n, t, s2) {
+                  if (f.fbq) return;
+                  n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+                  if (!f._fbq) f._fbq = n;
+                  n.push = n; n.loaded = !0; n.version = "2.0"; n.queue = [];
+                  t = b.createElement(e); t.async = !0; t.src = v;
+                  s2 = b.getElementsByTagName(e)[0]; s2.parentNode.insertBefore(t, s2);
+                })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+                window.fbq("init", metaPixel);
+                window.fbq("track", "PageView");
+              }
+            }
+            window.daitConsent = {
+              get: function () { try { return localStorage.getItem(KEY); } catch (e) { return null; } },
+              set: function (v) {
+                try { localStorage.setItem(KEY, v); } catch (e) {}
+                if (v === "granted") loadTags();
+              }
+            };
+            if (window.daitConsent.get() === "granted") loadTags();
+          })();
         </script>
       )
     }
@@ -178,78 +224,8 @@ const metaPixel = trackingEnabled ? siteConfig.analytics.metaPixelId : "";
     <JsonLd schema={localBusinessSchema()} />
     {jsonLd.map((s) => <JsonLd schema={s} />)}
 
-    <!-- GA4 (only when configured) -->
-    {
-      ga4 && (
-        <>
-          <script
-            is:inline
-            async
-            src={`https://www.googletagmanager.com/gtag/js?id=${ga4}`}
-          />
-          <script is:inline define:vars={{ ga4 }}>
-            window.dataLayer = window.dataLayer || [];
-            function gtag() {
-              dataLayer.push(arguments);
-            }
-            gtag("js", new Date());
-            gtag("config", ga4);
-          </script>
-        </>
-      )
-    }
-
-    <!-- Meta (Facebook) Pixel — only when configured -->
-    {
-      metaPixel && (
-        <>
-          <script is:inline define:vars={{ metaPixel }}>
-            !(function (f, b, e, v, n, t, s) {
-              if (f.fbq) return;
-              n = f.fbq = function () {
-                n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-              };
-              if (!f._fbq) f._fbq = n;
-              n.push = n;
-              n.loaded = !0;
-              n.version = "2.0";
-              n.queue = [];
-              t = b.createElement(e);
-              t.async = !0;
-              t.src = v;
-              s = b.getElementsByTagName(e)[0];
-              s.parentNode.insertBefore(t, s);
-            })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
-            fbq("init", metaPixel);
-            fbq("track", "PageView");
-          </script>
-          <noscript>
-            <img
-              height="1"
-              width="1"
-              style="display:none"
-              alt=""
-              src={`https://www.facebook.com/tr?id=${metaPixel}&ev=PageView&noscript=1`}
-            />
-          </noscript>
-        </>
-      )
-    }
   </head>
   <body class="min-h-screen flex flex-col">
-    {
-      gtm && (
-        <noscript>
-          <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${gtm}`}
-            height="0"
-            width="0"
-            style="display:none;visibility:hidden"
-            title="gtm"
-          />
-        </noscript>
-      )
-    }
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-3 focus:left-3 focus:bg-accent-500 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg"
@@ -265,6 +241,7 @@ const metaPixel = trackingEnabled ? siteConfig.analytics.metaPixelId : "";
     <Footer />
 
     <WhatsAppButton href={waHref} client:load />
+    <CookieConsent />
 
     <!-- Scroll reveals + counters -->
     <script>
