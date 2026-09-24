@@ -4,7 +4,10 @@
  *
  * Pairs with the consent gate in BaseLayout: Google/Meta tags are NOT injected
  * until `window.daitConsent.set("granted")` runs. Choosing "Essential only"
- * stores a refusal and nothing third-party ever loads.
+ * stores a refusal, clears our first-party attribution keys, and nothing
+ * third-party ever loads. The banner therefore shows even before analytics is
+ * switched on for the build, because those first-party keys are written either
+ * way and are what the visitor is actually consenting to.
  *
  * Deliberately plain language — this is read by 20-year-old graduates and by
  * working professionals on a phone, not by lawyers. No dark patterns: both
@@ -62,8 +65,8 @@ import { siteConfig } from "../../config/site";
     if (!el) return;
 
     var api = window.daitConsent;
-    // No consent gate on the page (tracking disabled for this build) — the
-    // banner would be asking about tags that never load, so stay hidden.
+    // Gate script missing (should not happen) — fail closed rather than show a
+    // banner whose buttons would do nothing.
     if (!api) return;
     if (api.get()) return; // already chosen
 

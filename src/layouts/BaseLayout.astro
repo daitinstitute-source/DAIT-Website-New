@@ -78,9 +78,7 @@ const metaPixel = trackingEnabled ? siteConfig.analytics.metaPixelId : "";
     <!-- Consent gate: Google/Meta tags are injected ONLY after the visitor
          accepts (see components/layout/CookieConsent.astro). Nothing
          third-party touches the page before that. -->
-    {
-      (gtm || ga4 || metaPixel) && (
-        <script is:inline define:vars={{ gtm, ga4, metaPixel }}>
+    <script is:inline define:vars={{ gtm, ga4, metaPixel }}>
           (function () {
             var KEY = "dait_consent";
             var loaded = false;
@@ -121,13 +119,16 @@ const metaPixel = trackingEnabled ? siteConfig.analytics.metaPixelId : "";
               set: function (v) {
                 try { localStorage.setItem(KEY, v); } catch (e) {}
                 if (v === "granted") loadTags();
+                if (v === "denied") {
+                  // Honour the refusal immediately, not just on the next visit.
+                  try { localStorage.removeItem("dait_visitor"); } catch (e) {}
+                  try { sessionStorage.removeItem("dait_sess"); } catch (e) {}
+                }
               }
             };
             if (window.daitConsent.get() === "granted") loadTags();
           })();
-        </script>
-      )
-    }
+    </script>
 
     <!-- First-party engagement tracking: records the visitor's main source,
          landing page, pages viewed, time on site and new/returning status for
@@ -135,6 +136,9 @@ const metaPixel = trackingEnabled ? siteConfig.analytics.metaPixelId : "";
     <script is:inline>
       (function () {
         try {
+          // Runs unless the visitor chose "Essential only". These keys stay on
+          // the device and only reach us if an enquiry form is submitted.
+          if (window.daitConsent && window.daitConsent.get() === "denied") return;
           var SKEY = "dait_sess";
           var VKEY = "dait_visitor";
 
