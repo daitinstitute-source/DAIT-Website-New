@@ -13,7 +13,7 @@ interface Props {
   sub?: string;
 }
 const {
-  heading = "Not sure where to start? Talk to a career advisor — free.",
+  heading = 'Not sure where to start? <span class="text-orange-300">Talk to a career advisor</span> — free.',
   sub = "A 20-minute call to map your background and goals to the right track. No pressure, no obligation.",
 } = Astro.props;
 
@@ -33,7 +33,7 @@ const waHref = whatsappLink(
   >
   </div>
   <div class="relative mx-auto max-w-2xl">
-    <h2 class="text-2xl sm:text-3xl text-white text-balance">{heading}</h2>
+    <h2 class="text-2xl sm:text-3xl text-white text-balance" set:html={heading} />
     <p class="mt-4 text-white/70">{sub}</p>
     <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
       <Button href={primaryCta.href} size="lg" class="!border-white !bg-white !text-accent-600 hover:!bg-white/90 hover:!border-white/90">

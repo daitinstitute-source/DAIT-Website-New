@@ -99,6 +99,18 @@ DAIT should read like a **serious, modern tech institute** (the confident, outco
 ### House style
 - "Cohort" (not "batch") where tone matters; "career advisor" is fine alongside "counselling."
 - Headings: white/ink + ONE orange keyword (see §2). Lead the keyword with the outcome.
+  Every display heading (h1/h2 at text-3xl and above) carries exactly one orange keyword —
+  no bare headings. The orange step is fixed by the surface it sits on, because it is the
+  only step that clears 3:1 contrast for large text there:
+
+  | Surface | Heading | Keyword | Contrast |
+  |---|---|---|---|
+  | Light (`surface`/`white`) | `text-ink-900` | `text-orange-500` | 3.19:1 |
+  | Dark (`dark-950`) | `text-white` | `text-orange-400` | 7.33:1 |
+  | Accent-blue panel (`accent-500/600`) | `text-white` | `text-orange-300` | 4.14:1 |
+
+  Do not use orange-400 on a light surface (2.58:1) or orange-500 on a blue panel (2.65:1).
+  Blog post titles are the one exception — they are author content, so they stay plain.
 - Body ≤ 3 short sentences per block; one clear CTA per section.
 
 ### Before → after (reference)
