@@ -99,6 +99,10 @@ const blog = defineCollection({
     // to a branded gradient banner when absent — drop a real photo in to humanise.
     image: z.string().optional(),
     imageAlt: z.string().optional(),
+    // Optional Q&A block. Rendered at the end of the post AND emitted as
+    // FAQPage JSON-LD, which is what earns the expandable FAQ rich result
+    // in Google. Keep answers self-contained — Google strips markup.
+    faqs: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
     draft: z.boolean().default(false),
   }),
 });

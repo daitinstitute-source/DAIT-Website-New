@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from "astro:content";
 import type { GetStaticPaths } from "astro";
-import type { WithContext, BlogPosting } from "schema-dts";
+import type { WithContext, BlogPosting, FAQPage } from "schema-dts";
 import { Icon } from "astro-icon/components";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Section from "../../components/ui/Section.astro";
@@ -58,16 +58,29 @@ const schema: WithContext<BlogPosting> = {
   url,
   keywords: d.tags.join(", "),
 };
+
+// FAQPage rich result — only when the post actually defines Q&As.
+const faqSchema: WithContext<FAQPage> | null = d.faqs.length
+  ? {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: d.faqs.map((f) => ({
+        "@type": "Question" as const,
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer" as const, text: f.a },
+      })),
+    }
+  : null;
 ---
 
 <BaseLayout
-  title={`${d.title} | DAIT Institute Blog`}
+  title={d.title}
   description={d.description}
   canonicalPath={`/blog/${post.id}/`}
   ogType="article"
   ogImage={cover}
   keywords={d.tags}
-  jsonLd={[schema]}
+  jsonLd={faqSchema ? [schema, faqSchema] : [schema]}
 >
   <!-- HEADER -->
   <section class="relative overflow-hidden bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 text-white">
@@ -101,6 +114,30 @@ const schema: WithContext<BlogPosting> = {
         <article class="article" data-reveal>
           <Content />
         </article>
+
+        {/* FAQs — visible on the page and mirrored in FAQPage JSON-LD above.
+            Google requires the answer to be visible, so this is <details> rather
+            than a JS accordion: it works with no JavaScript and stays crawlable. */}
+        {d.faqs.length > 0 && (
+          <section class="mt-12" data-reveal>
+            <h2 class="text-2xl font-black text-ink-900">Frequently asked questions</h2>
+            <div class="mt-5 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-white">
+              {d.faqs.map((f) => (
+                <details class="group">
+                  <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 text-sm font-bold text-ink-900 hover:bg-surface-50">
+                    {f.q}
+                    <Icon
+                      name="lucide:plus"
+                      size={18}
+                      class="shrink-0 text-accent-600 transition-transform group-open:rotate-45"
+                    />
+                  </summary>
+                  <p class="px-5 pb-5 text-sm leading-relaxed text-ink-600">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
 
         <!-- tags + share back -->
         <div class="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
