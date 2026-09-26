@@ -240,6 +240,11 @@ export default function EnquiryForm({
  */
 const looksLikeEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s);
 const phoneDigits = (s: string) => s.replace(/\D/g, "").length;
+  // False during SSR and until hydration finishes. The form relies entirely on
+  // React's onSubmit, so a click before that falls through to a NATIVE submit:
+  // the page reloads, the fields are wiped and the lead is lost silently.
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string>("");
   const [done, setDone] = useState(false);
@@ -335,7 +340,7 @@ const phoneDigits = (s: string) => s.replace(/\D/g, "").length;
             aria-label="Phone number" className={compactInput} />
           <button
             type="submit"
-            disabled={status === "submitting"}
+            disabled={!ready || status === "submitting"}
             className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border-2 border-orange-500 bg-orange-500 px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:border-orange-600 hover:bg-orange-600 hover:shadow-lg disabled:pointer-events-none disabled:opacity-60"
           >
             {status === "submitting" ? "Sending…" : "Book my visit"}
@@ -449,7 +454,7 @@ const phoneDigits = (s: string) => s.replace(/\D/g, "").length;
 
         <button
           type="submit"
-          disabled={status === "submitting"}
+          disabled={!ready || status === "submitting"}
           className="inline-flex w-full items-center justify-center gap-2 rounded-lg border-2 border-accent-500 bg-accent-500 px-6 py-3.5 text-[0.9rem] font-bold text-white transition-all duration-200 hover:-translate-y-0.5 hover:border-accent-600 hover:bg-accent-600 hover:shadow-lg disabled:pointer-events-none disabled:opacity-60"
         >
           {status === "submitting" ? "Sending…" : "Request free callback"}
