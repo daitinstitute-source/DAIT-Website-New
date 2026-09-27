@@ -1,0 +1,175 @@
+---
+# ⚠️ DRAFT — not published. `draft: true` keeps this out of the programs hub,
+# the nav dropdown, the homepage and the sitemap until the facts below are
+# confirmed. Flip to false only when DAIT can actually deliver this course.
+#
+# TODO before publishing (only DAIT can answer these):
+#   1. duration — set to the real course length (6 months assumed below)
+#   2. fee + professionalTrack.fee — deliberately omitted rather than invented;
+#      the page shows "Contact for fees" until set (and fees are hidden
+#      site-wide right now via siteConfig.display.showFees anyway)
+#   3. nextBatchDate — omitted; add when the batch calendar is set
+#   4. faculty — who teaches this? The other programs fall back to the founder
+#      block, which would be wrong here unless he is teaching it
+#   5. confirm the syllabus matches what will really be taught
+#   6. UPDATE THE BLOG in the same commit: the post
+#      src/content/blog/which-it-course-after-graduation.mdx currently tells
+#      readers "Cloud and DevOps ... We do not teach this either" and counts
+#      three of seven paths as ours. Publishing this program makes that false.
+title: "Cloud, DevOps & Security"
+tagline: "Learn how modern software actually runs in production — Linux, AWS, Docker, Kubernetes and CI/CD — and graduate having built and deployed real cloud infrastructure."
+area: "cloud-devops-security"
+duration: "6 months"
+mode: ["classroom", "online", "hybrid"]
+level: "beginner"
+audience: ["graduates", "working-professionals"]
+batchOptions: ["Weekday (Mon-Fri)", "Weekend (Sat-Sun)"]
+highlights:
+  - "Work confidently on the Linux command line"
+  - "Deploy real applications on AWS"
+  - "Containerise apps with Docker and run them on Kubernetes"
+  - "Build CI/CD pipelines that deploy on every commit"
+  - "Automate infrastructure with Terraform"
+  - "Graduate with deployed projects, not just certificates"
+tools:
+  - "Linux"
+  - "AWS"
+  - "Azure"
+  - "Docker"
+  - "Kubernetes"
+  - "Terraform"
+  - "Jenkins"
+  - "GitHub Actions"
+  - "Prometheus"
+  - "Grafana"
+  - "Git & GitHub"
+syllabus:
+  - module: "Linux & Networking Foundations"
+    topics:
+      - "The command line, files, permissions and processes"
+      - "Shell scripting for everyday automation"
+      - "Networking basics: DNS, HTTP, ports and firewalls"
+  - module: "Cloud Fundamentals with AWS"
+    topics:
+      - "How cloud billing, regions and availability zones work"
+      - "EC2, S3, IAM and VPC — the core services"
+      - "Deploying your first application to the cloud"
+  - module: "Git, GitHub & Team Workflow"
+    topics:
+      - "Branching, pull requests and code review"
+      - "Trunk-based development and release habits"
+      - "Working the way a real engineering team does"
+  - module: "Containers with Docker"
+    topics:
+      - "Images, containers, volumes and networks"
+      - "Writing Dockerfiles and multi-stage builds"
+      - "Docker Compose for local environments"
+  - module: "Kubernetes & Orchestration"
+    topics:
+      - "Pods, deployments, services and config"
+      - "Scaling, rolling updates and self-healing"
+      - "Running a real workload on a managed cluster"
+  - module: "CI/CD Pipelines"
+    topics:
+      - "Build, test and deploy automation"
+      - "Pipelines with GitHub Actions and Jenkins"
+      - "Deploying on every commit, safely"
+  - module: "Infrastructure as Code & Monitoring"
+    topics:
+      - "Provisioning infrastructure with Terraform"
+      - "Observability with CloudWatch, Prometheus and Grafana"
+      - "Reading logs and metrics when something breaks"
+  - module: "Cloud Security & Capstone"
+    topics:
+      - "IAM, least privilege, secrets and network hardening"
+      - "Common cloud misconfigurations and how to avoid them"
+      - "Capstone: a containerised app deployed through your own pipeline"
+professionalTrack:
+  tagline: "Already in IT support, development or infrastructure? Move into a DevOps or cloud engineering role — production Kubernetes, IaC and SRE practice, on weekends."
+  duration: "3 months · weekend intensive"
+  workSkills:
+    - "Run production workloads on managed Kubernetes"
+    - "Automate environments end to end with Terraform"
+    - "Design CI/CD pipelines your team can rely on"
+    - "Set up monitoring and alerting that catches real problems"
+    - "Harden cloud accounts against common misconfigurations"
+    - "Cut deployment time and manual release work"
+  tools:
+    - "EKS / AKS"
+    - "Helm"
+    - "ArgoCD"
+    - "Terraform"
+    - "Ansible"
+    - "Prometheus"
+    - "Grafana"
+  syllabus:
+    - module: "Production Kubernetes"
+      topics:
+        - "Managed clusters on EKS and AKS"
+        - "Helm charts and templated deployments"
+        - "Resource limits, autoscaling and cost control"
+    - module: "GitOps & Advanced Delivery"
+      topics:
+        - "GitOps workflows with ArgoCD"
+        - "Blue-green and canary releases"
+        - "Rollbacks and release safety"
+    - module: "Infrastructure as Code at Scale"
+      topics:
+        - "Terraform modules, state and workspaces"
+        - "Configuration management with Ansible"
+        - "Repeatable multi-environment setups"
+    - module: "SRE, Observability & Security"
+      topics:
+        - "SLOs, alerting and on-call basics"
+        - "Centralised logging and dashboards"
+        - "Cloud security review and incident response"
+eligibility:
+  - "Any graduate or final-year student — engineering, BCA, BSc or equivalent"
+  - "IT support, testing or helpdesk staff moving into cloud/DevOps roles"
+  - "Developers who want to own how their code is deployed and run"
+prerequisites:
+  - "No prior cloud or Linux experience required"
+  - "Comfort with a computer and a laptop for hands-on practice"
+  - "Willingness to work at the command line"
+batchSize: "Small batches — capped for personal mentor attention"
+outcomes:
+  - "Cloud Support Associate"
+  - "Junior DevOps Engineer"
+  - "Cloud Engineer"
+  - "Build & Release Engineer"
+certification: "Certificate of Completion"
+faqs:
+  - q: "Do I need a coding background for cloud and DevOps?"
+    a: "No. The course starts from Linux and networking basics. You will write shell scripts and configuration rather than build applications, so this is a realistic route for graduates who do not want a pure development role."
+  - q: "Will I get an AWS or Azure certification?"
+    a: "The course covers the ground that AWS and Azure associate-level certifications test, and prepares you to sit them. The certification exam itself is booked and paid for separately with the cloud provider."
+  - q: "Do I need my own cloud account?"
+    a: "You will use free-tier accounts for practice. We cover how to stay inside the free tier and set billing alerts so you are never surprised by a bill."
+  - q: "Is there demand for this in Chhatrapati Sambhajinagar?"
+    a: "Cloud skills are among the most requested by recruiters in the AURIC industrial belt, and remote and hybrid cloud roles with Pune, Mumbai and Bengaluru employers are common. Most cloud work can be done from anywhere."
+careerOutcomes:
+  - category: "Job Roles"
+    items:
+      - "Cloud Support Associate — ₹3.5–6 LPA"
+      - "Junior DevOps Engineer — ₹4–6 LPA"
+      - "Cloud Engineer — ₹4.5–7 LPA"
+      - "Build & Release Engineer — ₹4–6.5 LPA"
+    note: "Market averages for entry-level roles in India (AmbitionBox / Glassdoor and 2026 industry salary guides) — not a DAIT placement guarantee. Candidates with strong Docker and Kubernetes projects report offers above these bands."
+  - category: "Skills Mastered"
+    items:
+      - "Linux administration & shell scripting"
+      - "AWS core services & cloud deployment"
+      - "Docker & Kubernetes"
+      - "CI/CD pipeline automation"
+      - "Terraform & infrastructure as code"
+      - "Monitoring, logging & cloud security basics"
+  - category: "Where This Leads"
+    items:
+      - "IT services & managed cloud teams"
+      - "Product engineering & platform teams"
+      - "Site Reliability Engineering (SRE)"
+      - "A stepping stone toward cloud architecture or security"
+featured: false
+order: 4
+draft: true
+---
