@@ -29,6 +29,9 @@ interface Props {
   /** Override the card heading/subheading (e.g. "Request a Callback" in the hero). */
   heading?: string;
   subheading?: string;
+  /** Skip the built-in heading/subheading — for hosts that supply their own
+   *  title, e.g. the counselling modal, which would otherwise show two. */
+  hideHeading?: boolean;
   /** Hide the optional message textarea to keep the form short (e.g. in the hero). */
   hideMessage?: boolean;
   /**
@@ -225,6 +228,7 @@ export default function EnquiryForm({
   programs,
   heading,
   subheading,
+  hideHeading = false,
   hideMessage = false,
   extraFields,
   formId = "unlabelled",
@@ -363,13 +367,17 @@ const phoneDigits = (s: string) => s.replace(/\D/g, "").length;
           Enquire · {programTitle}
         </p>
       )}
-      <h3 className="mt-1 text-2xl font-bold text-ink-900">
-        {heading ?? "Talk to a career advisor"}
-      </h3>
-      <p className="mt-2 text-sm text-ink-500">
-        {subheading ??
-          "Share a few details and an advisor will call you back with cohort dates, fees, and the right track for your goals."}
-      </p>
+      {!hideHeading && (
+        <>
+          <h3 className="mt-1 text-2xl font-bold text-ink-900">
+            {heading ?? "Talk to a career advisor"}
+          </h3>
+          <p className="mt-2 text-sm text-ink-500">
+            {subheading ??
+              "Share a few details and an advisor will call you back with cohort dates, fees, and the right track for your goals."}
+          </p>
+        </>
+      )}
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
         {/* Honeypot — visually hidden, bots fill it, humans don't */}

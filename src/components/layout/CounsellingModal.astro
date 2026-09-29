@@ -1,0 +1,148 @@
+---
+/**
+ * CounsellingModal — the "Free Counselling" CTA opens this instead of sending
+ * the visitor to /contact/. Same EnquiryForm, same /api/leads → Brevo pipeline,
+ * so enquiries arrive exactly as they do from every other form; the only
+ * difference is the visitor keeps their place on the page.
+ *
+ * Rendered once in BaseLayout, so it is available from the header CTA and the
+ * mobile nav on every page.
+ *
+ * Progressive enhancement: the triggers stay real <a href="/contact/"> links.
+ * The script below intercepts the click and opens the dialog; if JavaScript
+ * fails or has not loaded, the click still reaches the contact page. Nobody
+ * ever hits a dead CTA.
+ *
+ * Uses a native <dialog> with showModal(), which gives focus trapping, Escape
+ * to close and an inert background for free, and renders in the browser's top
+ * layer — above the cookie banner (z-60) and the WhatsApp button (z-50)
+ * without competing on z-index.
+ */
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import EnquiryForm from "../forms/EnquiryForm.tsx";
+
+// Same program list the contact page offers, so a popup enquirer can pick one.
+const programs = (await getCollection("programs"))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((p) => ({ slug: p.id, title: p.data.title }));
+---
+
+<dialog
+  id="counselling-modal"
+  aria-labelledby="counselling-modal-title"
+  class="counselling-dialog w-[min(36rem,calc(100vw-2rem))] rounded-2xl border border-border bg-surface-75 p-0 shadow-lg backdrop:bg-dark-950/60 backdrop:backdrop-blur-sm"
+>
+  <div class="relative p-6 sm:p-7">
+    <button
+      type="button"
+      data-close-counselling
+      class="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-lg text-ink-500 transition-colors hover:bg-surface-50 hover:text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
+      aria-label="Close"
+    >
+      <Icon name="lucide:x" size={20} />
+    </button>
+
+    <h2 id="counselling-modal-title" class="pr-10 text-xl font-black text-ink-900">
+      Book your <span class="text-orange-500">free counselling call</span>
+    </h2>
+    <p class="mt-1.5 text-sm leading-relaxed text-ink-500">
+      Tell us where you are — fresh graduate or working professional — and an advisor will call you
+      back with the right track, batch and next steps. No obligation.
+    </p>
+
+    <div class="mt-5">
+      <EnquiryForm
+        client:load
+        variant="bare"
+        formId="Counselling popup"
+        programs={programs}
+        hideMessage
+        hideHeading
+      />
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* A native dialog is display:none until opened; keep the open state a grid so
+     the card centres predictably on short viewports. */
+  .counselling-dialog[open] {
+    display: block;
+  }
+  .counselling-dialog {
+    margin: auto;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .counselling-dialog[open] {
+      animation: counselling-in 0.18s ease-out;
+    }
+  }
+  @keyframes counselling-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<script>
+  (() => {
+    const dialog = document.getElementById("counselling-modal") as HTMLDialogElement | null;
+    if (!dialog || typeof dialog.showModal !== "function") return; // no <dialog> support -> links still work
+
+    let lastTrigger: HTMLElement | null = null;
+
+    const open = (trigger: HTMLElement) => {
+      lastTrigger = trigger;
+      dialog.showModal();
+      // showModal makes the background inert but does not stop the page scrolling.
+      document.documentElement.style.overflow = "hidden";
+      // Focus the first real field rather than the close button.
+      const first = dialog.querySelector<HTMLInputElement>("input:not([type=hidden]):not([name=company])");
+      if (first) first.focus({ preventScroll: true });
+    };
+
+    const close = () => {
+      dialog.close();
+    };
+
+    dialog.addEventListener("close", () => {
+      document.documentElement.style.overflow = "";
+      if (lastTrigger && document.contains(lastTrigger)) lastTrigger.focus({ preventScroll: true });
+      lastTrigger = null;
+    });
+
+    // Any CTA opts in with data-counselling — keeps its href as the no-JS fallback.
+    document.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      if (target.closest("[data-close-counselling]")) {
+        e.preventDefault();
+        close();
+        return;
+      }
+
+      const trigger = target.closest<HTMLElement>("[data-counselling]");
+      if (!trigger) return;
+      // Let modified clicks (new tab/window) behave normally.
+      const me = e as MouseEvent;
+      if (me.metaKey || me.ctrlKey || me.shiftKey || me.altKey || me.button !== 0) return;
+      e.preventDefault();
+      open(trigger);
+    });
+
+    // Click on the backdrop (i.e. outside the card) closes.
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) close();
+    });
+  })();
+</script>

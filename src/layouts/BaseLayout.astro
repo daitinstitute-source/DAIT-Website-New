@@ -15,6 +15,7 @@ import Footer from "../components/layout/Footer.astro";
 import JsonLd from "../components/seo/JsonLd.astro";
 import WhatsAppButton from "../components/forms/WhatsAppButton.tsx";
 import CookieConsent from "../components/layout/CookieConsent.astro";
+import CounsellingModal from "../components/layout/CounsellingModal.astro";
 
 export interface SEOProps {
   title: string;
@@ -246,6 +247,7 @@ const metaPixel = trackingEnabled ? siteConfig.analytics.metaPixelId : "";
 
     <WhatsAppButton href={waHref} client:load />
     <CookieConsent />
+    <CounsellingModal />
 
     <!-- Scroll reveals + counters -->
     <script>
