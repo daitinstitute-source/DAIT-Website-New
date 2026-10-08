@@ -1,0 +1,24 @@
+---
+/**
+ * /brochure/mr/ — the online brochure in Marathi (with everyday English terms).
+ * English edition: /brochure/.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Brochure from "../../components/sections/Brochure.astro";
+import { brochure } from "../../data/brochure";
+
+const { seo } = brochure.mr;
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  canonicalPath="/brochure/mr/"
+  ogImage="/images/og/brochure-mr.jpg"
+  brandedTitle={false}
+  noindex={true}
+  lang="mr"
+  keywords={["DAIT Institute brochure मराठी", "IT courses संभाजीनगर", "AI courses संभाजीनगर"]}
+>
+  <Brochure lang="mr" />
+</BaseLayout>

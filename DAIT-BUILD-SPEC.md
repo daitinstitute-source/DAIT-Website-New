@@ -16,6 +16,8 @@
 | `/contact/` | Contact / Enquiry | P0 |
 | `/thank-you/` | Post-form-submit (conversion tracking) | P0 |
 | `/404` | Not found | P0 |
+| `/brochure/` | Online brochure (English) — the link shared with students on WhatsApp | P1 |
+| `/brochure/mr/` | Online brochure (Marathi, with everyday English terms) | P1 |
 
 ### Seed programs (Phase 2 — 1-2 per area to start; add freely later)
 

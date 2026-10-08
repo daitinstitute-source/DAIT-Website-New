@@ -36,6 +36,8 @@ interface Props extends SEOProps {
   /** Set false on the dark hero pages if you want a transparent header. */
   headerSolid?: boolean;
   mainClass?: string;
+  /** Document language. Defaults to English; the Marathi brochure sets "mr". */
+  lang?: string;
 }
 
 const {
@@ -50,6 +52,7 @@ const {
   jsonLd = [],
   headerSolid = true,
   mainClass = "",
+  lang = "en",
 } = Astro.props;
 
 const fullTitle = brandedTitle ? seoDefaults.titlePattern(title) : title;
@@ -70,7 +73,7 @@ const metaPixel = trackingEnabled ? siteConfig.analytics.metaPixelId : "";
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

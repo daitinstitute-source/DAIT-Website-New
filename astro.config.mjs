@@ -88,7 +88,8 @@ export default defineConfig({
   // (add the Cloudflare adapter in Phase 2 when /api/leads is built).
   output: "static",
   site: process.env.PUBLIC_SITE_URL || "https://daitinstitute.com",
-  integrations: [react(), mdx(), sitemap(), icon()],
+  // The brochure pages are shared by link (WhatsApp) and deliberately noindex, so keep them out of the sitemap.
+  integrations: [react(), mdx(), sitemap({ filter: (page) => !page.includes("/brochure/") }), icon()],
   vite: {
     plugins: [tailwindcss(), devLeadsApi()],
   },

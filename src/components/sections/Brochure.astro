@@ -1,0 +1,468 @@
+---
+/**
+ * Brochure — the online, phone-first edition of the printed tri-fold.
+ * Rendered by /brochure/ (en) and /brochure/mr/ (mr). Copy lives in
+ * src/data/brochure.ts; program titles, durations, tools and roles are read
+ * from the programs collection so this page cannot drift from the program pages.
+ *
+ * The one unlaunched program (draft in the collection) is shown as "launching
+ * soon": no duration, no link to a page that does not exist yet.
+ */
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import Section from "../ui/Section.astro";
+import Button from "../ui/Button.astro";
+import HeroBackdrop from "./HeroBackdrop.astro";
+import BrochureDownload from "../forms/BrochureDownload.astro";
+import { siteConfig } from "../../config/site";
+import { canonicalUrl } from "../../lib/seo";
+import { brochure, brochureProgramSlugs, type BrochureLang } from "../../data/brochure";
+
+interface Props {
+  lang: BrochureLang;
+}
+const { lang } = Astro.props;
+const t = brochure[lang];
+const isMr = lang === "mr";
+
+const pagePath = isMr ? "/brochure/mr/" : "/brochure/";
+const otherPath = isMr ? "/brochure/" : "/brochure/mr/";
+
+/** Wrap the heading's single orange keyword. Copy is trusted, in-repo content. */
+const kw = (text: string, cls: string) =>
+  text.replace("{kw}", `<span class="${cls}">`).replace("{/kw}", "</span>");
+
+const icons: Record<string, string> = {
+  "ai-led-software-development": "lucide:code",
+  "data-analytics-and-ai": "lucide:chart-column",
+  "ai-led-digital-marketing": "lucide:megaphone",
+  "cloud-devops-and-security": "lucide:cloud",
+};
+
+const all = await getCollection("programs");
+const programs = brochureProgramSlugs.flatMap((slug) => {
+  const entry = all.find((p) => p.id === slug);
+  if (!entry) return [];
+  const launched = !entry.data.draft;
+  const duration = isMr
+    ? entry.data.duration.replace(/months?/i, t.courses.months)
+    : entry.data.duration;
+  return [
+    {
+      slug,
+      launched,
+      title: entry.data.title,
+      duration,
+      tools: entry.data.tools.slice(0, 7),
+      roles: entry.data.outcomes.slice(0, 4),
+      copy: t.courses.programs[slug],
+      icon: icons[slug],
+    },
+  ];
+});
+
+const tel = (n: string) => `tel:${n.replace(/\s/g, "")}`;
+const waHref = `https://wa.me/${siteConfig.whatsapp.number}?text=${encodeURIComponent(t.whatsappMessage)}`;
+const shareHref = `https://wa.me/?text=${encodeURIComponent(`${t.share.message} ${canonicalUrl(pagePath)}`)}`;
+const centre = siteConfig.centers[0];
+
+// Latin overlines are tracked caps; Devanagari has no capitals and breaks when letter-spaced.
+const label = isMr
+  ? "text-sm font-bold"
+  : "text-xs font-bold uppercase tracking-[0.2em]";
+---
+
+<!-- HERO -->
+<section class="relative overflow-hidden bg-dark-950 text-white">
+  <HeroBackdrop name="students" overlay="dark" />
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute -right-28 -top-32 h-[26rem] w-[26rem] rounded-full border-2 border-orange-400/50"
+  >
+  </div>
+  <div class="container-wide relative pt-24 pb-14 lg:pt-28 lg:pb-20">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p class={`inline-flex items-center gap-2 rounded-full bg-white/15 px-3.5 py-1.5 text-white ${isMr ? "text-sm font-semibold" : "text-xs font-bold uppercase tracking-wider"}`}>
+        <Icon name="lucide:book-open" size={14} />
+        {t.hero.eyebrow}
+      </p>
+      <a
+        href={otherPath}
+        lang={isMr ? "en" : "mr"}
+        class="inline-flex items-center gap-2 rounded-full border-2 border-white/40 px-4 py-1.5 text-sm font-bold text-white transition hover:border-white/70 hover:bg-white/10"
+      >
+        <Icon name="lucide:languages" size={16} />
+        {t.switchLabel}
+      </a>
+    </div>
+
+    <div class="mt-8 grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+      <div>
+        <h1
+          class="text-4xl font-black leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.4rem]"
+          set:html={kw(t.hero.heading, "text-orange-400")}
+        />
+        <p class="mt-5 max-w-xl text-lg font-medium leading-relaxed text-white/85">{t.hero.sub}</p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <Button href="/contact/" variant="secondary" size="lg" iconLeft="lucide:calendar-check" data-counselling>
+            {t.cta.counselling}
+          </Button>
+          <Button href={waHref} variant="ghost-on-dark" size="lg" iconLeft="simple-icons:whatsapp" external>
+            {t.cta.whatsapp}
+          </Button>
+          <Button variant="ghost-on-dark" size="lg" iconLeft="lucide:download" data-brochure-download>
+            {t.cta.download}
+          </Button>
+        </div>
+      </div>
+
+      <!-- Course list — the print cover's headline stack -->
+      <div class="rounded-[20px] border border-white/15 bg-white/[0.07] p-5 backdrop-blur-md sm:p-6">
+        <p class={`${label} text-cyan-400`}>{t.hero.coursesLabel}</p>
+        <ul class="mt-3 divide-y divide-white/10 border-l-4 border-orange-500 pl-4">
+          {
+            programs.map((p) => (
+              <li>
+                <a
+                  href={`#${p.slug}`}
+                  class="flex items-center gap-3 py-3 text-lg font-bold text-white transition hover:text-orange-400"
+                >
+                  <span class="flex-1">{p.title}</span>
+                  {!p.launched && (
+                    <span class="rounded-full border border-orange-400 px-2.5 py-0.5 text-xs font-bold text-orange-400">
+                      {t.hero.soon}
+                    </span>
+                  )}
+                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-cyan-400/30 bg-cyan-400/10 text-cyan-400">
+                    <Icon name={p.icon} size={18} />
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<Section tone="surface">
+  <div class="max-w-2xl" data-reveal>
+    <p class={`${label} text-accent-600`}>{t.audience.label}</p>
+    <h2 class="mt-3 text-3xl text-ink-900 sm:text-4xl" set:html={kw(t.audience.heading, "text-orange-500")} />
+    <p class="mt-4 text-ink-600">{t.audience.intro}</p>
+  </div>
+  <div class="mt-8 grid gap-5 md:grid-cols-2">
+    <div class="card p-6" data-reveal>
+      <div class="flex items-center gap-3">
+        <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+          <Icon name="lucide:graduation-cap" size={22} />
+        </span>
+        <h3 class="text-xl font-bold text-ink-900">{t.audience.graduates.title}</h3>
+      </div>
+      <ul class="mt-5 space-y-3">
+        {
+          t.audience.graduates.points.map((pt) => (
+            <li class="flex items-start gap-3">
+              <Icon name="lucide:check" size={18} class="mt-0.5 shrink-0 text-orange-500" />
+              <span class="text-sm leading-relaxed text-ink-600">{pt}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="rounded-[14px] bg-accent-500 p-6 text-white shadow-md" data-reveal data-reveal-delay="0.08">
+      <div class="flex items-center gap-3">
+        <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-white">
+          <Icon name="lucide:briefcase-business" size={22} />
+        </span>
+        <h3 class="text-xl font-bold text-white">{t.audience.professionals.title}</h3>
+      </div>
+      <ul class="mt-5 space-y-3">
+        {
+          t.audience.professionals.points.map((pt) => (
+            <li class="flex items-start gap-3">
+              <Icon name="lucide:check" size={18} class="mt-0.5 shrink-0 text-orange-300" />
+              <span class="text-sm leading-relaxed text-white/90">{pt}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</Section>
+
+<!-- COURSES -->
+<Section tone="white" id="courses">
+  <div class="max-w-2xl" data-reveal>
+    <p class={`${label} text-accent-600`}>{t.courses.label}</p>
+    <h2 class="mt-3 text-3xl text-ink-900 sm:text-4xl" set:html={kw(t.courses.heading, "text-orange-500")} />
+  </div>
+  <div class="mt-8 grid gap-5 lg:grid-cols-2">
+    {
+      programs.map((p, i) => (
+        <article id={p.slug} class="card flex scroll-mt-24 flex-col p-6" data-reveal data-reveal-delay={(i * 0.06).toString()}>
+          <div class="flex items-start gap-3">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+              <Icon name={p.icon} size={22} />
+            </span>
+            <div class="flex-1">
+              <h3 class="text-xl font-bold leading-snug text-ink-900">{p.title}</h3>
+              <p class="mt-1 text-sm text-ink-500">
+                {p.launched && <span class="font-bold text-ink-900">{p.duration} · </span>}
+                {p.copy.meta}
+              </p>
+            </div>
+            {!p.launched && (
+              <span class="shrink-0 rounded-full bg-orange-50 px-3 py-1 text-xs font-bold text-orange-600">
+                {t.courses.soonBadge}
+              </span>
+            )}
+          </div>
+
+          <p class="mt-4 text-sm leading-relaxed text-ink-600">{p.copy.summary}</p>
+
+          <p class={`mt-5 ${label} text-ink-500`}>{t.courses.tools}</p>
+          <ul class="mt-2 flex flex-wrap gap-1.5">
+            {p.tools.map((tool) => (
+              <li class="rounded-md border border-border-blue bg-surface-50 px-2 py-0.5 font-mono text-xs text-ink-900">
+                {tool}
+              </li>
+            ))}
+          </ul>
+
+          <p class={`mt-5 ${label} text-ink-500`}>{t.courses.build}</p>
+          <p class="mt-1.5 text-sm leading-relaxed text-ink-600">{p.copy.build}</p>
+
+          <p class={`mt-5 ${label} text-ink-500`}>{t.courses.roles}</p>
+          <p class="mt-1.5 text-sm font-medium leading-relaxed text-ink-900">{p.roles.join(" · ")}</p>
+
+          <div class="mt-auto pt-6">
+            {p.launched ? (
+              <>
+                {p.copy.proTrack && (
+                  <p class="mb-4 flex items-start gap-2 text-sm text-ink-500">
+                    <Icon name="lucide:briefcase-business" size={16} class="mt-0.5 shrink-0 text-orange-500" />
+                    <span>{p.copy.proTrack}</span>
+                  </p>
+                )}
+                <Button href={`/programs/${p.slug}/`} variant="outline" size="sm" icon="lucide:arrow-right">
+                  {t.cta.viewCourse}
+                </Button>
+              </>
+            ) : (
+              <p class="flex items-start gap-2 rounded-lg bg-orange-50 p-3 text-sm text-ink-900">
+                <Icon name="lucide:phone" size={16} class="mt-0.5 shrink-0 text-orange-600" />
+                <span>
+                  {t.courses.soonNote.split("{phone}")[0]}
+                  <a href={tel(siteConfig.enquiryPhone)} class="whitespace-nowrap font-bold text-accent-500 underline">
+                    {siteConfig.enquiryPhone}
+                  </a>
+                  {t.courses.soonNote.split("{phone}")[1]}
+                </span>
+              </p>
+            )}
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</Section>
+
+<!-- WHY DAIT -->
+<Section tone="dark">
+  <div class="grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+    <div data-reveal>
+      <p class={`${label} text-orange-400`}>{t.why.label}</p>
+      <h2 class="mt-3 text-3xl text-white sm:text-4xl" set:html={kw(t.why.heading, "text-orange-400")} />
+
+      <div class="mt-8 flex items-center gap-4">
+        <img
+          src={siteConfig.founder.photo}
+          alt={siteConfig.founder.name}
+          width="96"
+          height="96"
+          loading="lazy"
+          class="h-24 w-24 shrink-0 rounded-full border-2 border-orange-500 object-cover"
+        />
+        <div>
+          <p class="text-xl font-bold text-white">{siteConfig.founder.name}</p>
+          <p class="text-sm text-white/65">{t.why.founderRole}</p>
+          <ul class="mt-2 flex flex-wrap gap-1.5">
+            {t.why.credentials.map((c) => (
+              <li class="rounded-full bg-white/10 px-3 py-0.5 text-xs font-semibold text-white">{c}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <p class="mt-5 text-sm leading-relaxed text-white/75">{t.why.bio}</p>
+      <blockquote class="mt-5 border-l-4 border-orange-500 pl-4 text-lg font-medium italic leading-relaxed text-white">
+        “{t.why.quote}”
+      </blockquote>
+    </div>
+
+    <ul class="space-y-3" data-reveal data-reveal-delay="0.1">
+      {
+        t.why.points.map((pt) => (
+          <li class="flex items-start gap-4 rounded-[14px] border border-white/10 bg-white/[0.05] p-4">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-orange-400">
+              <Icon name={pt.icon} size={22} />
+            </span>
+            <div>
+              <p class="font-bold text-white">{pt.title}</p>
+              <p class="mt-0.5 text-sm leading-relaxed text-white/70">{pt.text}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Section>
+
+<!-- EVERY COURSE INCLUDES + HOW TO JOIN -->
+<Section tone="surface">
+  <div class="grid gap-10 lg:grid-cols-2">
+    <div data-reveal>
+      <p class={`${label} text-accent-600`}>{t.includes.label}</p>
+      <h2 class="mt-3 text-3xl text-ink-900 sm:text-4xl" set:html={kw(t.includes.heading, "text-orange-500")} />
+      <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+        {
+          t.includes.items.map((item) => (
+            <li class="flex items-center gap-3 rounded-lg border border-border bg-surface-75 px-4 py-3">
+              <Icon name="lucide:check" size={18} class="shrink-0 text-orange-500" />
+              <span class="text-sm font-medium text-ink-900">{item}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-5 rounded-lg bg-accent-50 px-4 py-3 text-sm leading-relaxed text-ink-900">{t.includes.fees}</p>
+    </div>
+
+    <div data-reveal data-reveal-delay="0.1">
+      <p class={`${label} text-accent-600`}>{t.join.label}</p>
+      <h2 class="mt-3 text-3xl text-ink-900 sm:text-4xl" set:html={kw(t.join.heading, "text-orange-500")} />
+      <ol class="mt-6 space-y-4">
+        {
+          t.join.steps.map((step, i) => (
+            <li class="flex items-start gap-4">
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-50 font-mono text-base font-medium text-ink-900">
+                {i + 1}
+              </span>
+              <div>
+                <p class="font-bold text-ink-900">{step.title}</p>
+                <p class="mt-0.5 text-sm leading-relaxed text-ink-600">{step.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</Section>
+
+<!-- CONTACT -->
+<Section tone="white" id="contact">
+  <div class="grid gap-10 lg:grid-cols-2 lg:items-start">
+    <div data-reveal>
+      <p class={`${label} text-accent-600`}>{t.contact.label}</p>
+      <h2 class="mt-3 text-3xl text-ink-900 sm:text-4xl" set:html={kw(t.contact.heading, "text-orange-500")} />
+      <p class="mt-4 text-ink-600">{t.contact.intro}</p>
+      <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <Button href="/contact/" variant="secondary" size="lg" iconLeft="lucide:calendar-check" data-counselling>
+          {t.cta.counselling}
+        </Button>
+        <Button href={waHref} variant="outline" size="lg" iconLeft="simple-icons:whatsapp" external>
+          {t.cta.whatsapp}
+        </Button>
+        <Button variant="ghost" size="lg" iconLeft="lucide:download" data-brochure-download>
+          {t.cta.download}
+        </Button>
+      </div>
+    </div>
+
+    <ul class="space-y-3" data-reveal data-reveal-delay="0.1">
+      <li>
+        <a href={tel(siteConfig.enquiryPhone)} class="card card--hover flex items-center gap-4 p-4">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+            <Icon name="lucide:phone" size={20} />
+          </span>
+          <span>
+            <span class="block text-sm text-ink-500">{t.contact.enquiry}</span>
+            <span class="block font-bold text-accent-500">{siteConfig.enquiryPhone}</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a href={tel(siteConfig.phone)} class="card card--hover flex items-center gap-4 p-4">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+            <Icon name="lucide:message-circle" size={20} />
+          </span>
+          <span>
+            <span class="block text-sm text-ink-500">{t.contact.callOrWhatsapp}</span>
+            <span class="block font-bold text-accent-500">{siteConfig.phone}</span>
+          </span>
+        </a>
+      </li>
+      <li>
+        <a href={`mailto:${siteConfig.email}`} class="card card--hover flex items-center gap-4 p-4">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+            <Icon name="lucide:mail" size={20} />
+          </span>
+          <span class="font-bold text-accent-500">{siteConfig.email}</span>
+        </a>
+      </li>
+      <li class="card flex items-start gap-4 p-4">
+        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-ink-900">
+          <Icon name="lucide:map-pin" size={20} />
+        </span>
+        <span>
+          <span class="block text-sm text-ink-500">{t.contact.visit}</span>
+          <span class="block font-semibold text-ink-900">
+            {siteConfig.name}, {centre.addressLines.join(", ")}, {centre.city}, {centre.state} {centre.postalCode}
+          </span>
+          <span class="mt-1 block text-sm text-ink-600">{t.contact.hours}</span>
+        </span>
+      </li>
+    </ul>
+  </div>
+  <p class="mt-10 border-t border-border pt-6 text-sm text-ink-500" data-reveal>
+    <span class="font-bold text-ink-900">{siteConfig.group.name} · {siteConfig.group.established}.</span>{" "}
+    {t.contact.group}
+  </p>
+</Section>
+
+<!-- SHARE -->
+<Section tone="surface">
+  <div
+    class="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-accent-600 via-accent-500 to-accent-600 p-8 text-white shadow-2xl sm:p-12"
+    data-reveal
+  >
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full border-2 border-orange-300/50"
+    >
+    </div>
+    <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+      <div class="max-w-2xl">
+        <h2 class="text-3xl font-black leading-[1.15] text-white sm:text-4xl" set:html={kw(t.share.heading, "text-orange-300")} />
+        <p class="mt-3 text-white/85">{t.share.text}</p>
+      </div>
+      <div class="flex shrink-0 flex-col gap-3">
+        <Button
+          href={shareHref}
+          iconLeft="simple-icons:whatsapp"
+          external
+          class="!border-white !bg-white !text-accent-600 hover:!bg-white/90"
+        >
+          {t.cta.share}
+        </Button>
+        <Button variant="ghost-on-dark" iconLeft="lucide:download" data-brochure-download>
+          {t.cta.download}
+        </Button>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<BrochureDownload lang={lang} />

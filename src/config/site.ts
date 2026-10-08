@@ -53,6 +53,8 @@ export const siteConfig = {
   email: "info@daitinstitute.com",
   // Primary phone for click-to-call / schema (also the WhatsApp number).
   phone: "+91 86688 93439",
+  // Admissions desk — the number printed on brochures for registering an enquiry.
+  enquiryPhone: "+91 92848 80032",
 
   whatsapp: {
     number: WHATSAPP_NUMBER, // digits only, for wa.me

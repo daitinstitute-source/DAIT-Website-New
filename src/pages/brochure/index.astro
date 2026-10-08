@@ -1,0 +1,23 @@
+---
+/**
+ * /brochure/ — the online brochure (English). The link sent to students on
+ * WhatsApp. Marathi edition: /brochure/mr/.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Brochure from "../../components/sections/Brochure.astro";
+import { brochure } from "../../data/brochure";
+
+const { seo } = brochure.en;
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  canonicalPath="/brochure/"
+  ogImage="/images/og/brochure.jpg"
+  brandedTitle={false}
+  noindex={true}
+  keywords={["DAIT Institute brochure", "IT courses Sambhaji Nagar", "AI courses Sambhaji Nagar"]}
+>
+  <Brochure lang="en" />
+</BaseLayout>

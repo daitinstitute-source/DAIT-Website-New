@@ -1,0 +1,295 @@
+---
+/**
+ * BrochureDownload — the details form shown before the brochure PDF downloads.
+ *
+ * Any element with `data-brochure-download` opens it. On submit the visitor is
+ * filed through the SAME /api/leads pipeline as every other form (standard lead
+ * payload → email + Brevo), then the PDF downloads. A visitor who has already
+ * shared their details on this device is not asked again.
+ *
+ * Plain <dialog> + inline script rather than a React island: the form works the
+ * moment the HTML arrives, so a fast tapper never hits an un-hydrated button.
+ *
+ * This is a lead-capture step, not access control: the PDF is a public file and
+ * the same content is readable on the page itself.
+ */
+import { Icon } from "astro-icon/components";
+import { siteConfig } from "../../config/site";
+import { brochure, type BrochureLang } from "../../data/brochure";
+
+interface Props {
+  lang: BrochureLang;
+}
+const { lang } = Astro.props;
+const t = brochure[lang];
+const g = t.gate;
+
+const kw = (text: string) =>
+  text.replace("{kw}", '<span class="text-orange-500">').replace("{/kw}", "</span>");
+const waHref = `https://wa.me/${siteConfig.whatsapp.number}?text=${encodeURIComponent(t.whatsappMessage)}`;
+
+const field =
+  "mt-1.5 w-full rounded-xl border border-border bg-surface-50 px-4 py-3 text-sm text-ink-900 placeholder:text-ink-400 focus:border-accent-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent-500/20 transition";
+const labelCls =
+  lang === "mr"
+    ? "block text-sm font-bold text-ink-600"
+    : "block text-xs font-bold uppercase tracking-wider text-ink-500";
+---
+
+<dialog
+  id="brochure-download"
+  aria-labelledby="brochure-download-title"
+  data-pdf={g.pdf}
+  data-lang={lang}
+  data-err-required={g.errRequired}
+  data-err-phone={g.errPhone}
+  data-err-email={g.errEmail}
+  data-err-send={g.errSend}
+  data-label-submit={g.submit}
+  data-label-sending={g.sending}
+  class="brochure-dialog w-[min(30rem,calc(100vw-2rem))] rounded-2xl border border-border bg-surface-75 p-0 shadow-lg backdrop:bg-dark-950/60 backdrop:backdrop-blur-sm"
+>
+  <div class="relative p-6 sm:p-7">
+    <button
+      type="button"
+      data-close-brochure
+      class="absolute right-4 top-4 inline-flex h-9 w-9 items-center justify-center rounded-lg text-ink-500 transition-colors hover:bg-surface-50 hover:text-ink-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500"
+      aria-label="Close"
+    >
+      <Icon name="lucide:x" size={20} />
+    </button>
+
+    <!-- Step 1: details -->
+    <div data-brochure-step="form">
+      <h2 id="brochure-download-title" class="pr-10 text-xl font-black text-ink-900" set:html={kw(g.title)} />
+      <p class="mt-1.5 text-sm leading-relaxed text-ink-500">{g.intro}</p>
+
+      <form class="mt-5 space-y-4" novalidate>
+        <!-- Honeypot -->
+        <div aria-hidden="true" class="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+          <input type="text" name="company" tabindex="-1" autocomplete="off" />
+        </div>
+        <div>
+          <label class={labelCls} for="bd-name">{g.name}</label>
+          <input id="bd-name" name="name" type="text" required autocomplete="name" class={field} />
+        </div>
+        <div>
+          <label class={labelCls} for="bd-phone">{g.phone}</label>
+          <input id="bd-phone" name="phone" type="tel" required autocomplete="tel" inputmode="tel" placeholder="98765 43210" class={field} />
+        </div>
+        <div>
+          <label class={labelCls} for="bd-email">
+            {g.email} <span class="font-medium normal-case tracking-normal text-ink-400">({g.emailHint})</span>
+          </label>
+          <input id="bd-email" name="email" type="email" autocomplete="email" class={field} />
+        </div>
+        <div>
+          <label class={labelCls} for="bd-audience">{g.audience}</label>
+          <select id="bd-audience" name="audienceType" class={field}>
+            {g.audienceOptions.map((o) => <option value={o.value}>{o.label}</option>)}
+          </select>
+        </div>
+
+        <p data-brochure-error role="alert" class="hidden text-sm text-red-600"></p>
+
+        <button
+          type="submit"
+          class="inline-flex w-full items-center justify-center gap-2 rounded-lg border-2 border-orange-500 bg-orange-500 px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:border-orange-600 hover:bg-orange-600 hover:shadow-lg disabled:pointer-events-none disabled:opacity-60"
+        >
+          <Icon name="lucide:download" size={18} />
+          <span data-brochure-submit-label>{g.submit}</span>
+        </button>
+        <p class="text-center text-xs text-ink-400">{g.privacy}</p>
+      </form>
+    </div>
+
+    <!-- Step 2: confirmation -->
+    <div data-brochure-step="done" class="hidden text-center">
+      <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent-50 text-accent-600">
+        <Icon name="lucide:check" size={28} />
+      </span>
+      <h2 class="mt-5 text-xl font-black text-ink-900">{g.doneTitle}</h2>
+      <p class="mt-2 text-sm leading-relaxed text-ink-500">{g.doneText}</p>
+      <div class="mt-6 flex flex-col gap-3">
+        <a
+          href={g.pdf}
+          download
+          class="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-accent-500 bg-accent-500 px-5 py-3 text-sm font-bold text-white transition-all duration-200 hover:border-accent-600 hover:bg-accent-600"
+        >
+          <Icon name="lucide:download" size={18} />
+          {g.again}
+        </a>
+        <a
+          href={waHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-accent-500 px-5 py-3 text-sm font-bold text-accent-500 transition-all duration-200 hover:bg-accent-50"
+        >
+          <Icon name="simple-icons:whatsapp" size={18} />
+          {t.cta.whatsapp}
+        </a>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .brochure-dialog[open] {
+    display: block;
+  }
+  .brochure-dialog {
+    margin: auto;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+  }
+</style>
+
+<script>
+  (() => {
+    const dialog = document.getElementById("brochure-download") as HTMLDialogElement | null;
+    if (!dialog || typeof dialog.showModal !== "function") return;
+
+    const UNLOCK_KEY = "dait_brochure_ok";
+    const pdf = dialog.dataset.pdf ?? "";
+    const form = dialog.querySelector("form") as HTMLFormElement;
+    const errorEl = dialog.querySelector("[data-brochure-error]") as HTMLElement;
+    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const submitLabel = dialog.querySelector("[data-brochure-submit-label]") as HTMLElement;
+    const steps = {
+      form: dialog.querySelector('[data-brochure-step="form"]') as HTMLElement,
+      done: dialog.querySelector('[data-brochure-step="done"]') as HTMLElement,
+    };
+
+    const unlocked = () => {
+      try {
+        return localStorage.getItem(UNLOCK_KEY) === "1";
+      } catch {
+        return false;
+      }
+    };
+
+    const show = (step: "form" | "done") => {
+      steps.form.classList.toggle("hidden", step !== "form");
+      steps.done.classList.toggle("hidden", step !== "done");
+    };
+
+    const startDownload = () => {
+      const a = document.createElement("a");
+      a.href = pdf;
+      a.download = pdf.split("/").pop() ?? "dait-institute-brochure.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    };
+
+    const fail = (msg: string) => {
+      errorEl.textContent = msg;
+      errorEl.classList.remove("hidden");
+    };
+
+    /** Same first-party session snapshot EnquiryForm sends (see BaseLayout tracker). */
+    const engagement = () => {
+      const here = location.pathname;
+      let s: Record<string, unknown> = {};
+      try {
+        s = JSON.parse(sessionStorage.getItem("dait_sess") ?? "{}") ?? {};
+      } catch {
+        s = {};
+      }
+      const start = Number(s.start) || Date.now();
+      const visit = Number(s.visit) || 1;
+      return {
+        source: here,
+        leadSource: (s.source as string) || "Direct",
+        landingPage: (s.landing as string) || here,
+        pagesViewed: Number(s.pages) || 1,
+        timeOnSiteSec: Math.max(0, Math.round((Date.now() - start) / 1000)),
+        visitor: visit > 1 ? "returning" : "new",
+        visitNumber: visit,
+        referrer: (s.referrer as string) || document.referrer,
+      };
+    };
+
+    document.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (target.closest("[data-close-brochure]")) {
+        dialog.close();
+        return;
+      }
+      if (!target.closest("[data-brochure-download]")) return;
+      e.preventDefault();
+      // Already shared details on this device: skip the form, keep the confirmation.
+      if (unlocked()) {
+        show("done");
+        startDownload();
+      } else {
+        show("form");
+      }
+      dialog.showModal();
+      if (!unlocked()) (form.elements.namedItem("name") as HTMLInputElement | null)?.focus();
+    });
+
+    // Click on the backdrop closes.
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorEl.classList.add("hidden");
+      const fd = new FormData(form);
+      const name = String(fd.get("name") ?? "").trim();
+      const phone = String(fd.get("phone") ?? "").trim();
+      const email = String(fd.get("email") ?? "").trim();
+
+      if (!name || !phone) return fail(dialog.dataset.errRequired ?? "");
+      if (phone.replace(/\D/g, "").length < 10) return fail(dialog.dataset.errPhone ?? "");
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return fail(dialog.dataset.errEmail ?? "");
+
+      submitBtn.disabled = true;
+      submitLabel.textContent = dialog.dataset.labelSending ?? "";
+      try {
+        const res = await fetch("/api/leads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            email,
+            phone,
+            programInterest: "general",
+            audienceType: String(fd.get("audienceType") ?? "other"),
+            message: "Downloaded the brochure PDF",
+            company: String(fd.get("company") ?? ""), // honeypot — must stay empty
+            ...engagement(),
+            submittedAt: new Date().toISOString(),
+            extra: { form: "Brochure download", brochure_language: dialog.dataset.lang ?? "en" },
+          }),
+        });
+        if (!res.ok) throw new Error(`Request failed (${res.status})`);
+
+        try {
+          localStorage.setItem(UNLOCK_KEY, "1");
+        } catch {
+          /* private mode: they will simply be asked again next time */
+        }
+        try {
+          const w = window as unknown as { dataLayer?: unknown[]; fbq?: (...a: unknown[]) => void };
+          w.dataLayer = w.dataLayer || [];
+          w.dataLayer.push({ event: "generate_lead", lead_program: "brochure-download" });
+          w.fbq?.("track", "Lead", { content_name: "brochure-download" });
+        } catch {
+          /* analytics must never block the download */
+        }
+        form.reset();
+        show("done");
+        startDownload();
+      } catch {
+        fail(dialog.dataset.errSend ?? "");
+      } finally {
+        submitBtn.disabled = false;
+        submitLabel.textContent = dialog.dataset.labelSubmit ?? "";
+      }
+    });
+  })();
+</script>

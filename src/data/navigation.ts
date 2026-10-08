@@ -97,6 +97,7 @@ export const footerQuickLinks: NavItem[] = [
   { label: "All Programs", href: "/programs/" },
   { label: "Contact", href: "/contact/" },
   { label: "Book Counselling", href: "/contact/" },
+  { label: "Download Brochure", href: "/brochure/" },
 ];
 
 /** Legal links — footer bottom bar. Add terms/refund pages here when they exist. */
