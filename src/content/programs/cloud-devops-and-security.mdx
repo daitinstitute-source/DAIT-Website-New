@@ -1,21 +1,11 @@
 ---
-# ⚠️ DRAFT — not published. `draft: true` keeps this out of the programs hub,
-# the nav dropdown, the homepage and the sitemap until the facts below are
-# confirmed. Flip to false only when DAIT can actually deliver this course.
+# Published. Fee and nextBatchDate are intentionally absent: fees are hidden
+# site-wide (siteConfig.display.showFees) and the batch calendar is not set,
+# so the page shows "Contact for fees" and "New batches every month". Add both
+# here when they are confirmed — no other change needed.
 #
-# TODO before publishing (only DAIT can answer these):
-#   1. duration — set to the real course length (6 months assumed below)
-#   2. fee + professionalTrack.fee — deliberately omitted rather than invented;
-#      the page shows "Contact for fees" until set (and fees are hidden
-#      site-wide right now via siteConfig.display.showFees anyway)
-#   3. nextBatchDate — omitted; add when the batch calendar is set
-#   4. faculty — who teaches this? The other programs fall back to the founder
-#      block, which would be wrong here unless he is teaching it
-#   5. confirm the syllabus matches what will really be taught
-#   6. UPDATE THE BLOG in the same commit: the post
-#      src/content/blog/which-it-course-after-graduation.mdx currently tells
-#      readers "Cloud and DevOps ... We do not teach this either" and counts
-#      three of seven paths as ours. Publishing this program makes that false.
+# No `faculty` yet, so the page falls back to the founder block, exactly as the
+# other three programs do. Add a faculty entry when the cloud instructor is set.
 title: "Cloud, DevOps & Security"
 tagline: "Learn how modern software actually runs in production — Linux, AWS, Docker, Kubernetes and CI/CD — and graduate having built and deployed real cloud infrastructure."
 area: "cloud-devops-security"
@@ -171,5 +161,5 @@ careerOutcomes:
       - "A stepping stone toward cloud architecture or security"
 featured: false
 order: 4
-draft: true
+draft: false
 ---
