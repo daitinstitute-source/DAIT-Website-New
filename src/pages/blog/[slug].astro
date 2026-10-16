@@ -27,10 +27,10 @@ const fmt = (date: Date) =>
   new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(new Date(date));
 
 // Sidebar data: promote courses, read-next posts, categories.
+// All live programs — the sidebar is a vertical list, so it scales.
 const promoPrograms = (await getCollection("programs"))
   .filter((p) => !p.data.draft)
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 3);
+  .sort((a, b) => a.data.order - b.data.order);
 const allPosts = (await getCollection("blog")).filter((p) => !p.data.draft);
 const relatedPosts = allPosts
   .filter((p) => p.id !== post.id)

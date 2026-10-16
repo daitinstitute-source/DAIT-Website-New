@@ -28,10 +28,13 @@ import { primaryCta } from "../data/navigation";
 const allPrograms = (await getCollection("programs")).filter(
   (p) => !p.data.draft,
 );
+// Every featured program shows — capping this hid the 4th program entirely.
 const featured = allPrograms
   .filter((p) => p.data.featured)
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 3);
+  .sort((a, b) => a.data.order - b.data.order);
+// Class strings stay literal so Tailwind sees them at build time.
+const featuredCols =
+  featured.length === 4 ? "md:grid-cols-2" : "md:grid-cols-2 lg:grid-cols-3";
 
 // Batch start dates are hidden site-wide via siteConfig.display — see
 // config/site.ts. With none listed, the section below renders its
@@ -114,7 +117,7 @@ const fmtDate = (d: Date) =>
 
     {
       featured.length > 0 ? (
-        <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div class={`mt-10 grid gap-6 ${featuredCols}`}>
           {featured.map((p) => (
             <ProgramCard slug={p.id} data={p.data} />
           ))}

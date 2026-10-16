@@ -7,7 +7,7 @@
 # No `faculty` yet, so the page falls back to the founder block, exactly as the
 # other three programs do. Add a faculty entry when the cloud instructor is set.
 title: "Cloud, DevOps & Security"
-tagline: "Learn how modern software actually runs in production — Linux, AWS, Docker, Kubernetes and CI/CD — and graduate having built and deployed real cloud infrastructure."
+tagline: "Learn how modern software actually runs in production — Linux, AWS, Azure, Docker, Kubernetes and CI/CD — and graduate having built and deployed real cloud infrastructure."
 area: "cloud-devops-security"
 duration: "6 months"
 mode: ["classroom", "online", "hybrid"]
@@ -16,7 +16,7 @@ audience: ["graduates", "working-professionals"]
 batchOptions: ["Weekday (Mon-Fri)", "Weekend (Sat-Sun)"]
 highlights:
   - "Work confidently on the Linux command line"
-  - "Deploy real applications on AWS"
+  - "Deploy real applications on AWS and Azure"
   - "Containerise apps with Docker and run them on Kubernetes"
   - "Build CI/CD pipelines that deploy on every commit"
   - "Automate infrastructure with Terraform"
@@ -39,11 +39,12 @@ syllabus:
       - "The command line, files, permissions and processes"
       - "Shell scripting for everyday automation"
       - "Networking basics: DNS, HTTP, ports and firewalls"
-  - module: "Cloud Fundamentals with AWS"
+  - module: "Cloud Fundamentals — AWS & Azure"
     topics:
       - "How cloud billing, regions and availability zones work"
-      - "EC2, S3, IAM and VPC — the core services"
-      - "Deploying your first application to the cloud"
+      - "AWS core services: EC2, S3, IAM and VPC"
+      - "The Azure equivalents: Virtual Machines, Blob Storage, Entra ID and VNet"
+      - "Choosing between the two, and deploying your first app to each"
   - module: "Git, GitHub & Team Workflow"
     topics:
       - "Branching, pull requests and code review"
@@ -67,7 +68,7 @@ syllabus:
   - module: "Infrastructure as Code & Monitoring"
     topics:
       - "Provisioning infrastructure with Terraform"
-      - "Observability with CloudWatch, Prometheus and Grafana"
+      - "Observability with CloudWatch, Azure Monitor, Prometheus and Grafana"
       - "Reading logs and metrics when something breaks"
   - module: "Cloud Security & Capstone"
     topics:
@@ -148,7 +149,7 @@ careerOutcomes:
   - category: "Skills Mastered"
     items:
       - "Linux administration & shell scripting"
-      - "AWS core services & cloud deployment"
+      - "AWS & Azure core services and deployment"
       - "Docker & Kubernetes"
       - "CI/CD pipeline automation"
       - "Terraform & infrastructure as code"
@@ -159,7 +160,7 @@ careerOutcomes:
       - "Product engineering & platform teams"
       - "Site Reliability Engineering (SRE)"
       - "A stepping stone toward cloud architecture or security"
-featured: false
+featured: true
 order: 4
 draft: false
 ---
