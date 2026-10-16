@@ -5,19 +5,18 @@
  * later (filter by `area`) instead of the roster being duplicated.
  *
  * TODO — only DAIT can supply these, and the section degrades cleanly until then:
- *   1. Surnames for everyone except Amol.
- *   2. Photos → public/images/team/<slug>.jpg, then set `photo`. Missing files
+ *   1. Photos → public/images/team/<slug>.jpg, then set `photo`. Missing files
  *      fall back to an initials avatar (checked at build time), so a path can be
- *      wired before the file lands.
- *   3. LinkedIn URLs — the card renders the icon only when `linkedinUrl` is set.
- *   4. Nikhil's exact designation: the brief said only "Cloud & DevOps — Nikhil",
- *      so `role` below is the minimum honest description, and he is listed as
- *      Instructor only because masterclass/mentor were not stated for him.
- *   5. Prachi's title was given as "AI Mastering Trainer" — reduced to "AI Trainer"
- *      rather than guessing at the intended wording.
+ *      wired before the file lands. Only the founder has one today.
+ *   2. LinkedIn URLs — the card renders the icon only when `linkedinUrl` is set.
  *
- * NOTE: no instructor is listed for Software Development. That program is live,
- * so the homepage currently shows a teaching team covering three of four areas.
+ * Settled 2026-10-16: surnames are not needed (first names are deliberate for
+ * everyone except the founder), and Prachi's title is confirmed as given.
+ *
+ * NOTE: no instructor is listed for Software Development yet — DAIT is supplying
+ * one. Until then the homepage shows a teaching team covering three of four live
+ * tracks, which an attentive visitor will notice. Add the entry here and it
+ * appears automatically; no component change needed.
  */
 import type { ProgramArea } from "./navigation";
 
@@ -65,7 +64,7 @@ export const instructors: Instructor[] = [
   },
   {
     name: "Nikhil",
-    role: "Cloud & DevOps Instructor",
+    role: "Senior .NET Tech Lead",
     area: "cloud-devops-security",
     teaches: ["Instructor"],
     photo: "",
