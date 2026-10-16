@@ -19,6 +19,7 @@ import FounderStory from "../components/sections/FounderStory.astro";
 import AudienceSplit from "../components/sections/AudienceSplit.astro";
 import DaitDifference from "../components/sections/DaitDifference.astro";
 import LearningModel from "../components/sections/LearningModel.astro";
+import InstructorsTeam from "../components/sections/InstructorsTeam.astro";
 import ProgramCard from "../components/sections/ProgramCard.astro";
 import CTABanner from "../components/sections/CTABanner.astro";
 import { siteConfig } from "../config/site";
@@ -146,7 +147,12 @@ const fmtDate = (d: Date) =>
     }
   </Section>
 
-  <!-- ── 9 · Upcoming batches (LIGHT) ─────────────────────── -->
+  <!-- ── 9 · Who teaches you (DARK) ───────────────────────── -->
+  <Section tone="dark">
+    <InstructorsTeam />
+  </Section>
+
+  <!-- ── 10 · Upcoming batches (LIGHT) ────────────────────── -->
   <Section tone="white">
     <div class="max-w-2xl" data-reveal>
       <SectionLabel>Upcoming cohorts</SectionLabel>
@@ -227,7 +233,7 @@ const fmtDate = (d: Date) =>
     }
   </Section>
 
-  <!-- ── 10 · Latest from the blog (LIGHT) ────────────────── -->
+  <!-- ── 11 · Latest from the blog (LIGHT) ────────────────── -->
   {
     latestPosts.length > 0 && (
       <Section tone="surface">
@@ -257,7 +263,7 @@ const fmtDate = (d: Date) =>
     )
   }
 
-  <!-- ── 11 · Final CTA (LIGHT bg, blue banner) ───────────── -->
+  <!-- ── 12 · Final CTA (LIGHT bg, blue banner) ───────────── -->
   <Section tone="surface">
     <CTABanner />
   </Section>
