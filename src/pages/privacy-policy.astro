@@ -12,6 +12,8 @@ import LegalLayout from "../layouts/LegalLayout.astro";
 import { siteConfig } from "../config/site";
 
 const centre = siteConfig.centers[0];
+const legal = siteConfig.legal;
+const grievanceEmail = legal.grievanceEmail || siteConfig.email;
 const address = [
   centre.name,
   ...centre.addressLines,
@@ -28,9 +30,23 @@ const address = [
 >
   <h2>Who we are</h2>
   <p>
-    This website is operated by <strong>{siteConfig.legalName}</strong> ("DAIT Institute", "we",
-    "us"), an IT training institute based in {centre.city}, {centre.state}, India.
+    This website is operated by <strong>{siteConfig.legalName}</strong>, a company incorporated
+    in India and trading as <strong>DAIT Institute</strong> ("we", "us"). We run an IT training
+    institute in {centre.city}, {centre.state}.
   </p>
+  <p>
+    For the purposes of India's Digital Personal Data Protection Act, 2023, the company is the
+    <strong>Data Fiduciary</strong> for the personal data described below — it decides why and
+    how that data is processed.
+  </p>
+  {legal.cin && (
+    <p>
+      <strong>CIN:</strong> {legal.cin}
+      {legal.registeredOffice.length > 0 && (
+        <><br /><strong>Registered office:</strong> {legal.registeredOffice.join(", ")}</>
+      )}
+    </p>
+  )}
   <p>
     <strong>Address:</strong> {address}<br />
     <strong>Email:</strong> <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a><br />
@@ -142,6 +158,12 @@ const address = [
     We will respond as quickly as we can, and in any case within the timelines the law requires.
   </p>
   <p>
+    {legal.grievanceContact && (
+      <>
+        Queries and grievances about your personal data go to {legal.grievanceContact} at{" "}
+        <a href={`mailto:${grievanceEmail}`}>{grievanceEmail}</a>.{" "}
+      </>
+    )}
     If you are not satisfied with how we have handled your request, you may raise a grievance with
     us at the same address, and you have the right to complain to the Data Protection Board of
     India.

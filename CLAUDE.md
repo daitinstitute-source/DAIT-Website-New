@@ -11,7 +11,7 @@
 ## Project Identity
 
 **Site:** daitinstitute.com
-**Legal Entity:** DAIT Institute — Dhakne's Digital AI & IT Training Institute
+**Legal Entity:** DAIT Education & Technologies Private Limited (trading as DAIT Institute)
 **Location:** Sambhaji Nagar, Maharashtra, India · info@daitinstitute.com
 **What it is:** DAIT Institute's marketing + admissions website — an IT training institute offering career programs in Software Development, Data Science & AI, Cloud/DevOps/Security, and Digital Marketing / non-coding IT.
 **Hosting:** Vercel (`output: "static"`). The lead API is a Vercel serverless function in the top-level `api/` directory, which Vercel builds independently of the Astro build. A Cloudflare Pages adapter is kept in `functions/` so the host stays swappable — see "Lead Pipeline" below.

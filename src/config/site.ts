@@ -36,7 +36,7 @@ const WHATSAPP_NUMBER =
 
 export const siteConfig = {
   name: "DAIT Institute",
-  legalName: "Dhakne's Digital AI & IT Training Institute",
+  legalName: "DAIT Education & Technologies Private Limited",
   shortName: "DAIT",
   url: PUBLIC_SITE_URL,
 
@@ -53,6 +53,27 @@ export const siteConfig = {
   email: "info@daitinstitute.com",
   // Primary phone for click-to-call / schema (also the WhatsApp number).
   phone: "+91 86688 93439",
+
+  // Statutory disclosure for the incorporated company. Rule 26 of the Companies
+  // (Incorporation) Rules, 2014 requires a company that runs a website to publish
+  // its name, registered office, CIN, telephone, email and the name of a person to
+  // contact for queries or grievances on the landing page. The footer renders on
+  // every page, so filling this satisfies it.
+  //
+  // The block only renders once `cin` is set — a half-filled statutory notice is
+  // worse than none at all.
+  //
+  // TODO: copy these from the Certificate of Incorporation and have the CS or CA
+  // confirm the exact wording before launch.
+  legal: {
+    cin: "", // e.g. "U85500MH2026PTC123456"
+    /** Registered office exactly as on the CoI — may differ from the teaching centre. */
+    registeredOffice: [] as string[],
+    /** Named person for queries/grievances, as Rule 26 requires. */
+    grievanceContact: "",
+    /** Falls back to siteConfig.email when blank. */
+    grievanceEmail: "",
+  },
   // Admissions desk — the number printed on brochures for registering an enquiry.
   enquiryPhone: "+91 92848 80032",
 

@@ -15,6 +15,14 @@ import {
 const year = new Date().getFullYear();
 const waHref = whatsappLink();
 const hasPhone = Boolean(siteConfig.phone);
+
+// Rule 26, Companies (Incorporation) Rules 2014: a company running a website must
+// publish name, registered office, CIN, phone, email and a named grievance contact
+// on the landing page. Rendered only when the CIN exists, so an incomplete
+// statutory notice never ships. See siteConfig.legal.
+const legal = siteConfig.legal;
+const showStatutory = Boolean(legal.cin);
+const grievanceEmail = legal.grievanceEmail || siteConfig.email;
 ---
 
 <footer class="bg-dark-950 text-white/70">
@@ -195,6 +203,28 @@ const hasPhone = Boolean(siteConfig.phone);
         <li class="font-semibold text-white/80">DAIT Institute</li>
       </ul>
     </div>
+
+    {
+      showStatutory && (
+        <div class="mt-8 border-t border-white/10 pt-6 text-xs leading-relaxed text-white/40">
+          <p class="font-semibold text-white/55">{siteConfig.legalName}</p>
+          <p>CIN: {legal.cin}</p>
+          {legal.registeredOffice.length > 0 && (
+            <p>Registered office: {legal.registeredOffice.join(", ")}</p>
+          )}
+          <p>
+            {hasPhone && <>Tel: {siteConfig.phone} · </>}
+            Email: <a href={`mailto:${siteConfig.email}`} class="hover:text-white/70">{siteConfig.email}</a>
+          </p>
+          {legal.grievanceContact && (
+            <p>
+              For queries or grievances: {legal.grievanceContact} ·{" "}
+              <a href={`mailto:${grievanceEmail}`} class="hover:text-white/70">{grievanceEmail}</a>
+            </p>
+          )}
+        </div>
+      )
+    }
 
     <div
       class="mt-8 pt-6 border-t border-white/10 flex flex-col gap-4 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between"
