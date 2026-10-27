@@ -1,0 +1,512 @@
+---
+/**
+ * /business-consulting/ — DAIT Business Consulting.
+ *
+ * The B2B vertical: founder-led growth consulting, sales enablement and
+ * corporate training for manufacturing, industrial, IT/SaaS and service
+ * businesses. Built on the existing design system (Section, SectionLabel,
+ * Button, HeroBackdrop) so it reads as part of the site, with a darker,
+ * quieter treatment so it reads as enterprise rather than campus.
+ *
+ * All copy and figures come from src/data/consulting.ts — edit claims there.
+ *
+ * POSITIONING: advisory, training and coaching. NOT an agency, not lead gen,
+ * not campaign execution, not implementation. The boundary lines on the
+ * service cards and in the process section are load-bearing, not decoration.
+ */
+import { Icon } from "astro-icon/components";
+import type { WithContext, ProfessionalService } from "schema-dts";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import SectionLabel from "../components/ui/SectionLabel.astro";
+import Button from "../components/ui/Button.astro";
+import HeroBackdrop from "../components/sections/HeroBackdrop.astro";
+import CompanyReferences from "../components/consulting/CompanyReferences.astro";
+import ConsultingForm from "../components/forms/ConsultingForm.tsx";
+import { siteConfig } from "../config/site";
+import { canonicalUrl } from "../lib/seo";
+import {
+  consultingStats,
+  statsDisclaimer,
+  consultingServices,
+  consultingIndustries,
+  consultingProcess,
+  processBoundary,
+  partnerCategories,
+  founderConsulting as f,
+} from "../data/consulting";
+
+const centre = siteConfig.centers[0];
+const url = canonicalUrl("/business-consulting/");
+
+/**
+ * ProfessionalService rather than a second Organization — the site already
+ * emits an EducationalOrganization from BaseLayout, and declaring two competing
+ * organisation entities for one domain muddies the knowledge graph. This is
+ * scoped to the service and points back at the existing org via `provider`.
+ */
+const schema: WithContext<ProfessionalService> = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "@id": `${url}#service`,
+  name: "DAIT Business Consulting",
+  url,
+  description:
+    "Founder-led B2B growth consulting, sales enablement and corporate training for manufacturing, industrial, IT and SaaS businesses in Chhatrapati Sambhajinagar.",
+  parentOrganization: { "@id": `${siteConfig.url}/#organization` },
+  areaServed: { "@type": "Country", name: "India" },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: centre.city,
+    addressRegion: centre.state,
+    addressCountry: "IN",
+    ...(centre.postalCode ? { postalCode: centre.postalCode } : {}),
+  },
+  ...(siteConfig.phone ? { telephone: siteConfig.phone } : {}),
+  email: siteConfig.email,
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Consulting services",
+    itemListElement: consultingServices.map((svc) => ({
+      "@type": "Offer" as const,
+      itemOffered: {
+        "@type": "Service" as const,
+        name: svc.title,
+        description: svc.summary,
+      },
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title="DAIT Business Consulting | B2B Growth & Corporate Training"
+  brandedTitle={false}
+  description="B2B growth consulting, sales enablement, manufacturing marketing advisory and corporate training in Chhatrapati Sambhajinagar. Strengthen your team's growth capabilities."
+  canonicalPath="/business-consulting/"
+  keywords={[
+    "B2B growth consultant Chhatrapati Sambhajinagar",
+    "business consulting Sambhaji Nagar",
+    "B2B marketing consultant Maharashtra",
+    "manufacturing marketing consultant",
+    "corporate sales and marketing training",
+    "account-based marketing consultant",
+    "fractional CMO services",
+    "technology vendor advisory",
+  ]}
+  ogImage={f.photo}
+  jsonLd={[schema]}
+>
+  <!-- ── 1 · Founder-led hero (DARK) ──────────────────────── -->
+  <section
+    class="relative overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-850 text-white"
+  >
+    <HeroBackdrop name="consulting" overlay="dark" />
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-0 opacity-[0.06]"
+      style="background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0); background-size: 30px 30px;"
+    >
+    </div>
+
+    <div class="container-wide relative py-16 lg:py-20">
+      <div class="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
+        <div data-reveal>
+          <p
+            class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[0.7rem] font-bold uppercase tracking-wider text-white backdrop-blur-sm"
+          >
+            <Icon name="lucide:briefcase-business" size={14} class="text-orange-400" />
+            Founder-led B2B growth consulting · {centre.city}
+          </p>
+
+          <h1
+            class="mt-6 text-[2rem] font-black leading-[1.08] tracking-tight text-white sm:text-[2.6rem] lg:text-5xl"
+          >
+            Better growth strategy. Stronger sales teams.{" "}
+            <span class="text-orange-400">Smarter business decisions.</span>
+          </h1>
+
+          <p class="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
+            DAIT Business Consulting helps manufacturing companies, B2B IT, SaaS and technology
+            businesses strengthen their marketing and sales capabilities through strategic
+            consulting, team training and growth coaching.
+          </p>
+          <p class="mt-4 max-w-xl text-sm leading-relaxed text-white/70">
+            With {f.experience} across B2B marketing, enterprise demand generation, SaaS, IT services
+            and international markets, {f.name} helps organisations connect marketing activity to
+            qualified opportunities and measurable pipeline.
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <Button href="#consultation" size="lg">Book a business consultation</Button>
+            <Button href="#services" variant="ghost-on-dark" icon="lucide:arrow-down">
+              Explore our services
+            </Button>
+          </div>
+        </div>
+
+        <!-- Founder portrait. Replace public/images/founder.jpg to change it. -->
+        <div class="relative mx-auto w-full max-w-sm lg:mx-0" data-reveal data-reveal-delay="0.1">
+          <div class="relative overflow-hidden rounded-[24px] shadow-2xl ring-1 ring-white/15">
+            <img
+              src={f.photo}
+              alt={`${f.name}, ${f.positioning.split("|")[0].trim()}, DAIT Business Consulting`}
+              width="1080"
+              height="1080"
+              class="aspect-square w-full object-cover"
+              loading="eager"
+            />
+            <div
+              class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-5 pt-16"
+            >
+              <p class="text-lg font-black text-white">{f.name}</p>
+              <p class="mt-0.5 text-xs leading-snug text-white/75">
+                B2B Growth Strategist · Fractional CMO · Corporate Trainer
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 2 · Achievement statistics (LIGHT) ───────────────── -->
+  <Section tone="surface" class="!py-10 lg:!py-12">
+    <dl class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        consultingStats.map((s, i) => (
+          <div
+            class="rounded-2xl border border-border bg-white p-5 shadow-sm"
+            data-reveal
+            data-reveal-delay={(i * 0.06).toString()}
+          >
+            <dt class="sr-only">{s.label}</dt>
+            <dd>
+              <span class="block text-3xl font-black leading-none text-ink-900">{s.value}</span>
+              <span class="mt-2 block text-sm font-semibold leading-snug text-ink-600">
+                {s.label}
+              </span>
+              {s.note && (
+                <span class="mt-1.5 block text-xs leading-snug text-orange-600">{s.note}</span>
+              )}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="mt-4 max-w-3xl text-xs leading-relaxed text-ink-500">{statsDisclaimer}</p>
+  </Section>
+
+  <!-- ── 3 · Services (LIGHT) ─────────────────────────────── -->
+  <Section tone="white" id="services">
+    <div class="max-w-2xl" data-reveal>
+      <SectionLabel>What we do</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+        Consulting, training and <span class="text-orange-500">coaching</span>
+      </h2>
+      <p class="mt-4 text-ink-500 measure">
+        We advise your team and build their capability. Your team — or a vendor you choose — does
+        the execution. That boundary is deliberate, and it is what keeps the advice honest.
+      </p>
+    </div>
+
+    <div class="mt-10 grid gap-6 md:grid-cols-2">
+      {
+        consultingServices.map((s, i) => (
+          <article
+            class={`flex flex-col rounded-3xl border p-7 shadow-sm ${
+              s.flagship
+                ? "border-orange-300 bg-orange-50/40 md:col-span-2"
+                : "border-border bg-white"
+            }`}
+            data-reveal
+            data-reveal-delay={(i * 0.05).toString()}
+          >
+            <div class="flex items-start gap-4">
+              <span
+                class={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+                  s.flagship ? "bg-orange-500 text-white" : "bg-accent-50 text-accent-600"
+                }`}
+              >
+                <Icon name={s.icon} size={24} />
+              </span>
+              <div class="min-w-0">
+                {s.flagship && (
+                  <span class="inline-block rounded-full bg-orange-500 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider text-white">
+                    Flagship
+                  </span>
+                )}
+                <h3 class={`text-xl font-bold text-ink-900 ${s.flagship ? "mt-2" : ""}`}>
+                  {s.title}
+                </h3>
+                <p class="mt-1.5 text-sm leading-relaxed text-ink-500">{s.summary}</p>
+              </div>
+            </div>
+
+            <ul class={`mt-5 grid gap-2.5 ${s.flagship ? "sm:grid-cols-2" : ""}`}>
+              {s.points.map((p) => (
+                <li class="flex gap-2.5 text-sm leading-relaxed text-ink-600">
+                  <Icon
+                    name="lucide:check"
+                    size={16}
+                    class={`mt-0.5 shrink-0 ${s.flagship ? "text-orange-500" : "text-accent-500"}`}
+                  />
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+
+            {s.boundary && (
+              <p class="mt-5 flex gap-2 rounded-xl bg-surface-50 p-3 text-xs leading-relaxed text-ink-500">
+                <Icon name="lucide:info" size={14} class="mt-0.5 shrink-0 text-ink-400" />
+                <span>{s.boundary}</span>
+              </p>
+            )}
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="mt-8" data-reveal>
+      <Button href="#consultation" variant="outline" icon="lucide:arrow-right">
+        Request a growth assessment
+      </Button>
+    </div>
+  </Section>
+
+  <!-- ── 4 · Industries (LIGHT) ───────────────────────────── -->
+  <Section tone="surface">
+    <div class="max-w-2xl" data-reveal>
+      <SectionLabel>Where we work</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+        Industries, and the growth problems <span class="text-orange-500">they share</span>
+      </h2>
+      <p class="mt-4 text-ink-500 measure">
+        Experience across these sectors is commercial, not technical — we help with how you reach
+        and convince buyers, not with engineering your product.
+      </p>
+    </div>
+
+    <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        consultingIndustries.map((ind, i) => (
+          <li
+            class="rounded-2xl border border-border bg-white p-6 shadow-sm"
+            data-reveal
+            data-reveal-delay={(i * 0.05).toString()}
+          >
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+              <Icon name={ind.icon} size={21} />
+            </span>
+            <h3 class="mt-4 text-base font-bold leading-snug text-ink-900">{ind.name}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-500">{ind.challenge}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-10">
+      <CompanyReferences intro="Named with permission. Relationship stated exactly." />
+    </div>
+  </Section>
+
+  <!-- ── 5 · How we work (DARK) ───────────────────────────── -->
+  <Section tone="dark">
+    <div class="max-w-2xl" data-reveal>
+      <SectionLabel onDark>How we work</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl text-white">
+        Five stages, and your team <span class="text-orange-400">keeps the wheel</span>
+      </h2>
+      <p class="mt-4 text-white/70 measure">{processBoundary}</p>
+    </div>
+
+    <div class="relative mt-12">
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-x-0 top-[1.375rem] hidden h-px bg-white/15 lg:block"
+      >
+      </div>
+      <ol class="relative grid gap-8 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-5 lg:gap-6">
+        {
+          consultingProcess.map((stage, i) => (
+            <li
+              class="relative flex gap-4 lg:block"
+              data-reveal
+              data-reveal-delay={(i * 0.08).toString()}
+            >
+              {i < consultingProcess.length - 1 && (
+                <span
+                  aria-hidden="true"
+                  class="absolute left-[1.375rem] top-12 -bottom-8 w-px bg-white/15 sm:hidden"
+                />
+              )}
+              <span class="relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-black text-white ring-4 ring-dark-950">
+                {i + 1}
+              </span>
+              <div class="min-w-0 lg:mt-5">
+                <p class="text-sm font-black uppercase tracking-wider text-white">{stage.title}</p>
+                <p class="mt-1.5 text-sm leading-relaxed text-white/65">{stage.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </Section>
+
+  <!-- ── 6 · About the founder (LIGHT) ────────────────────── -->
+  <Section tone="white" id="founder">
+    <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 lg:items-start">
+      <div class="relative mx-auto w-full max-w-sm lg:mx-0" data-reveal>
+        <img
+          src={f.photo}
+          alt={`${f.name} — founder, DAIT Business Consulting`}
+          width="1080"
+          height="1080"
+          loading="lazy"
+          class="aspect-[4/5] w-full rounded-3xl object-cover shadow-lg"
+        />
+      </div>
+
+      <div data-reveal data-reveal-delay="0.1">
+        <SectionLabel>About the founder</SectionLabel>
+        <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+          Growth strategy backed by <span class="text-orange-500">real-world B2B experience</span>
+        </h2>
+        <p class="mt-4 text-sm font-semibold text-accent-600">{f.positioning}</p>
+
+        <div class="mt-5 space-y-4 measure text-ink-600">
+          {f.bio.map((p) => <p class="text-sm leading-relaxed">{p}</p>)}
+        </div>
+
+        <h3 class="mt-7 text-xs font-bold uppercase tracking-wider text-ink-500">Education</h3>
+        <ul class="mt-3 space-y-2">
+          {
+            f.education.map((e) => (
+              <li class="flex gap-2.5 text-sm text-ink-600">
+                <Icon name="lucide:graduation-cap" size={16} class="mt-0.5 shrink-0 text-accent-500" />
+                <span>{e}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="mt-8">
+          <Button href="#consultation" icon="lucide:arrow-right">
+            Discuss a consulting engagement
+          </Button>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- ── 7 · Technology partner network (LIGHT) ───────────── -->
+  <Section tone="surface" id="partners">
+    <div class="max-w-2xl" data-reveal>
+      <SectionLabel>Partner network</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+        The right expertise. The right <span class="text-orange-500">technology partner</span>.
+      </h2>
+      <p class="mt-4 text-ink-500 measure">
+        When a project needs building rather than advising, we help you define what you actually
+        need and identify specialist providers who can deliver it. DAIT does not implement — and
+        any referral arrangement is set out in writing and disclosed to you.
+      </p>
+    </div>
+
+    <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        partnerCategories.map((c, i) => (
+          <li
+            class="rounded-2xl border border-border bg-white p-6 shadow-sm"
+            data-reveal
+            data-reveal-delay={(i * 0.05).toString()}
+          >
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+              <Icon name={c.icon} size={21} />
+            </span>
+            <h3 class="mt-4 text-base font-bold text-ink-900">{c.name}</h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-ink-500">{c.description}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-10 grid gap-6 lg:grid-cols-2" data-reveal>
+      <div class="rounded-3xl border border-border bg-white p-7 shadow-sm">
+        <h3 class="text-lg font-bold text-ink-900">I need a technology partner</h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink-500">
+          Tell us what you are trying to achieve. We will help define the requirement and point you
+          to providers worth evaluating.
+        </p>
+        <div class="mt-5">
+          <Button href="#consultation" variant="outline" icon="lucide:arrow-right">
+            Start with a consultation
+          </Button>
+        </div>
+      </div>
+
+      <div class="rounded-3xl border border-border bg-white p-7 shadow-sm">
+        <h3 class="text-lg font-bold text-ink-900">I want to become a DAIT partner</h3>
+        <p class="mt-2 text-sm leading-relaxed text-ink-500">
+          If you deliver implementation work in one of the categories above, tell us about your
+          capability.
+        </p>
+        <div class="mt-5">
+          <ConsultingForm client:visible variant="partner" />
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- ── 8 · Consultation form (DARK) ─────────────────────── -->
+  <Section tone="dark" id="consultation">
+    <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
+      <div data-reveal>
+        <SectionLabel onDark>Book a consultation</SectionLabel>
+        <h2 class="mt-3 text-3xl sm:text-4xl text-white">
+          Start with a conversation, <span class="text-orange-400">not a proposal</span>
+        </h2>
+        <p class="mt-4 text-white/70 measure">
+          Tell us where the growth problem actually sits. The first conversation is about
+          understanding your business — if consulting is not what you need, we will say so.
+        </p>
+
+        <ul class="mt-7 space-y-3">
+          {
+            [
+              "Founder-led — you talk to Amol, not an account manager",
+              "In person in " + centre.city + ", or online",
+              "No obligation, and no pressure to commit",
+            ].map((point) => (
+              <li class="flex items-start gap-3 text-sm text-white/80">
+                <Icon name="lucide:check" size={17} class="mt-0.5 shrink-0 text-orange-400" />
+                <span>{point}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="mt-8 rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+          <p class="text-xs font-bold uppercase tracking-wider text-white/45">
+            Also available
+          </p>
+          <p class="mt-2 text-sm leading-relaxed text-white/70">
+            Customised corporate workshops for marketing and sales teams — mention it in your
+            enquiry and we will scope it with you.
+          </p>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-surface-75 p-6 shadow-lg sm:p-7" data-reveal data-reveal-delay="0.1">
+        <h3 class="text-xl font-bold text-ink-900">Book a business consultation</h3>
+        <p class="mt-1.5 text-sm text-ink-500">
+          Takes a minute. We reply within one working day.
+        </p>
+        <div class="mt-5">
+          <ConsultingForm client:load variant="consultation" />
+        </div>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>

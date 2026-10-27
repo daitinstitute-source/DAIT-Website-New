@@ -1,0 +1,72 @@
+---
+/**
+ * CompanyReferences — approved client/engagement references.
+ *
+ * Renders NOTHING until `companyReferences` in src/data/consulting.ts contains
+ * entries marked `approved: true`. That is deliberate: naming an organisation
+ * on a consulting page implies a client relationship and an endorsement, and
+ * doing that without permission is both a legal and a reputational risk.
+ *
+ * Each rendered entry states the real nature of the relationship rather than
+ * implying all were direct clients. Logos are only shown when the company has
+ * supplied one — never scraped from their website.
+ */
+import { Icon } from "astro-icon/components";
+import { companyReferences } from "../../data/consulting";
+
+interface Props {
+  heading?: string;
+  intro?: string;
+  onDark?: boolean;
+}
+const {
+  heading = "Organisations worked with",
+  intro,
+  onDark = false,
+} = Astro.props as Props;
+
+const approved = companyReferences.filter((c) => c.approved);
+---
+
+{
+  approved.length > 0 && (
+    <div data-reveal>
+      <h3 class={`text-lg font-bold ${onDark ? "text-white" : "text-ink-900"}`}>
+        {heading}
+      </h3>
+      {intro && (
+        <p class={`mt-2 text-sm ${onDark ? "text-white/60" : "text-ink-500"}`}>{intro}</p>
+      )}
+
+      <ul class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {approved.map((c) => (
+          <li
+            class={`flex items-center gap-3 rounded-xl border p-4 ${
+              onDark ? "border-white/10 bg-white/[0.04]" : "border-border bg-white"
+            }`}
+          >
+            {c.logo ? (
+              <img src={c.logo} alt={c.name} width="40" height="40" loading="lazy" class="h-10 w-auto object-contain" />
+            ) : (
+              <span
+                class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
+                  onDark ? "bg-white/10 text-white/70" : "bg-accent-50 text-accent-600"
+                }`}
+              >
+                <Icon name="lucide:building-2" size={18} />
+              </span>
+            )}
+            <span class="min-w-0">
+              <span class={`block text-sm font-bold ${onDark ? "text-white" : "text-ink-900"}`}>
+                {c.name}
+              </span>
+              <span class={`block text-xs ${onDark ? "text-white/50" : "text-ink-500"}`}>
+                {c.relationship}
+              </span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
