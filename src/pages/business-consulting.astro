@@ -30,6 +30,8 @@ import {
   statsDisclaimer,
   consultingServices,
   consultingIndustries,
+  engagementHighlights,
+  engagementHighlightsNote,
   consultingProcess,
   processBoundary,
   partnerCategories,
@@ -305,8 +307,37 @@ const schema: WithContext<ProfessionalService> = {
       }
     </ul>
 
-    <div class="mt-10">
-      <CompanyReferences intro="Named with permission. Relationship stated exactly." />
+    <div class="mt-12 rounded-3xl border border-border bg-white p-7 shadow-sm sm:p-8" data-reveal>
+      <h3 class="text-lg font-bold text-ink-900">Where this experience comes from</h3>
+      <p class="mt-2 max-w-3xl text-sm leading-relaxed text-ink-500">
+        {engagementHighlightsNote}
+      </p>
+
+      <ul class="mt-6 grid gap-5 sm:grid-cols-2">
+        {
+          engagementHighlights.map((h, i) => (
+            <li
+              class="flex gap-4 rounded-2xl bg-surface-50 p-5"
+              data-reveal
+              data-reveal-delay={(i * 0.06).toString()}
+            >
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+                <Icon name={h.icon} size={19} />
+              </span>
+              <div class="min-w-0">
+                <p class="text-xs font-bold uppercase tracking-wider text-orange-600">{h.sector}</p>
+                <p class="mt-1 text-sm font-bold leading-snug text-ink-900">{h.detail}</p>
+                <p class="mt-1 text-sm leading-relaxed text-ink-500">{h.scope}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+
+      {/* Renders only if an approved, permissioned name is ever added. */}
+      <div class="mt-8">
+        <CompanyReferences heading="Named references" intro="Published with written permission. Relationship stated exactly." />
+      </div>
     </div>
   </Section>
 

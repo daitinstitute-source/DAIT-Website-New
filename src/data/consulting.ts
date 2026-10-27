@@ -296,6 +296,56 @@ export const partnerCategories: PartnerCategory[] = [
   },
 ];
 
+/* --------------------------------------------- engagement highlights */
+
+export interface EngagementHighlight {
+  /** Sector, never an organisation name. */
+  sector: string;
+  /** The scale of the engagement, anonymised. */
+  detail: string;
+  /** What the work actually was. */
+  scope: string;
+  icon: string;
+}
+
+/**
+ * Anonymised alternative to naming clients. Every line is traceable to the CV,
+ * and none of them identifies an organisation.
+ *
+ * FRAMING MATTERS: these are outcomes from Amol's prior in-house and agency-side
+ * roles, NOT DAIT Business Consulting client engagements. The heading and note
+ * on the page say so explicitly — do not reword them into "our clients".
+ */
+export const engagementHighlights: EngagementHighlight[] = [
+  {
+    sector: "Cable, pipe & cement manufacturing",
+    detail: "Four enterprise accounts won with leading Indian manufacturers",
+    scope: "IT, cloud and AI go-to-market, account targeting and executive outreach",
+    icon: "lucide:factory",
+  },
+  {
+    sector: "Fertility & healthcare technology",
+    detail: "Two of India's largest IVF chains, plus an international account",
+    scope: "Platform positioning and demand generation in a trust-led market",
+    icon: "lucide:heart-pulse",
+  },
+  {
+    sector: "Healthcare SaaS, international",
+    detail: "Four live accounts and three in advanced pipeline",
+    scope: "Recurring-revenue SaaS marketing across international markets",
+    icon: "lucide:cloud",
+  },
+  {
+    sector: "DACH enterprise (Switzerland)",
+    detail: "Three Swiss enterprise engagements in active commercial discussion",
+    scope: "International market entry and enterprise sales enablement",
+    icon: "lucide:globe",
+  },
+];
+
+export const engagementHighlightsNote =
+  "These outcomes come from Amol's prior in-house and agency-side roles, not from DAIT Business Consulting engagements. Organisations are described by sector rather than named, because publishing a client name requires their written permission.";
+
 /* ----------------------------------------------------- company references */
 
 export interface CompanyReference {
