@@ -31,15 +31,14 @@ export const consultingStats: ConsultingStat[] = [
   {
     value: "₹20 Cr+",
     label: "B2B pipeline across ABM-led engagements",
-    note: "Pipeline contributed to, not closed revenue",
   },
   {
     value: "10+",
     label: "Enterprise logos won across verticals",
   },
   {
-    value: "10+",
-    label: "Marketing team members led",
+    value: "AI-first",
+    label: "Building marketing, pre-sales and inbound teams with hands-on AI tooling",
   },
   {
     value: "4 regions",
@@ -296,56 +295,6 @@ export const partnerCategories: PartnerCategory[] = [
   },
 ];
 
-/* --------------------------------------------- engagement highlights */
-
-export interface EngagementHighlight {
-  /** Sector, never an organisation name. */
-  sector: string;
-  /** The scale of the engagement, anonymised. */
-  detail: string;
-  /** What the work actually was. */
-  scope: string;
-  icon: string;
-}
-
-/**
- * Anonymised alternative to naming clients. Every line is traceable to the CV,
- * and none of them identifies an organisation.
- *
- * FRAMING MATTERS: these are outcomes from Amol's prior in-house and agency-side
- * roles, NOT DAIT Business Consulting client engagements. The heading and note
- * on the page say so explicitly — do not reword them into "our clients".
- */
-export const engagementHighlights: EngagementHighlight[] = [
-  {
-    sector: "Cable, pipe & cement manufacturing",
-    detail: "Four enterprise accounts won with leading Indian manufacturers",
-    scope: "IT, cloud and AI go-to-market, account targeting and executive outreach",
-    icon: "lucide:factory",
-  },
-  {
-    sector: "Fertility & healthcare technology",
-    detail: "Two of India's largest IVF chains, plus an international account",
-    scope: "Platform positioning and demand generation in a trust-led market",
-    icon: "lucide:heart-pulse",
-  },
-  {
-    sector: "Healthcare SaaS, international",
-    detail: "Four live accounts and three in advanced pipeline",
-    scope: "Recurring-revenue SaaS marketing across international markets",
-    icon: "lucide:cloud",
-  },
-  {
-    sector: "DACH enterprise (Switzerland)",
-    detail: "Three Swiss enterprise engagements in active commercial discussion",
-    scope: "International market entry and enterprise sales enablement",
-    icon: "lucide:globe",
-  },
-];
-
-export const engagementHighlightsNote =
-  "These outcomes come from Amol's prior in-house and agency-side roles, not from DAIT Business Consulting engagements. Organisations are described by sector rather than named, because publishing a client name requires their written permission.";
-
 /* ----------------------------------------------------- company references */
 
 export interface CompanyReference {
@@ -387,11 +336,32 @@ export const founderConsulting = {
     "He uses AI tools — Claude, ChatGPT, Gemini and Copilot — in day-to-day marketing work, from research and competitor analysis to content and campaign preparation, and runs internal AI training workshops for teams adopting them.",
     "His approach combines strategic thinking with practical team coaching, helping businesses improve their own capability rather than depend entirely on external agencies.",
   ],
-  /** IIM Raipur was an executive PROGRAMME, not a degree. Keep the wording exact. */
-  education: [
-    "Strategic Chief Marketing Officer Programme — IIM Raipur",
-    "MBA in Information Technology — Dr. Babasaheb Ambedkar Marathwada University",
-    "Bachelor of Engineering in Electronics",
+  /**
+   * Credential cards, same treatment as the homepage founder block.
+   * IIM Raipur was an executive PROGRAMME, not a degree — keep that wording.
+   * Years stay at 9+ per the CV; do not inflate without a verified update.
+   */
+  credentials: [
+    {
+      icon: "lucide:award",
+      value: "IIM Raipur",
+      label: "Strategic CMO Programme",
+    },
+    {
+      icon: "lucide:briefcase-business",
+      value: "9+ years",
+      label: "B2B marketing & pre-sales leadership",
+    },
+    {
+      icon: "lucide:globe",
+      value: "4 regions",
+      label: "USA · Asia · Middle East · DACH",
+    },
+    {
+      icon: "lucide:sparkles",
+      value: "AI-first",
+      label: "Claude, ChatGPT and Gemini in daily practice",
+    },
   ],
   photo: "/images/founder.jpg",
 };
