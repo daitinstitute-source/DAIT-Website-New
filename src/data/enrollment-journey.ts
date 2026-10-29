@@ -15,10 +15,14 @@
  *   • "Start building", not "Start learning". Project-first is the actual
  *     differentiator against watching recorded lectures; say it.
  *
- * TODO — confirm with DAIT before relying on this publicly:
- *   does the aptitude check exist today, and is it free? The copy below says
- *   nothing is committed until step 4, which is structurally true either way,
- *   but it does not claim the first steps are free. Add that if they are.
+ * Confirmed 2026-10-29: the aptitude check is free, and every enrolled student
+ * gets lifetime access to the items in `seatIncludes` below.
+ *
+ * ⚠️ The student portal is NOT built yet — siteConfig.portalUrl is marked
+ *   "not built yet" and the Student Login nav slot is still hidden behind
+ *   comingSoon. Listing it here is a promise with a delivery date attached.
+ *   `portalLive` gates that one item, so it can be held back without losing
+ *   the other three. Flip it when the portal actually exists.
  */
 
 export interface JourneyStep {
@@ -32,8 +36,8 @@ export interface JourneyStep {
 export const enrollmentJourney: JourneyStep[] = [
   {
     title: "Aptitude & interest check",
-    body: "A short check of where your strengths sit and which subjects hold your attention. It exists to help you choose, not to filter you out.",
-    note: "No pass or fail",
+    body: "A short, free check of where your strengths sit and which subjects hold your attention. It exists to help you choose, not to filter you out.",
+    note: "Free · no pass or fail",
     icon: "lucide:clipboard-list",
   },
   {
@@ -64,3 +68,31 @@ export const enrollmentJourney: JourneyStep[] = [
 
 export const journeyIntro =
   "Five steps, and nothing is committed until you choose a seat. The first conversations are about working out whether this is right for you at all.";
+
+/* ------------------------------------------------- what a seat includes */
+
+/**
+ * Flip to true when portal.daitinstitute.com is live. While false the portal
+ * line is simply not shown, so the page never promises a product that does
+ * not exist yet — the other three are available from day one.
+ */
+export const portalLive = false;
+
+export interface SeatInclude {
+  label: string;
+  icon: string;
+  /** Only rendered once the portal is live. */
+  needsPortal?: boolean;
+}
+
+const allIncludes: SeatInclude[] = [
+  { label: "Student portal access", icon: "lucide:layout-dashboard", needsPortal: true },
+  { label: "Masterclasses", icon: "lucide:presentation" },
+  { label: "Industry mentor sessions", icon: "lucide:handshake" },
+  { label: "AI workshops", icon: "lucide:sparkles" },
+];
+
+export const seatIncludes = allIncludes.filter((i) => portalLive || !i.needsPortal);
+
+export const seatIncludesLabel = "Lifetime access, included with every seat";
+

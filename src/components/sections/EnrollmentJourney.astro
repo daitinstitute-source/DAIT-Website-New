@@ -11,7 +11,12 @@
  */
 import { Icon } from "astro-icon/components";
 import SectionLabel from "../ui/SectionLabel.astro";
-import { enrollmentJourney, journeyIntro } from "../../data/enrollment-journey";
+import {
+  enrollmentJourney,
+  journeyIntro,
+  seatIncludes,
+  seatIncludesLabel,
+} from "../../data/enrollment-journey";
 ---
 
 <div id="how-to-join">
@@ -69,4 +74,24 @@ import { enrollmentJourney, journeyIntro } from "../../data/enrollment-journey";
       }
     </ol>
   </div>
+
+  {
+    seatIncludes.length > 0 && (
+      <div class="mt-12 rounded-2xl border border-white/10 bg-white/[0.04] p-6 sm:p-7" data-reveal>
+        <p class="text-xs font-bold uppercase tracking-wider text-orange-400">
+          {seatIncludesLabel}
+        </p>
+        <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {seatIncludes.map((item) => (
+            <li class="flex items-center gap-3 text-sm text-white/80">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-orange-300">
+                <Icon name={item.icon} size={17} />
+              </span>
+              {item.label}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
 </div>
