@@ -259,8 +259,11 @@ export const siteConfig = {
     showForCompanies: false,
   },
 
-  // Reserved for Phase 4 portal (separate app).
-  portalUrl: "https://portal.daitinstitute.com", // not built yet
+  // NOTE: the student portal lives on its own subdomain and is deliberately
+  // absent from this config. siteConfig is imported by a React island, so
+  // anything here is serialised into the client bundle and readable by any
+  // visitor. The portal must not be linked from the site or any collateral —
+  // see the studentLogin note in data/navigation.ts.
 
   analytics: {
     // Google Tag Manager container (copied from the existing daitinstitute.com).

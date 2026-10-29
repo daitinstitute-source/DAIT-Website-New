@@ -80,12 +80,19 @@ export const mainNav: NavItem[] = [
   { label: "Contact", href: "/contact/" },
 ];
 
-/** Reserved slot — points to the separate portal app (Phase 4). */
+/**
+ * The student portal exists at its own subdomain, but it is deliberately NOT
+ * linked from this marketing site or from any collateral — brochures, emails,
+ * social. Students are given the URL directly by the institute.
+ *
+ * The slot is kept so the intent is documented rather than rediscovered, but
+ * it carries no href and nothing renders it. Do not re-add a link here.
+ */
 export const studentLogin: NavItem = {
   label: "Student Login",
-  href: "https://portal.daitinstitute.com",
+  href: "",
   external: true,
-  comingSoon: true, // hidden until the portal exists
+  comingSoon: true, // never rendered — see the note above
 };
 
 /** Primary site-wide CTA. */

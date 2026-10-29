@@ -8,7 +8,7 @@ import { siteConfig, whatsappLink } from "../../config/site";
 import {
   programAreas,
   footerQuickLinks,
-  studentLogin,
+
   legalLinks,
 } from "../../data/navigation";
 
@@ -99,17 +99,9 @@ const grievanceEmail = legal.grievanceEmail || siteConfig.email;
               </li>
             ))
           }
-          <li>
-            <a
-              href={studentLogin.href}
-              class="inline-flex items-center gap-1.5 hover:text-white transition-colors text-white/50"
-            >
-              {studentLogin.label}
-              <span class="text-[0.6rem] uppercase tracking-wide bg-white/10 px-1.5 py-0.5 rounded">
-                Soon
-              </span>
-            </a>
-          </li>
+          {/* No Student Login link: the portal must not be linked from the
+              marketing site or any collateral. Students are given the URL
+              directly. See data/navigation.ts. */}
         </ul>
       </nav>
 

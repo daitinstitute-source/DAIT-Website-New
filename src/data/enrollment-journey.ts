@@ -18,11 +18,9 @@
  * Confirmed 2026-10-29: the aptitude check is free, and every enrolled student
  * gets lifetime access to the items in `seatIncludes` below.
  *
- * ⚠️ The student portal is NOT built yet — siteConfig.portalUrl is marked
- *   "not built yet" and the Student Login nav slot is still hidden behind
- *   comingSoon. Listing it here is a promise with a delivery date attached.
- *   `portalLive` gates that one item, so it can be held back without losing
- *   the other three. Flip it when the portal actually exists.
+ * The student portal exists, so it is listed as an inclusion. It is named
+ * but NOT linked, and must not be linked from this site or any collateral —
+ * students are given the URL directly. See data/navigation.ts.
  */
 
 export interface JourneyStep {
@@ -72,11 +70,13 @@ export const journeyIntro =
 /* ------------------------------------------------- what a seat includes */
 
 /**
- * Flip to true when portal.daitinstitute.com is live. While false the portal
- * line is simply not shown, so the page never promises a product that does
- * not exist yet — the other three are available from day one.
+ * The portal exists, so the inclusion is shown. Set false to withhold just
+ * that line if it is ever taken offline; the other three are unaffected.
+ *
+ * Showing it does NOT mean linking it — the band renders plain text, never
+ * an anchor.
  */
-export const portalLive = false;
+export const portalLive = true;
 
 export interface SeatInclude {
   label: string;
