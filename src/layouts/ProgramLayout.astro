@@ -276,7 +276,8 @@ const defaultWhyDAIT = [
 
 <!-- CAREER OUTCOMES -->
 <Section tone="surface">
-  <OutcomesSection outcomes={data.careerOutcomes || [
+  {/* Same empty-array-is-truthy trap as WhyDAIT above. */}
+  <OutcomesSection outcomes={data.careerOutcomes?.length ? data.careerOutcomes : [
     {
       category: "Job Roles",
       items: data.outcomes || []
@@ -291,7 +292,9 @@ const defaultWhyDAIT = [
 
 <!-- WHY DAIT BENEFITS -->
 <Section tone="surface">
-  <WhyDAIT benefits={data.whyDAIT || defaultWhyDAIT} />
+  {/* An empty array is truthy, so `||` never reached the defaults and the
+      component fell through to its empty state. Check length. */}
+  <WhyDAIT benefits={data.whyDAIT?.length ? data.whyDAIT : defaultWhyDAIT} />
 </Section>
 
 <!-- COMPARISON — what makes this program stand out -->
