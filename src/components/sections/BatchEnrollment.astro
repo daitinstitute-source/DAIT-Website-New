@@ -14,7 +14,7 @@ interface Props {
   batchOptions: string[];
   nextBatchDate?: string;
   fee?: string;
-  duration: string;
+  duration?: string;
   primaryCtaLink: string;
 }
 const { batchOptions, nextBatchDate, fee, duration, primaryCtaLink } = Astro.props;
@@ -93,7 +93,9 @@ const steps = [
           <p class="text-lg font-bold">New batches every month</p>
         )}
         <div class="mt-3 flex flex-wrap gap-2">
-          <span class="rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold">{duration}</span>
+          {duration && (
+            <span class="rounded-full bg-white/15 px-2.5 py-1 text-xs font-bold">{duration}</span>
+          )}
           {shownFee && <span class="rounded-full bg-orange-500 px-2.5 py-1 text-xs font-bold">{shownFee}</span>}
         </div>
         {shownFee && (

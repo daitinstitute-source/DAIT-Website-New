@@ -52,7 +52,7 @@ const courseSchema: WithContext<Course> = {
     {
       "@type": "CourseInstance",
       courseMode: data.mode.map((m) => modeMap[m] ?? m),
-      courseWorkload: data.duration,
+      ...(data.duration ? { courseWorkload: data.duration } : {}),
       ...(siteConfig.display.showNextBatchDate && data.nextBatchDate
         ? { startDate: new Date(data.nextBatchDate).toISOString().slice(0, 10) }
         : {}),

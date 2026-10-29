@@ -126,10 +126,12 @@ const tabBase =
               {p.batch}
             </p>
             <dl class="mt-3 space-y-2 border-t border-accent-200 pt-3 text-sm">
-              <div class="flex items-center justify-between">
-                <dt class="text-ink-500">Duration</dt>
-                <dd class="font-bold text-ink-900">{p.duration}</dd>
-              </div>
+              {p.duration && (
+                <div class="flex items-center justify-between">
+                  <dt class="text-ink-500">Duration</dt>
+                  <dd class="font-bold text-ink-900">{p.duration}</dd>
+                </div>
+              )}
               {p.fee && (
                 <div class="flex items-center justify-between">
                   <dt class="text-ink-500">Fee</dt>

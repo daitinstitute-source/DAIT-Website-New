@@ -14,7 +14,7 @@ interface Props {
     title: string;
     tagline: string;
     area: string;
-    duration: string;
+    duration?: string;
     mode: string[];
     level: string;
     nextBatchDate?: Date;
@@ -55,10 +55,12 @@ const nextBatch = siteConfig.display.showNextBatchDate && data.nextBatchDate
   <p class="mt-2 text-sm text-ink-500 leading-relaxed flex-1">{data.tagline}</p>
 
   <dl class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-ink-500">
-    <div class="flex items-center gap-1.5">
-      <Icon name="lucide:clock" size={15} class="text-accent-500" />
-      <dd>{data.duration}</dd>
-    </div>
+    {data.duration && (
+      <div class="flex items-center gap-1.5">
+        <Icon name="lucide:clock" size={15} class="text-accent-500" />
+        <dd>{data.duration}</dd>
+      </div>
+    )}
     <div class="flex items-center gap-1.5">
       {data.mode.map((m) => <Icon name={modeIcons[m]} size={15} class="text-accent-500" />)}
       <dd class="capitalize">{data.mode.join(" · ")}</dd>

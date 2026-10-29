@@ -44,9 +44,13 @@ const programs = brochureProgramSlugs.flatMap((slug) => {
   const entry = all.find((p) => p.id === slug);
   if (!entry) return [];
   const launched = !entry.data.draft;
-  const duration = isMr
-    ? entry.data.duration.replace(/months?/i, t.courses.months)
-    : entry.data.duration;
+  // duration is optional on a program, and .replace() on undefined throws
+  // during the build rather than at request time.
+  const duration = entry.data.duration
+    ? isMr
+      ? entry.data.duration.replace(/months?/i, t.courses.months)
+      : entry.data.duration
+    : "";
   return [
     {
       slug,

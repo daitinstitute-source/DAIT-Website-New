@@ -17,7 +17,10 @@ const programs = defineCollection({
       "cloud-devops-security",
       "digital-marketing",
     ]),
-    duration: z.string(), // "6 months"
+    // Optional: some programs are deliberately published without a stated
+    // length. Every render site guards on it — see ProgramCard, BatchEnrollment,
+    // SyllabusTracks, ProgramAudienceToggle and Brochure.
+    duration: z.string().optional(), // "6 months"
     mode: z.array(z.enum(["classroom", "online", "hybrid"])),
     level: z.enum(["beginner", "intermediate", "advanced"]),
     audience: z.array(z.enum(["graduates", "working-professionals"])),
