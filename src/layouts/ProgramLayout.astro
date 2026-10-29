@@ -12,6 +12,7 @@ import ToolsMarquee from "../components/sections/ToolsMarquee.astro";
 import SyllabusTracks from "../components/sections/SyllabusTracks.astro";
 import EligibilitySection from "../components/sections/EligibilitySection.astro";
 import BatchEnrollment from "../components/sections/BatchEnrollment.astro";
+import EnrollmentJourney from "../components/sections/EnrollmentJourney.astro";
 import FacultyProfiles from "../components/sections/FacultyProfiles.astro";
 import FounderStory from "../components/sections/FounderStory.astro";
 import TestimonialCarousel from "../components/sections/TestimonialCarousel.astro";
@@ -113,6 +114,7 @@ const navSections = [
   { id: "why-dait", label: "Why DAIT" },
   { id: "compare", label: "Compare" },
   { id: "testimonials", label: hasTestimonials ? "Student stories" : "Founding cohort" },
+  { id: "how-to-join", label: "How to join" },
   { id: "enrollment", label: "Enroll now" },
   { id: "faq", label: "FAQs" },
 ];
@@ -330,6 +332,11 @@ const defaultWhyDAIT = [
   ) : (
     <FoundingCohort primaryCtaLink={primaryCtaLink} />
   )}
+</Section>
+
+<!-- HOW TO JOIN — the five-step enrolment journey, identical for every program -->
+<Section tone="dark">
+  <EnrollmentJourney />
 </Section>
 
 <!-- BATCH ENROLLMENT -->
