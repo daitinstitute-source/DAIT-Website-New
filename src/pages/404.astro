@@ -1,0 +1,77 @@
+---
+/**
+ * 404 — not found.
+ *
+ * Astro emits this as dist/404.html and Vercel serves it automatically for any
+ * unmatched path, with a real 404 status. Without it the visitor gets Vercel's
+ * generic page: correct status, but a dead end with no way back into the site.
+ *
+ * So this page's whole job is to be a route onward. Someone landing here has
+ * usually followed a stale link from a brochure, a WhatsApp forward or an old
+ * search result — the four program areas are the fastest way to the thing they
+ * were actually looking for.
+ *
+ * noindex: a 404 should never be indexed. It is also excluded from the sitemap
+ * automatically, since Astro does not list it.
+ */
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import Button from "../components/ui/Button.astro";
+import { programAreas } from "../data/navigation";
+---
+
+<BaseLayout
+  title="Page not found"
+  description="That page doesn't exist. Browse DAIT Institute's programs in software development, data and AI, cloud and security, or digital marketing."
+  canonicalPath="/404/"
+  noindex={true}
+>
+  <Section tone="dark" class="pt-28 pb-24">
+    <div class="mx-auto max-w-2xl text-center" data-reveal>
+      <span
+        class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-orange-500/15 text-orange-400 ring-1 ring-orange-500/40"
+      >
+        <Icon name="lucide:compass" size={32} />
+      </span>
+
+      <p class="mt-8 text-sm font-bold uppercase tracking-[0.2em] text-white/40">Error 404</p>
+      <h1 class="mt-3 text-4xl sm:text-5xl font-black tracking-tight text-white">
+        This page has <span class="text-orange-400">moved or vanished</span>
+      </h1>
+      <p class="mt-5 text-lg text-white/70">
+        The link you followed is out of date. Here is the way back.
+      </p>
+
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <Button href="/programs/" iconLeft="lucide:graduation-cap">Browse all programs</Button>
+        <Button href="/contact/" variant="ghost-on-dark" iconLeft="lucide:phone">
+          Book free counselling
+        </Button>
+      </div>
+    </div>
+
+    <div class="mx-auto mt-14 grid max-w-4xl gap-4 sm:grid-cols-2">
+      {
+        programAreas.map((area, i) => (
+          <a
+            href="/programs/"
+            class="group flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 transition-colors hover:border-orange-400/40 hover:bg-white/[0.07]"
+            data-reveal
+            data-reveal-delay={(i * 0.06).toString()}
+          >
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/10 text-orange-300">
+              <Icon name={area.icon} size={19} />
+            </span>
+            <span class="min-w-0">
+              <span class="block text-sm font-black text-white">{area.label}</span>
+              <span class="mt-1 block text-sm leading-relaxed text-white/60">
+                {area.description}
+              </span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </Section>
+</BaseLayout>

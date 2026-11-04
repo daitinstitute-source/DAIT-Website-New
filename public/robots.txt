@@ -1,6 +1,11 @@
 # ⛔ PRE-LAUNCH: site is NOT public yet. Block every crawler until go-live.
-# On the owner's green signal, replace this file with the "LIVE" version at the
-# bottom, and set siteConfig.allowIndexing = true.
+#
+# This file is only ONE of FOUR indexing blocks. Swapping it alone will NOT
+# make the site indexable — the pages still carry a noindex meta tag and
+# Vercel still sends an X-Robots-Tag header.
+#
+# Follow GO-LIVE.md in the repo root. It lists all four, in order, with the
+# commands to verify each one.
 
 # --- Search engines ---
 User-agent: *

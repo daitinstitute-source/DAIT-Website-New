@@ -14,6 +14,7 @@ import Header from "../components/layout/Header.astro";
 import Footer from "../components/layout/Footer.astro";
 import JsonLd from "../components/seo/JsonLd.astro";
 import WhatsAppButton from "../components/forms/WhatsAppButton.tsx";
+import ChatWidget from "../components/forms/ChatWidget.tsx";
 import CookieConsent from "../components/layout/CookieConsent.astro";
 import CounsellingModal from "../components/layout/CounsellingModal.astro";
 
@@ -63,6 +64,18 @@ const waHref = whatsappLink();
 // Launch gate: until the site is opened for indexing, force noindex/nofollow on
 // every page (blocks Google/Bing AND AI answer engines from listing the site).
 const blockIndexing = !siteConfig.allowIndexing || noindex;
+
+/**
+ * The chatbot only renders when there is a backend to talk to.
+ *
+ * Read at BUILD time (this frontmatter runs in Node), so an unset key means the
+ * widget is never shipped at all — rather than shipping a launcher that opens
+ * and reports "chat is unavailable", which is worse than no launcher. Set
+ * ANTHROPIC_API_KEY in the Vercel project and the next deploy brings it back.
+ *
+ * The key itself never reaches the browser: only this boolean does.
+ */
+const chatEnabled = Boolean(process.env.ANTHROPIC_API_KEY);
 
 // Analytics (GTM/GA4/Pixel) only fire once the site is live — keeps pre-launch
 // QA traffic out of the real reports.
@@ -249,6 +262,9 @@ const metaPixel = trackingEnabled ? siteConfig.analytics.metaPixelId : "";
     <Footer />
 
     <WhatsAppButton href={waHref} client:load />
+    {/* client:idle, not client:load — the chat is never the reason someone
+        opened the page, so it must not compete with the hero for main thread. */}
+    {chatEnabled && <ChatWidget client:idle />}
     <CookieConsent />
     <CounsellingModal />
 

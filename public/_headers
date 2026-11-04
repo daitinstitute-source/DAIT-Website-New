@@ -1,6 +1,11 @@
-# ⛔ PRE-LAUNCH: server-level noindex on Cloudflare Pages for EVERY response
-# (belt-and-suspenders with robots.txt + the per-page meta tag).
-# On the owner's green signal, DELETE this file (or the block below) and set
-# siteConfig.allowIndexing = true.
+# ⛔ PRE-LAUNCH: server-level noindex for EVERY response.
+#
+# ⚠️  THIS FILE DOES NOTHING ON VERCEL, which is where the site deploys.
+#     `_headers` is a Cloudflare Pages format; Vercel ignores it entirely.
+#     The header that actually runs is the X-Robots-Tag rule in vercel.json.
+#     This file is kept only so a move back to Cloudflare Pages stays covered.
+#
+# At go-live, DELETE this file — and remove the X-Robots-Tag from vercel.json.
+# Both steps, plus robots.txt and siteConfig.allowIndexing, are in GO-LIVE.md.
 /*
   X-Robots-Tag: noindex, nofollow, noarchive, nosnippet
