@@ -98,14 +98,85 @@ JSON-LD; no broken internal links.
 
 ---
 
-## 4. Still open (not indexing blockers)
+## 4. FIX BEFORE GO-LIVE — the canonical points at a redirect
 
+Every canonical, every `og:url` and every sitemap URL says **non-www**:
+
+```
+<link rel="canonical" href="https://daitinstitute.com/programs/...">
+```
+
+but the live site **308-redirects non-www to www**:
+
+```
+https://daitinstitute.com/...   -> 308 -> https://www.daitinstitute.com/...
+https://www.daitinstitute.com/... -> 200
+```
+
+So no page has a self-referencing canonical, and every sitemap entry points at
+a URL that immediately redirects. Google will usually resolve this, but it
+wastes crawl budget and Search Console will report the sitemap as "Page with
+redirect". Settle it now, while nothing is indexed and the choice is free.
+
+Pick ONE host and make all three agree — the site, the canonicals, and the
+Google Business Profile / citations:
+
+- **To keep www** (matches what the server already does): set
+  `PUBLIC_SITE_URL=https://www.daitinstitute.com` in the Vercel project. The
+  canonical, `og:url` and sitemap all derive from it, so that single variable
+  fixes everything.
+- **To keep non-www** (matches the code's default): change the primary domain
+  in Vercel so www redirects to non-www instead of the other way round.
+
+Then re-check:
+
+```bash
+curl -sI https://daitinstitute.com/ | grep -i location
+curl -s https://<chosen host>/programs/digital-marketing-course-sambhaji-nagar/ \
+  | grep -o '<link rel="canonical"[^>]*>'
+```
+
+The canonical must equal the URL that returns 200, with no redirect in between.
+
+---
+
+## 5. Still open (not indexing blockers)
+
+- **Centre `geo` and `mapUrl` are unset** in `src/config/site.ts`. These are the
+  strongest remaining hyperlocal signals. Take the lat/lng and the share link
+  from the Google Business Profile pin — they must match it exactly, which is
+  why they were left blank rather than approximated.
+- **No Digital Marketing course photo.** `src/assets/hero/` has images for
+  software development and data analytics but none for digital marketing. This
+  is the one Rank Math check left unmet on that page (keyword in image alt):
+  the only image without alt text there is the decorative hero backdrop, and
+  putting keywords in a decorative image's alt is alt stuffing. A real photo
+  closes it honestly.
 - **Titles over 65 chars on 9 pages, descriptions over 165 on 9 pages.** These
   truncate in search results — no ranking cost, but they cost click-through.
   Worst: `will-ai-replace-software-developers-2026` (94-char title),
   `which-it-course-after-graduation` (285-char description).
-- **`ANTHROPIC_API_KEY` is not set in Vercel.** Until it is, the chat widget
-  renders and reports that chat is unavailable. Set it, or the widget should be
-  removed from `BaseLayout.astro` before launch.
+- **`ANTHROPIC_API_KEY` is not set in Vercel.** The chat widget is gated on it
+  at build time, so right now it simply does not render — nothing is broken on
+  the live site. Set the variable when you want chat live.
 - The content TODOs in `IMAGES-TODO.md` and `CLAUDE.md` (purpose-built 1200x630
   OG image, founder photo, real social URLs, placement/testimonial content).
+
+---
+
+## 6. Local-ranking work that is NOT in this repo
+
+On-page and schema are a minority of local pack ranking. The rest is yours:
+
+- **Google Business Profile** — primary category, the exact NAP below, photos,
+  weekly posts, seeded Q&A. This is the single biggest lever.
+- **Reviews** — volume, recency, and whether the text mentions the course and
+  the city.
+- **Citations** — JustDial, Sulekha, IndiaMART. The address must match
+  byte-for-byte, including punctuation:
+
+  > DAIT Institute, Ambedkar Chowk, Chikalthana, Sambhaji Nagar, Maharashtra 431007
+
+  If the GBP says "Chhatrapati Sambhajinagar" and the site says "Sambhaji
+  Nagar", decide which, then change `src/config/site.ts` and every citation to
+  match it.
