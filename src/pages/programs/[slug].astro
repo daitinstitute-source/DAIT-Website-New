@@ -42,11 +42,12 @@ const courseSchema: WithContext<Course> = {
   name: data.title,
   description: data.tagline,
   url,
-  provider: {
-    "@type": "EducationalOrganization",
-    name: siteConfig.name,
-    sameAs: siteConfig.url,
-  },
+  // Reference the org node by @id rather than inlining a second anonymous
+  // EducationalOrganization. Inline, it reads as a DIFFERENT organisation that
+  // happens to share a name, so the Course's authority lands on a node with no
+  // address, reviews or sameAs behind it. By @id, every course consolidates
+  // onto the one entity defined in seo-defaults.ts.
+  provider: { "@id": `${siteConfig.url}/#organization` },
   ...(data.certification ? { educationalCredentialAwarded: data.certification } : {}),
   hasCourseInstance: [
     {

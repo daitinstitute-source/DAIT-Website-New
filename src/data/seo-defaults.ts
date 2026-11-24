@@ -37,6 +37,29 @@ export function educationalOrganizationSchema(): WithContext<EducationalOrganiza
       addressCountry: "IN",
       ...(center.postalCode ? { postalCode: center.postalCode } : {}),
     },
+    /**
+     * Topical entity signals — what this organisation is actually about.
+     * Helps Google connect the brand to these subjects rather than inferring
+     * them page by page. Keep it to subjects genuinely taught here; padding it
+     * with terms the curriculum does not cover devalues the whole node.
+     */
+    knowsAbout: [
+      "Digital Marketing",
+      "Search Engine Optimization",
+      "Answer Engine Optimization",
+      "Generative Engine Optimization",
+      "Google Ads",
+      "Performance Marketing",
+      "Social Media Marketing",
+      "Data Analytics",
+      "Artificial Intelligence",
+      "Machine Learning",
+      "Computer Vision",
+      "Software Development",
+      "Cloud Computing",
+      "DevOps",
+      "Cybersecurity",
+    ],
     sameAs: siteConfig.social
       .map((s) => s.href)
       .filter((h) => h && h !== "#"),
@@ -68,7 +91,25 @@ export function localBusinessSchema(): WithContext<LocalBusiness> {
       addressCountry: "IN",
       ...(center.postalCode ? { postalCode: center.postalCode } : {}),
     },
-    areaServed: { "@type": "City", name: center.city },
+    /**
+     * The city node carries the old name as an alternateName, so the entity
+     * resolves for "Aurangabad" searches without that word appearing on the
+     * page. The localities follow as their own Place nodes — this is the
+     * hyperlocal signal, and it is only credible while every entry is somewhere
+     * a student would actually travel from.
+     */
+    areaServed: [
+      {
+        "@type": "City",
+        name: center.city,
+        ...(center.alternateCityName ? { alternateName: center.alternateCityName } : {}),
+      },
+      ...(center.serviceAreas ?? []).map((area) => ({
+        "@type": "Place" as const,
+        name: area,
+        containedInPlace: { "@type": "City" as const, name: center.city },
+      })),
+    ],
     ...(center.geo
       ? { geo: { "@type": "GeoCoordinates", latitude: center.geo.lat, longitude: center.geo.lng } }
       : {}),

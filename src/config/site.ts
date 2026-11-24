@@ -17,6 +17,19 @@ export interface Center {
   hours: string; // human display, e.g. "Mon–Sat · 9:00 AM – 6:00 PM"
   openingHours?: string; // schema.org format, e.g. "Mo-Sa 09:00-18:00"
   geo?: { lat: number; lng: number }; // exact centre coords → hyperlocal LocalBusiness schema
+  /**
+   * The city's former name. Chhatrapati Sambhajinagar was renamed from
+   * Aurangabad in 2023 and most local search volume still uses the old name.
+   * Emitted as an alternateName on the areaServed node so the entity resolves
+   * to BOTH names — it never appears in visible copy.
+   */
+  alternateCityName?: string;
+  /**
+   * Localities the centre actually serves, for areaServed. These are entity
+   * signals, not keyword padding: list only places a student would plausibly
+   * travel from, or the node stops being credible.
+   */
+  serviceAreas?: string[];
 }
 
 export interface SocialLink {
@@ -107,7 +120,21 @@ export const siteConfig = {
       openingHours: "Mo-Sa 09:00-18:00",
       // TODO: exact centre coordinates (from the Google Maps pin) → strengthens
       // hyperlocal ranking. Replace with e.g. { lat: 19.8620, lng: 75.3910 }
+      // Leave undefined rather than approximate: a pin in the wrong place is
+      // worse for local ranking than no pin, and it has to match the Google
+      // Business Profile exactly.
       geo: undefined as { lat: number; lng: number } | undefined,
+      alternateCityName: "Aurangabad",
+      serviceAreas: [
+        "Chikalthana",
+        "CIDCO",
+        "Garkheda",
+        "Osmanpura",
+        "Jalna Road",
+        "Nirala Bazar",
+        "Waluj",
+        "Beed Bypass",
+      ],
     },
   ] satisfies Center[],
 
