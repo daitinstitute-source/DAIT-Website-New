@@ -7,7 +7,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Section from "../../components/ui/Section.astro";
 import Button from "../../components/ui/Button.astro";
 import { siteConfig, whatsappLink } from "../../config/site";
-import { canonicalUrl, absoluteUrl } from "../../lib/seo";
+import { canonicalUrl, absoluteUrl, programUrl } from "../../lib/seo";
 import { existingImage } from "../../lib/media";
 import { programAreas } from "../../data/navigation";
 
@@ -175,7 +175,7 @@ const faqSchema: WithContext<FAQPage> | null = d.faqs.length
           <ul class="mt-4 space-y-2">
             {promoPrograms.map((p) => (
               <li>
-                <a href={`/programs/${p.id}/`} class="group flex items-center gap-3 rounded-xl p-2 -mx-2 transition hover:bg-accent-50">
+                <a href={programUrl(p.id)} class="group flex items-center gap-3 rounded-xl p-2 -mx-2 transition hover:bg-accent-50">
                   <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-accent-600 group-hover:bg-accent-500 group-hover:text-white transition-colors">
                     <Icon name={programAreas.find((a) => a.slug === p.data.area)?.icon ?? "lucide:book"} size={17} />
                   </span>

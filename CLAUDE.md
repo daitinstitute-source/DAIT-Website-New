@@ -62,8 +62,11 @@ Two distinct audiences. Every program page and the homepage must speak to BOTH:
 Programs are a **content collection** (MDX + Zod schema), NOT pure Astro pages. Reason: every program shares one layout and highly structured data (duration, fees, syllabus, batches) — a collection scales to 50+ programs without new code.
 
 - Listing page: `/programs/` — groups programs by area, filter tabs per area
-- Detail pages: `/programs/<program-slug>/` — dynamic route `src/pages/programs/[slug].astro` rendering `ProgramLayout.astro`
-- **Areas are a data field, not a URL level** (keeps URLs short now; `/programs/<area>/` category pages can be added later without breaking anything)
+- Detail pages: **root level**, `/<program-slug>/` — dynamic route `src/pages/[slug].astro` rendering `ProgramLayout.astro`
+- **Every program slug ends `-course-sambhaji-nagar`** (e.g. `/digital-marketing-course-sambhaji-nagar/`). The city is in the URL because these pages compete on local search terms, and the `/programs/` segment added nothing a searcher types. A root-level dynamic route is safe here: Astro resolves static routes first, and no static page will ever be named `<something>-course-sambhaji-nagar`.
+- **Build every program link with `programUrl(slug)` from `src/lib/seo.ts`** — never hardcode the path. It has already moved once, and the cost was hunting down ten copies of the pattern.
+- Old URLs (`/programs/<old-slug>`) are 301'd in `vercel.json`. Renaming a program means adding a redirect there too.
+- **Areas are a data field, not a URL level** (keeps URLs short; `/programs/<area>/` category pages can be added later without breaking anything)
 
 **Program areas (enum in schema):**
 1. `software-development` — full-stack, web, mobile
@@ -174,9 +177,9 @@ src/
     ProgramLayout.astro    -> Extends BaseLayout + breadcrumbs, program hero, syllabus, batch info, enquiry CTA
   pages/
     index.astro            -> Homepage (9 sections — see DAIT-BUILD-SPEC.md)
+    [slug].astro           -> Program detail at ROOT, /<slug>-course-sambhaji-nagar/
     programs/
       index.astro          -> Programs hub (grouped by area, filter tabs)
-      [slug].astro         -> Program detail (renders collection entry via ProgramLayout)
     contact.astro          -> Enquiry form + WhatsApp + center address/map + phone/email
     thank-you.astro        -> Post-submit page (conversion tracking fires here)
     404.astro

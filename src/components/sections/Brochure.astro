@@ -15,7 +15,7 @@ import Button from "../ui/Button.astro";
 import HeroBackdrop from "./HeroBackdrop.astro";
 import BrochureDownload from "../forms/BrochureDownload.astro";
 import { siteConfig } from "../../config/site";
-import { canonicalUrl } from "../../lib/seo";
+import { canonicalUrl, programUrl } from "../../lib/seo";
 import { brochure, brochureProgramSlugs, type BrochureLang } from "../../data/brochure";
 
 interface Props {
@@ -33,10 +33,10 @@ const kw = (text: string, cls: string) =>
   text.replace("{kw}", `<span class="${cls}">`).replace("{/kw}", "</span>");
 
 const icons: Record<string, string> = {
-  "ai-led-software-development": "lucide:code",
-  "data-analytics-and-ai": "lucide:chart-column",
+  "software-development-course-sambhaji-nagar": "lucide:code",
+  "data-analytics-course-sambhaji-nagar": "lucide:chart-column",
   "digital-marketing-course-sambhaji-nagar": "lucide:megaphone",
-  "cloud-devops-and-security": "lucide:cloud",
+  "cloud-computing-course-sambhaji-nagar": "lucide:cloud",
 };
 
 const all = await getCollection("programs");
@@ -251,7 +251,7 @@ const label = isMr
                     <span>{p.copy.proTrack}</span>
                   </p>
                 )}
-                <Button href={`/programs/${p.slug}/`} variant="outline" size="sm" icon="lucide:arrow-right">
+                <Button href={programUrl(p.slug)} variant="outline" size="sm" icon="lucide:arrow-right">
                   {t.cta.viewCourse}
                 </Button>
               </>

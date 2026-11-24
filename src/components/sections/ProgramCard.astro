@@ -1,4 +1,5 @@
 ---
+import { programUrl } from "../../lib/seo";
 /**
  * ProgramCard — a single program summary card (homepage featured + programs hub).
  * Takes a programs collection entry's data + slug.
@@ -39,7 +40,7 @@ const nextBatch = siteConfig.display.showNextBatchDate && data.nextBatchDate
 ---
 
 <a
-  href={`/programs/${slug}/`}
+  href={programUrl(slug)}
   class="card card--hover p-6 flex flex-col group"
 >
   <div class="flex items-center justify-between gap-3">

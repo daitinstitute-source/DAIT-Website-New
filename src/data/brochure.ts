@@ -180,14 +180,14 @@ export const brochure: Record<BrochureLang, BrochureCopy> = {
       soonBadge: "Launching soon",
       soonNote: "Visit our office or call {phone} to register your enquiry.",
       programs: {
-        "ai-led-software-development": {
+        "software-development-course-sambhaji-nagar": {
           meta: "Beginner-friendly · No coding needed to start",
           summary:
             "Full-stack development with React, Node.js and AI-assisted coding. Ship deployed apps and graduate with a GitHub portfolio.",
           build: "A live React dashboard, REST APIs, and a full-stack capstone app deployed to the cloud.",
           proTrack: "Already coding? Advanced track: 3 months, weekends.",
         },
-        "data-analytics-and-ai": {
+        "data-analytics-course-sambhaji-nagar": {
           meta: "Beginner-friendly · No maths needed",
           summary:
             "SQL, Python, Power BI and AI. Turn raw data into decisions and graduate with a portfolio of real dashboards.",
@@ -202,7 +202,7 @@ export const brochure: Record<BrochureLang, BrochureCopy> = {
             "A live Google or Meta ad campaign, a blog post ranked on Google, and a full campaign for a real brand.",
           proTrack: "In marketing already? Advanced track: 3 months, weekends.",
         },
-        "cloud-devops-and-security": {
+        "cloud-computing-course-sambhaji-nagar": {
           meta: "Beginner-friendly · No cloud background",
           summary:
             "Learn how modern software runs in production, and build and deploy real cloud infrastructure.",
@@ -375,14 +375,14 @@ export const brochure: Record<BrochureLang, BrochureCopy> = {
       soonBadge: "लवकरच",
       soonNote: "Registration साठी Office ला भेट द्या किंवा {phone} वर Call करा.",
       programs: {
-        "ai-led-software-development": {
+        "software-development-course-sambhaji-nagar": {
           meta: "Beginners साठी · Coding येणे आवश्यक नाही",
           summary:
             "React, Node.js आणि AI-assisted coding सह Full-Stack Development. Live apps बनवा आणि GitHub Portfolio सह course पूर्ण करा.",
           build: "Live React Dashboard, REST APIs आणि Cloud वर deploy केलेले Full-Stack Capstone App.",
           proTrack: "आधीच coding करता? Advanced Track: 3 महिने, weekends.",
         },
-        "data-analytics-and-ai": {
+        "data-analytics-course-sambhaji-nagar": {
           meta: "Beginners साठी · Maths background आवश्यक नाही",
           summary:
             "SQL, Python, Power BI आणि AI. Raw data मधून decisions घ्यायला शिका आणि real dashboards च्या Portfolio सह course पूर्ण करा.",
@@ -397,7 +397,7 @@ export const brochure: Record<BrochureLang, BrochureCopy> = {
             "Live Google / Meta Ad Campaign, Google वर rank होणारी Blog Post, आणि real brand साठी संपूर्ण Campaign.",
           proTrack: "आधीच Marketing मध्ये आहात? Advanced Track: 3 महिने, weekends.",
         },
-        "cloud-devops-and-security": {
+        "cloud-computing-course-sambhaji-nagar": {
           meta: "Beginners साठी · Cloud अनुभव नको",
           summary:
             "Modern software प्रत्यक्ष production मध्ये कसे चालते ते शिका, आणि real Cloud Infrastructure build व deploy करा.",
@@ -492,8 +492,8 @@ export const brochure: Record<BrochureLang, BrochureCopy> = {
 
 /** Program order on the brochure. The last one is unlaunched (draft) and shown as "launching soon". */
 export const brochureProgramSlugs = [
-  "ai-led-software-development",
-  "data-analytics-and-ai",
+  "software-development-course-sambhaji-nagar",
+  "data-analytics-course-sambhaji-nagar",
   "digital-marketing-course-sambhaji-nagar",
-  "cloud-devops-and-security",
+  "cloud-computing-course-sambhaji-nagar",
 ] as const;

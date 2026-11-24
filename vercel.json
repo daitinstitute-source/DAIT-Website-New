@@ -1,9 +1,36 @@
 {
-  "regions": ["bom1"],
+  "regions": [
+    "bom1"
+  ],
   "redirects": [
     {
+      "source": "/programs/ai-led-software-development",
+      "destination": "/software-development-course-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/programs/data-analytics-and-ai",
+      "destination": "/data-analytics-course-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/programs/ai-ml-and-computer-vision",
+      "destination": "/ai-machine-learning-course-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/programs/cloud-devops-and-security",
+      "destination": "/cloud-computing-course-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
       "source": "/programs/ai-led-digital-marketing",
-      "destination": "/programs/digital-marketing-course-sambhaji-nagar/",
+      "destination": "/digital-marketing-course-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/programs/digital-marketing-course-sambhaji-nagar",
+      "destination": "/digital-marketing-course-sambhaji-nagar/",
       "permanent": true
     }
   ],
@@ -11,10 +38,22 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive, nosnippet" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow, noarchive, nosnippet"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
         {
           "key": "Permissions-Policy",
           "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
@@ -27,7 +66,12 @@
     },
     {
       "source": "/downloads/(.*)",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
     }
   ]
 }

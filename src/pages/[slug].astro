@@ -2,11 +2,11 @@
 import { getCollection, render } from "astro:content";
 import type { GetStaticPaths } from "astro";
 import type { WithContext, Course, BreadcrumbList, FAQPage, Thing } from "schema-dts";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import ProgramLayout from "../../layouts/ProgramLayout.astro";
-import Section from "../../components/ui/Section.astro";
-import { siteConfig } from "../../config/site";
-import { canonicalUrl } from "../../lib/seo";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProgramLayout from "../layouts/ProgramLayout.astro";
+import Section from "../components/ui/Section.astro";
+import { siteConfig } from "../config/site";
+import { canonicalUrl, programUrl } from "../lib/seo";
 
 export const getStaticPaths = (async () => {
   const programs = await getCollection("programs");
@@ -23,7 +23,7 @@ const { Content } = await render(program);
 const data = program.data;
 /** Most programs ship no MDX body — see the wrapper note below. */
 const hasBody = Boolean(program.body?.trim());
-const url = canonicalUrl(`/programs/${program.id}/`);
+const url = canonicalUrl(programUrl(program.id));
 
 // Map our modes to schema.org course modes.
 const modeMap: Record<string, string> = {
@@ -121,7 +121,7 @@ const city = siteConfig.centers[0]?.city ?? "Sambhaji Nagar";
 <BaseLayout
   title={data.seoTitle ?? `${data.title} Course in ${city} | DAIT Institute`}
   description={data.seoDescription ?? data.tagline}
-  canonicalPath={`/programs/${program.id}/`}
+  canonicalPath={programUrl(program.id)}
   brandedTitle={false}
   keywords={data.keywords.length
     ? data.keywords

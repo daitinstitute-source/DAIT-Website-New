@@ -15,6 +15,25 @@ export function canonicalUrl(pathname: string): string {
   return `${siteConfig.url}${withSlash}`;
 }
 
+/**
+ * The path for a program detail page.
+ *
+ * Programs live at the ROOT (`/software-development-course-sambhaji-nagar/`),
+ * not under `/programs/`. The hub page keeps `/programs/`, and the route that
+ * renders a program is `src/pages/[slug].astro`.
+ *
+ * Every link to a program must go through here. The pattern moved once
+ * already and the cost was tracking down ten hardcoded copies of it; the next
+ * change should be this one line.
+ *
+ * Note each slug ends in `-course-sambhaji-nagar`, so a root-level dynamic
+ * route cannot realistically collide with a future static page — and static
+ * routes win over dynamic ones in Astro regardless.
+ */
+export function programUrl(slug: string): string {
+  return `/${slug}/`;
+}
+
 /** Absolute URL for an asset path (og images etc.). */
 export function absoluteUrl(path: string): string {
   if (path.startsWith("http")) return path;

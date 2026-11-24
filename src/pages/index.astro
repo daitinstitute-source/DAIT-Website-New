@@ -1,4 +1,5 @@
 ---
+import { programUrl } from "../lib/seo";
 /**
  * Homepage — alternating dark/light rhythm (see BRAND.md).
  * 1 Hero (D) · 2 Choose your path (L) · 3 Which describes you (L)
@@ -195,7 +196,7 @@ const fmtDate = (d: Date) =>
                   </td>
                   <td class="py-4">
                     <a
-                      href={`/programs/${p.id}/`}
+                      href={programUrl(p.id)}
                       class="inline-flex items-center gap-1.5 text-sm font-bold text-accent-600 hover:gap-2.5 transition-all"
                     >
                       Enquire
