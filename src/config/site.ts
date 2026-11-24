@@ -110,7 +110,11 @@ export const siteConfig = {
   centers: [
     {
       name: "DAIT Institute — Sambhaji Nagar",
-      addressLines: ["Chikalthana"],
+      // NAP: this string must match the Google Business Profile byte for byte,
+      // and every citation (JustDial, Sulekha, IndiaMART) after it. Changing
+      // the wording here means changing it everywhere, or the local signal
+      // splits across two addresses.
+      addressLines: ["Ambedkar Chowk", "Chikalthana"],
       city: "Sambhaji Nagar",
       state: "Maharashtra",
       postalCode: "431007",

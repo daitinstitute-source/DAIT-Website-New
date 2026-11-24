@@ -194,7 +194,7 @@ export const brochure: Record<BrochureLang, BrochureCopy> = {
           build: "Power BI and Tableau dashboards, plus an end-to-end capstone on a real dataset.",
           proTrack: "Working with data? Advanced track adds ML: 3 months, weekends.",
         },
-        "ai-led-digital-marketing": {
+        "digital-marketing-course-sambhaji-nagar": {
           meta: "Beginner-friendly · Any stream",
           summary:
             "Performance marketing, SEO, analytics and AI-driven growth on the tools agencies use, with a portfolio of live campaigns.",
@@ -389,7 +389,7 @@ export const brochure: Record<BrochureLang, BrochureCopy> = {
           build: "Power BI व Tableau Dashboards, आणि real data वर संपूर्ण Capstone Project.",
           proTrack: "Data सोबत काम करता? Advanced Track मध्ये ML: 3 महिने, weekends.",
         },
-        "ai-led-digital-marketing": {
+        "digital-marketing-course-sambhaji-nagar": {
           meta: "Beginners साठी · Any Stream",
           summary:
             "Agencies वापरतात त्याच tools वर Performance Marketing, SEO, Analytics आणि AI — Live Campaigns च्या Portfolio सह.",
@@ -494,6 +494,6 @@ export const brochure: Record<BrochureLang, BrochureCopy> = {
 export const brochureProgramSlugs = [
   "ai-led-software-development",
   "data-analytics-and-ai",
-  "ai-led-digital-marketing",
+  "digital-marketing-course-sambhaji-nagar",
   "cloud-devops-and-security",
 ] as const;

@@ -1,5 +1,12 @@
 {
   "regions": ["bom1"],
+  "redirects": [
+    {
+      "source": "/programs/ai-led-digital-marketing",
+      "destination": "/programs/digital-marketing-course-sambhaji-nagar/",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
