@@ -4,6 +4,7 @@ import type { GetStaticPaths } from "astro";
 import type { WithContext, Course, BreadcrumbList, FAQPage, Thing } from "schema-dts";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProgramLayout from "../../layouts/ProgramLayout.astro";
+import Section from "../../components/ui/Section.astro";
 import { siteConfig } from "../../config/site";
 import { canonicalUrl } from "../../lib/seo";
 
@@ -20,6 +21,8 @@ export const getStaticPaths = (async () => {
 const { program } = Astro.props;
 const { Content } = await render(program);
 const data = program.data;
+/** Most programs ship no MDX body — see the wrapper note below. */
+const hasBody = Boolean(program.body?.trim());
 const url = canonicalUrl(`/programs/${program.id}/`);
 
 // Map our modes to schema.org course modes.
@@ -131,8 +134,23 @@ const city = siteConfig.centers[0]?.city ?? "Sambhaji Nagar";
   jsonLd={schemas}
 >
   <ProgramLayout program={program}>
-    <div class="prose prose-slate max-w-none">
-      <Content />
-    </div>
+    {
+      /* The MDX body renders through ProgramLayout's <slot />, which sits
+         outside every Section — so without this wrapper the prose went
+         full-bleed with no container, padding or reading width, and ran off
+         both edges of the viewport.
+
+         Rendered only when there IS a body: four of the five programs have an
+         empty one, and an empty Section would give them a blank padded band
+         above the footer. The last section before the slot is tone="surface",
+         so this one is "white" to keep the alternation. */
+      hasBody && (
+        <Section tone="white">
+          <div class="prose prose-slate max-w-[680px]">
+            <Content />
+          </div>
+        </Section>
+      )
+    }
   </ProgramLayout>
 </BaseLayout>
