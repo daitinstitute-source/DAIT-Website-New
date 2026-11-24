@@ -146,7 +146,14 @@ const city = siteConfig.centers[0]?.city ?? "Sambhaji Nagar";
          so this one is "white" to keep the alternation. */
       hasBody && (
         <Section tone="white">
-          <div class="prose prose-slate max-w-[680px]">
+          {/* `.article` is the house long-form style (blog posts, legal pages)
+              and `.measure` the 680px reading width. The previous
+              `prose prose-slate` did nothing at all: @tailwindcss/typography
+              is not installed, so those were dead class names while preflight
+              had already zeroed the h2 and p margins — which is why the
+              heading looked like bold body text and the paragraphs ran
+              together into a wall. */}
+          <div class="article measure" data-reveal>
             <Content />
           </div>
         </Section>
