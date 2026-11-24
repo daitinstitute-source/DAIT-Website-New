@@ -11,6 +11,28 @@ const programs = defineCollection({
   schema: z.object({
     title: z.string(),
     tagline: z.string(),
+    /**
+     * Search metadata, separate from the visible copy.
+     *
+     * `title` and `tagline` are written for the person reading the page; a meta
+     * title and description are written for a search result. Making one string
+     * do both jobs means the page reads like an advert or the SERP entry
+     * carries no keywords. These three let a program be tuned for search
+     * WITHOUT a word of on-page copy changing.
+     *
+     * All optional — a program that sets none keeps the generated defaults in
+     * src/pages/programs/[slug].astro, so existing programs are untouched.
+     *
+     * seoTitle:       aim for <=65 characters, or Google truncates it.
+     * seoDescription: aim for <=165, same reason. Lead with the keyword.
+     * keywords:       the <meta name="keywords"> tag. Google has ignored this
+     *                 since 2009 — it is kept because it costs nothing and a
+     *                 couple of smaller engines still read it. Do NOT treat it
+     *                 as the place where keyword work happens.
+     */
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional(),
+    keywords: z.array(z.string()).default([]),
     area: z.enum([
       "software-development",
       "data-ai",

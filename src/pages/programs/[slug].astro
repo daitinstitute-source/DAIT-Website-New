@@ -106,14 +106,27 @@ if (data.faqs.length > 0) {
   };
   schemas.push(faqSchema);
 }
+/**
+ * A program may override its search metadata (seoTitle / seoDescription /
+ * keywords in the MDX frontmatter). Where it does not, these generated
+ * defaults apply exactly as before.
+ */
+const city = siteConfig.centers[0]?.city ?? "Sambhaji Nagar";
 ---
 
 <BaseLayout
-  title={`${data.title} Course in ${siteConfig.centers[0]?.city ?? "Sambhaji Nagar"} | DAIT Institute`}
-  description={data.tagline}
+  title={data.seoTitle ?? `${data.title} Course in ${city} | DAIT Institute`}
+  description={data.seoDescription ?? data.tagline}
   canonicalPath={`/programs/${program.id}/`}
   brandedTitle={false}
-  keywords={[`${data.title} course`, `${data.title} course in ${siteConfig.centers[0]?.city ?? "Sambhaji Nagar"}`, "IT training Sambhaji Nagar", "AI course Sambhaji Nagar"]}
+  keywords={data.keywords.length
+    ? data.keywords
+    : [
+        `${data.title} course`,
+        `${data.title} course in ${city}`,
+        "IT training Sambhaji Nagar",
+        "AI course Sambhaji Nagar",
+      ]}
   jsonLd={schemas}
 >
   <ProgramLayout program={program}>
