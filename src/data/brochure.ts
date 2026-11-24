@@ -122,7 +122,8 @@ export const brochure: Record<BrochureLang, BrochureCopy> = {
       download: "Download Brochure (PDF)",
     },
     gate: {
-      pdf: "/downloads/dait-institute-brochure.pdf",
+      // Not a public URL any more: /api/brochure serves the PDF against a signed
+      // token minted by /api/leads. See src/lib/brochure.ts.
       title: "Get the brochure as a {kw}PDF{/kw}",
       intro: "Share your details and the download starts straight away. An advisor may call to help you pick a track.",
       name: "Full name",
@@ -317,7 +318,8 @@ export const brochure: Record<BrochureLang, BrochureCopy> = {
       download: "Brochure Download करा (PDF)",
     },
     gate: {
-      pdf: "/downloads/dait-institute-brochure-marathi.pdf",
+      // Not a public URL any more: /api/brochure serves the PDF against a signed
+      // token minted by /api/leads. See src/lib/brochure.ts.
       title: "Brochure {kw}PDF{/kw} मध्ये मिळवा",
       intro: "तुमची माहिती द्या, download लगेच सुरू होईल. योग्य track निवडायला मदत करण्यासाठी आमचे counsellor तुम्हाला call करू शकतात.",
       name: "पूर्ण नाव",

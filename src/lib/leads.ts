@@ -27,6 +27,8 @@
  *                LEAD_WEBHOOK_URL
  */
 
+import { mintBrochureToken, brochureSecret } from "./brochure.js";
+
 export interface Env {
   BREVO_API_KEY?: string;
   LEADS_TO_EMAIL?: string;
@@ -36,6 +38,8 @@ export interface Env {
   BREVO_PIPELINE_ID?: string;
   BREVO_STAGE_ID?: string;
   LEAD_WEBHOOK_URL?: string;
+  /** HMAC key for brochure download tokens. Falls back to BREVO_API_KEY. */
+  BROCHURE_SECRET?: string;
 }
 
 export interface LeadPayload {
@@ -45,6 +49,8 @@ export interface LeadPayload {
   programInterest?: string;
   audienceType?: string;
   message?: string;
+  /** Set by the brochure form to request a download token: "en" | "mr". */
+  brochure?: string;
   company?: string; // honeypot
   source?: string; // page the form was submitted on (conversion page)
   // First-party engagement (from the BaseLayout session tracker):
@@ -80,6 +86,12 @@ export interface LeadResult {
   contacted?: boolean;
   dealt?: boolean;
   forwarded?: boolean;
+  /**
+   * Short-lived token for /api/brochure, present only when the lead asked for
+   * a brochure AND was actually filed. Minting it here is the whole gate: the
+   * token cannot exist without a lead behind it.
+   */
+  brochureToken?: string;
 }
 
 export interface LeadResponse {
@@ -364,5 +376,20 @@ export async function handleLead(lead: LeadPayload, env: Env): Promise<LeadRespo
     console.log("[leads] captured (no delivery channel succeeded):", JSON.stringify(lead));
   }
 
-  return result({ ok: true, notified, contacted: crm.contacted, dealt: crm.dealt, forwarded });
+  // Only now, with the lead filed, is a download token issued.
+  const brochureToken = lead.brochure
+    ? await mintBrochureToken(
+        lead.brochure === "mr" ? "mr" : "en",
+        brochureSecret(env as Record<string, string | undefined>),
+      ).catch(() => "")
+    : "";
+
+  return result({
+    ok: true,
+    notified,
+    contacted: crm.contacted,
+    dealt: crm.dealt,
+    forwarded,
+    ...(brochureToken ? { brochureToken } : {}),
+  });
 }

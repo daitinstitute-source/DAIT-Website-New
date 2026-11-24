@@ -39,7 +39,6 @@ const labelCls =
 <dialog
   id="brochure-download"
   aria-labelledby="brochure-download-title"
-  data-pdf={g.pdf}
   data-lang={lang}
   data-err-required={g.errRequired}
   data-err-phone={g.errPhone}
@@ -111,9 +110,11 @@ const labelCls =
       <h2 class="mt-5 text-xl font-black text-ink-900">{g.doneTitle}</h2>
       <p class="mt-2 text-sm leading-relaxed text-ink-500">{g.doneText}</p>
       <div class="mt-6 flex flex-col gap-3">
+        {/* href is set in script once a token exists — there is no public PDF
+            URL to put here any more. */}
         <a
-          href={g.pdf}
-          download
+          data-brochure-again
+          href="#"
           class="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-accent-500 bg-accent-500 px-5 py-3 text-sm font-bold text-white transition-all duration-200 hover:border-accent-600 hover:bg-accent-600"
         >
           <Icon name="lucide:download" size={18} />
@@ -149,8 +150,16 @@ const labelCls =
     const dialog = document.getElementById("brochure-download") as HTMLDialogElement | null;
     if (!dialog || typeof dialog.showModal !== "function") return;
 
-    const UNLOCK_KEY = "dait_brochure_ok";
-    const pdf = dialog.dataset.pdf ?? "";
+    /**
+     * The PDF path is no longer here, and that is the point: the file lives
+     * outside the web root and only /api/brochure can reach it, with a token
+     * that /api/leads mints once a lead is filed.
+     *
+     * There is also no "already downloaded on this device" shortcut any more.
+     * It used to jump straight to the file, which cannot work when the file
+     * needs a fresh token — the form is the only way through now.
+     */
+    const lang = dialog.dataset.lang === "mr" ? "mr" : "en";
     const form = dialog.querySelector("form") as HTMLFormElement;
     const errorEl = dialog.querySelector("[data-brochure-error]") as HTMLElement;
     const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
@@ -160,23 +169,24 @@ const labelCls =
       done: dialog.querySelector('[data-brochure-step="done"]') as HTMLElement,
     };
 
-    const unlocked = () => {
-      try {
-        return localStorage.getItem(UNLOCK_KEY) === "1";
-      } catch {
-        return false;
-      }
-    };
-
     const show = (step: "form" | "done") => {
       steps.form.classList.toggle("hidden", step !== "form");
       steps.done.classList.toggle("hidden", step !== "done");
     };
 
-    const startDownload = () => {
+    const downloadUrl = (token: string) =>
+      `/api/brochure?t=${encodeURIComponent(token)}&lang=${lang}`;
+
+    /** The token is the only thing that opens the file; without one, nothing to do. */
+    const startDownload = (token: string) => {
+      if (!token) return;
+      // Point "download again" at the same token, so the button works for as
+      // long as the token does rather than silently 403ing.
+      const again = dialog.querySelector("[data-brochure-again]") as HTMLAnchorElement | null;
+      if (again) again.href = downloadUrl(token);
+
       const a = document.createElement("a");
-      a.href = pdf;
-      a.download = pdf.split("/").pop() ?? "dait-institute-brochure.pdf";
+      a.href = downloadUrl(token);
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -219,15 +229,9 @@ const labelCls =
       }
       if (!target.closest("[data-brochure-download]")) return;
       e.preventDefault();
-      // Already shared details on this device: skip the form, keep the confirmation.
-      if (unlocked()) {
-        show("done");
-        startDownload();
-      } else {
-        show("form");
-      }
+      show("form");
       dialog.showModal();
-      if (!unlocked()) (form.elements.namedItem("name") as HTMLInputElement | null)?.focus();
+      (form.elements.namedItem("name") as HTMLInputElement | null)?.focus();
     });
 
     // Click on the backdrop closes.
@@ -261,18 +265,21 @@ const labelCls =
             audienceType: String(fd.get("audienceType") ?? "other"),
             message: "Downloaded the brochure PDF",
             company: String(fd.get("company") ?? ""), // honeypot — must stay empty
+            brochure: lang, // asks /api/leads for a download token
             ...engagement(),
             submittedAt: new Date().toISOString(),
-            extra: { form: "Brochure download", brochure_language: dialog.dataset.lang ?? "en" },
+            extra: { form: "Brochure download", brochure_language: lang },
           }),
         });
         if (!res.ok) throw new Error(`Request failed (${res.status})`);
 
-        try {
-          localStorage.setItem(UNLOCK_KEY, "1");
-        } catch {
-          /* private mode: they will simply be asked again next time */
+        const body = (await res.json().catch(() => ({}))) as { brochureToken?: string };
+        if (!body.brochureToken) {
+          // The lead is filed, so never say it failed — but the file cannot be
+          // served without a token, so point them somewhere that works.
+          throw new Error("No download token returned");
         }
+
         try {
           const w = window as unknown as { dataLayer?: unknown[]; fbq?: (...a: unknown[]) => void };
           w.dataLayer = w.dataLayer || [];
@@ -283,7 +290,7 @@ const labelCls =
         }
         form.reset();
         show("done");
-        startDownload();
+        startDownload(body.brochureToken);
       } catch {
         fail(dialog.dataset.errSend ?? "");
       } finally {
