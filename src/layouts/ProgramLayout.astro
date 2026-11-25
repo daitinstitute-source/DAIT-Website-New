@@ -18,6 +18,7 @@ import FounderStory from "../components/sections/FounderStory.astro";
 import TestimonialCarousel from "../components/sections/TestimonialCarousel.astro";
 import FoundingCohort from "../components/sections/FoundingCohort.astro";
 import OutcomesSection from "../components/sections/OutcomesSection.astro";
+import JobRolesSlider from "../components/sections/JobRolesSlider.astro";
 import CareerSupport from "../components/sections/CareerSupport.astro";
 import ProgramComparison from "../components/sections/ProgramComparison.astro";
 import WhyDAIT from "../components/sections/WhyDAIT.astro";
@@ -59,6 +60,15 @@ interface Props {
       faculty?: Array<{ name: string; role: string; experience: string; expertise: string[]; linkedinUrl?: string }>;
       testimonials?: Array<{ name: string; jobTitle: string; company: string; quote: string; rating?: number; salaryHike?: string }>;
       whyDAIT?: Array<{ title: string; description: string; icon: string }>;
+      jobRoles?: Array<{
+        title: string;
+        summary: string;
+        responsibilities?: string[];
+        tools?: string[];
+        hires?: string;
+        level?: string;
+        icon?: string;
+      }>;
       careerOutcomes?: Array<{ category: string; items: string[]; note?: string }>;
     };
   };
@@ -275,14 +285,28 @@ const defaultWhyDAIT = [
 )}
 
 <!-- CAREER OUTCOMES -->
-<Section tone="surface">
-  {/* Same empty-array-is-truthy trap as WhyDAIT above. */}
-  <OutcomesSection outcomes={data.careerOutcomes?.length ? data.careerOutcomes : [
-    {
-      category: "Job Roles",
-      items: data.outcomes || []
-    }
-  ]} />
+{/* The anchor lives on the Section, not on either child: the sticky nav links
+    to #outcomes and must still resolve whichever of them renders. */}
+<Section tone="surface" id="outcomes">
+  {/* Roles come first as a slider of real job descriptions. A program that
+      has not had its roles written yet falls back to the plain `outcomes`
+      list, so nothing is blank while content catches up. */}
+  {
+    data.jobRoles?.length ? (
+      <JobRolesSlider roles={data.jobRoles} programTitle={data.title} />
+    ) : (
+      <OutcomesSection
+        outcomes={[{ category: "Job Roles", items: data.outcomes || [] }]}
+      />
+    )
+  }
+
+  {/* Skills and progression still render as cards beneath the slider. */}
+  {data.careerOutcomes?.length ? (
+    <div class="mt-14">
+      <OutcomesSection outcomes={data.careerOutcomes} hideHeading={Boolean(data.jobRoles?.length)} />
+    </div>
+  ) : null}
 </Section>
 
 <!-- 360° CAREER SUPPORT -->

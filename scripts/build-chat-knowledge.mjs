@@ -97,6 +97,31 @@ function renderProgram(p) {
 
   if (p.outcomes?.length) out.push(`\n**Job roles this leads to**\n${list(p.outcomes)}`);
 
+  /**
+   * The detailed roles, which replaced the salary bands on the page. Worth the
+   * tokens: "what does a BI Analyst actually do" is one of the questions a
+   * counselling bot gets most, and the answer now exists in the content rather
+   * than having to be improvised.
+   */
+  if (p.jobRoles?.length) {
+    const roles = p.jobRoles
+      .map((r) => {
+        const bits = [`- **${r.title}**${r.level ? ` (${r.level})` : ""}: ${r.summary}`];
+        if (r.responsibilities?.length) {
+          bits.push(`  Day to day: ${r.responsibilities.join("; ")}`);
+        }
+        if (r.tools?.length) bits.push(`  Tools: ${r.tools.join(", ")}`);
+        if (r.hires) bits.push(`  Who hires: ${r.hires}`);
+        return bits.join("\n");
+      })
+      .join("\n");
+    out.push(
+      `\n**What these roles actually involve**\n` +
+        `(Describe the work. Salary figures were deliberately removed from this site — ` +
+        `if asked about pay, say it depends on the employer and the portfolio, and offer counselling.)\n${roles}`,
+    );
+  }
+
   if (p.careerOutcomes?.length) {
     const co = p.careerOutcomes
       .map((c) => {

@@ -159,15 +159,74 @@ faqs:
     a: "No. Training work uses provided GPU access, and the Edge AI phase uses Jetson hardware at the centre. You are welcome to use your own if you have it."
   - q: "How is this different from an online AI course?"
     a: "It is classroom and mentor-led, with your work reviewed in person, and it goes past model training into deployment — Edge AI, optimisation and MLOps — which is where most self-taught learners stop and where employers start asking questions."
+jobRoles:
+  - title: "Machine Learning Engineer"
+    level: "Core AI role"
+    icon: "lucide:brain-circuit"
+    summary: "Builds models that make a prediction the business will act on, then gets them running reliably on real data rather than a clean notebook."
+    responsibilities:
+      - "Frame a business problem as something a model can learn"
+      - "Engineer features and train models against real data"
+      - "Evaluate honestly, including where the model fails"
+      - "Hand the model over as a service something else can call"
+    tools: ["Python", "Scikit-Learn", "XGBoost", "PyTorch", "FastAPI"]
+    hires: "Product companies, analytics teams, and IT services firms building AI capability for clients."
+  - title: "Computer Vision Engineer"
+    level: "Specialist"
+    icon: "lucide:eye"
+    summary: "Works on systems that read images and video — inspection, detection, tracking, counting. Strong fit for the manufacturing base around Sambhaji Nagar."
+    responsibilities:
+      - "Collect and label image data worth training on"
+      - "Train detection and segmentation models"
+      - "Tune for accuracy and for speed on real hardware"
+      - "Deploy to cameras or edge devices on site"
+    tools: ["OpenCV", "YOLOv8", "PyTorch", "DeepSORT", "TensorRT"]
+    hires: "Industrial automation and inspection firms, surveillance and safety vendors, and product teams."
+  - title: "Deep Learning Engineer"
+    level: "Model-building focus"
+    icon: "lucide:network"
+    summary: "Works with neural networks where simpler methods are not enough — image, text and signal problems that need architecture and training skill."
+    responsibilities:
+      - "Choose and adapt architectures for the problem"
+      - "Fine-tune pretrained models on domain data"
+      - "Run and track experiments so results are reproducible"
+      - "Optimise models that work but are too slow or too large"
+    tools: ["PyTorch", "TensorFlow", "Keras", "MLflow"]
+    hires: "AI product teams, research-leaning groups, and services firms with a dedicated AI practice."
+  - title: "MLOps Engineer"
+    level: "Production side"
+    icon: "lucide:workflow"
+    summary: "Makes machine learning a system rather than a one-off result — versioned, monitored, retrainable, and recoverable when it drifts."
+    responsibilities:
+      - "Containerise models and serve them behind an API"
+      - "Build pipelines for training and retraining"
+      - "Track experiments, versions and datasets"
+      - "Monitor live models for drift and degradation"
+    tools: ["Docker", "Kubernetes", "MLflow", "DVC", "CI/CD"]
+    hires: "Companies that already have models in production and need them to stay working. Consistently short-staffed."
+  - title: "GenAI / LLM Engineer"
+    level: "Fastest-moving area"
+    icon: "lucide:sparkles"
+    summary: "Builds applications on top of large language models — retrieval over a company's own documents, assistants, and workflow tools."
+    responsibilities:
+      - "Build RAG pipelines over internal content"
+      - "Design prompts and evaluate output quality properly"
+      - "Work with vector databases and embeddings"
+      - "Judge when fine-tuning is the wrong answer"
+    tools: ["LangChain", "ChromaDB", "FAISS", "Python", "Claude"]
+    hires: "Product companies, consultancies and IT services firms building AI features for clients."
+  - title: "Edge AI Engineer"
+    level: "Hardware-adjacent"
+    icon: "lucide:cpu"
+    summary: "Gets models running on devices rather than servers — on a factory floor, a camera or a vehicle, where latency and power actually matter."
+    responsibilities:
+      - "Optimise and quantise models for constrained hardware"
+      - "Deploy to NVIDIA Jetson and similar devices"
+      - "Measure and improve real inference speed"
+      - "Work within power, heat and cost limits"
+    tools: ["NVIDIA Jetson", "TensorRT", "ONNX", "CUDA", "OpenCV"]
+    hires: "Industrial automation, robotics and IoT product companies — a strong fit for the manufacturing belt here."
 careerOutcomes:
-  - category: "Job Roles"
-    items:
-      - "AI / Machine Learning Engineer — ₹5–12 LPA"
-      - "Computer Vision Engineer — ₹6–14 LPA"
-      - "Deep Learning Engineer — ₹6–15 LPA"
-      - "MLOps Engineer — ₹6–14 LPA"
-      - "GenAI Engineer — ₹6–15 LPA"
-    note: "Market averages for these roles in India (AmbitionBox / Glassdoor and 2026 industry salary guides) — not a DAIT placement guarantee. AI and computer vision roles pay above general software averages, and a strong project portfolio moves the band materially."
   - category: "Skills Mastered"
     items:
       - "Python, NumPy, Pandas and the maths behind ML"

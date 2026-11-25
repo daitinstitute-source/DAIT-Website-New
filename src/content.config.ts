@@ -98,10 +98,35 @@ const programs = defineCollection({
       description: z.string(),
       icon: z.string(), // lucide icon name
     })).default([]),
+    /**
+     * The roles this program leads to, as a slider of real job descriptions.
+     *
+     * This replaced a list of salary bands. A band like "₹4–7 LPA" told a
+     * prospective student almost nothing useful, needed a disclaimer under it
+     * every time, and dated badly — while what people actually want to know is
+     * what the job IS and whether they would like doing it.
+     *
+     * Describe the role as it exists in the market. Do not imply DAIT places
+     * anyone into it: that claim lives nowhere on this site.
+     */
+    jobRoles: z.array(z.object({
+      title: z.string(),
+      /** One or two sentences: what this person actually does. */
+      summary: z.string(),
+      /** 3-4 concrete day-to-day tasks. */
+      responsibilities: z.array(z.string()).default([]),
+      /** Tools used in the job, which should overlap what the course teaches. */
+      tools: z.array(z.string()).default([]),
+      /** Who hires for it locally, e.g. "IT services firms, agencies, in-house teams". */
+      hires: z.string().optional(),
+      /** Where it sits on a career path, e.g. "Common first role". */
+      level: z.string().optional(),
+      icon: z.string().optional(), // lucide name; falls back to a briefcase
+    })).default([]),
     careerOutcomes: z.array(z.object({
-      category: z.string(), // "Job Roles", "Skills", "Salary Range"
+      category: z.string(), // "Skills Mastered", "Where This Leads"
       items: z.array(z.string()),
-      note: z.string().optional(), // e.g. source disclaimer: "Market averages — AmbitionBox, 2025"
+      note: z.string().optional(), // optional source/disclaimer line
     })).default([]),
     featured: z.boolean().default(false), // shown on homepage
     order: z.number().default(99),

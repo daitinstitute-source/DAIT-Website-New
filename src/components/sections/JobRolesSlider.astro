@@ -1,0 +1,215 @@
+---
+/**
+ * JobRolesSlider — the roles a program leads to, one card per role.
+ *
+ * Replaces the old salary-band list. A band like "₹4–7 LPA" needed a
+ * disclaimer under it every time, dated within a year, and never answered the
+ * question someone choosing a course is actually asking: what is this job, and
+ * would I want to do it?
+ *
+ * Built on CSS scroll-snap rather than a carousel library. With no JS it is
+ * still a usable horizontal scroller — the arrows are an enhancement, not the
+ * mechanism — which matters because this sits well down a long page where
+ * script may not have run yet.
+ *
+ * Accessibility: the track is a focusable region so keyboard users can scroll
+ * it with arrow keys natively, each card is an <article> with its heading, and
+ * the arrows are real buttons that disable at the ends rather than silently
+ * doing nothing.
+ */
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+
+export interface JobRole {
+  title: string;
+  summary: string;
+  responsibilities?: string[];
+  tools?: string[];
+  hires?: string;
+  level?: string;
+  icon?: string;
+}
+
+interface Props {
+  roles: JobRole[];
+  /** Program title, for the intro line. */
+  programTitle?: string;
+}
+
+const { roles, programTitle } = Astro.props;
+---
+
+{
+  roles.length > 0 && (
+    <div id="job-roles">
+      <div class="max-w-3xl" data-reveal>
+        <SectionLabel>Career outcomes</SectionLabel>
+        <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+          Roles this program <span class="text-orange-500">opens up</span>
+        </h2>
+        <p class="mt-4 text-ink-600 measure">
+          What each job actually involves day to day, the tools it runs on, and who hires for
+          it{programTitle ? "" : ""}. Swipe or use the arrows to look through them.
+        </p>
+      </div>
+
+      <div class="relative mt-10" data-roles>
+        {/* Arrows: hidden until the script decides they are needed. */}
+        <div class="mb-4 flex items-center gap-2" data-roles-nav hidden>
+          <button
+            type="button"
+            data-roles-prev
+            aria-label="Previous roles"
+            class="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-ink-600 transition-colors hover:border-accent-500 hover:text-accent-500 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-border disabled:hover:text-ink-600"
+          >
+            <Icon name="lucide:arrow-left" size={18} />
+          </button>
+          <button
+            type="button"
+            data-roles-next
+            aria-label="More roles"
+            class="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-ink-600 transition-colors hover:border-accent-500 hover:text-accent-500 disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:border-border disabled:hover:text-ink-600"
+          >
+            <Icon name="lucide:arrow-right" size={18} />
+          </button>
+          <p class="ml-2 text-xs font-semibold text-ink-500">
+            <span data-roles-count>{roles.length}</span> roles
+          </p>
+        </div>
+
+        <ul
+          data-roles-track
+          tabindex="0"
+          role="region"
+          aria-label="Job roles this program leads to"
+          class="roles-track flex snap-x snap-mandatory gap-5 overflow-x-auto pb-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-500"
+        >
+          {roles.map((role, i) => (
+            <li
+              class="w-[min(20rem,82vw)] shrink-0 snap-start sm:w-[22rem]"
+              data-reveal
+              data-reveal-delay={(Math.min(i, 3) * 0.08).toString()}
+            >
+              <article class="flex h-full flex-col rounded-3xl border border-border bg-white p-7 shadow-sm">
+                <div class="flex items-start gap-3">
+                  <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">
+                    <Icon name={role.icon || "lucide:briefcase"} size={21} />
+                  </span>
+                  <div class="min-w-0">
+                    <h3 class="text-lg font-black leading-tight text-ink-900">{role.title}</h3>
+                    {role.level && (
+                      <p class="mt-1 text-[0.7rem] font-bold uppercase tracking-wider text-orange-500">
+                        {role.level}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <p class="mt-4 text-sm leading-relaxed text-ink-600">{role.summary}</p>
+
+                {role.responsibilities && role.responsibilities.length > 0 && (
+                  <>
+                    <p class="mt-5 text-[0.7rem] font-bold uppercase tracking-wider text-ink-500">
+                      Day to day
+                    </p>
+                    <ul class="mt-2.5 space-y-2">
+                      {role.responsibilities.map((r) => (
+                        <li class="flex items-start gap-2.5 text-sm leading-relaxed text-ink-600">
+                          <Icon
+                            name="lucide:check"
+                            size={14}
+                            class="mt-1 shrink-0 text-accent-500"
+                          />
+                          <span>{r}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+
+                {role.tools && role.tools.length > 0 && (
+                  <div class="mt-5 flex flex-wrap gap-1.5">
+                    {role.tools.map((t) => (
+                      <span class="rounded-full bg-surface-50 px-2.5 py-1 text-[0.7rem] font-semibold text-ink-600">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {role.hires && (
+                  <p class="mt-auto flex items-start gap-2 border-t border-border pt-4 text-xs leading-relaxed text-ink-500">
+                    <Icon name="lucide:building-2" size={14} class="mt-0.5 shrink-0" />
+                    <span>{role.hires}</span>
+                  </p>
+                )}
+              </article>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  /* Thin, unobtrusive scrollbar; the track is still scrollable without JS. */
+  .roles-track {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-blue) transparent;
+  }
+  .roles-track::-webkit-scrollbar {
+    height: 6px;
+  }
+  .roles-track::-webkit-scrollbar-thumb {
+    background: var(--color-border-blue);
+    border-radius: 999px;
+  }
+  .roles-track::-webkit-scrollbar-track {
+    background: transparent;
+  }
+</style>
+
+<script>
+  (() => {
+    document.querySelectorAll<HTMLElement>("[data-roles]").forEach((root) => {
+      const track = root.querySelector<HTMLElement>("[data-roles-track]");
+      const nav = root.querySelector<HTMLElement>("[data-roles-nav]");
+      const prev = root.querySelector<HTMLButtonElement>("[data-roles-prev]");
+      const next = root.querySelector<HTMLButtonElement>("[data-roles-next]");
+      if (!track || !nav || !prev || !next) return;
+
+      const overflows = () => track.scrollWidth > track.clientWidth + 4;
+
+      /** One card plus its gap, so a click advances exactly one. */
+      const step = () => {
+        const card = track.querySelector<HTMLElement>("li");
+        if (!card) return track.clientWidth;
+        const gap = parseFloat(getComputedStyle(track).columnGap || "20") || 20;
+        return card.getBoundingClientRect().width + gap;
+      };
+
+      const sync = () => {
+        // Arrows are pointless when everything already fits.
+        nav.hidden = !overflows();
+        const max = track.scrollWidth - track.clientWidth;
+        prev.disabled = track.scrollLeft <= 2;
+        next.disabled = track.scrollLeft >= max - 2;
+      };
+
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const go = (dir: 1 | -1) =>
+        track.scrollBy({ left: dir * step(), behavior: reduced ? "auto" : "smooth" });
+
+      prev.addEventListener("click", () => go(-1));
+      next.addEventListener("click", () => go(1));
+      track.addEventListener("scroll", sync, { passive: true });
+      window.addEventListener("resize", sync);
+
+      sync();
+      // Re-check once fonts and images have settled the layout.
+      requestAnimationFrame(sync);
+      setTimeout(sync, 400);
+    });
+  })();
+</script>

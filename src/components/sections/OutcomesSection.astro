@@ -10,9 +10,14 @@ interface CareerOutcome {
 
 interface Props {
   outcomes: CareerOutcome[];
+  /**
+   * Drop the heading block when JobRolesSlider has already introduced this
+   * section — otherwise the page says "Career outcomes" twice in a row.
+   */
+  hideHeading?: boolean;
 }
 
-const { outcomes } = Astro.props;
+const { outcomes, hideHeading = false } = Astro.props;
 
 const categoryIcons: Record<string, string> = {
   "Job Roles": "lucide:briefcase",
@@ -26,17 +31,21 @@ const categoryIcons: Record<string, string> = {
 };
 ---
 
-<div id="outcomes">
-  <div class="max-w-3xl" data-reveal>
-    <SectionLabel>Career outcomes</SectionLabel>
-    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">What you can <span class="text-orange-500">achieve</span></h2>
-    <p class="mt-4 text-ink-600 measure">
-      Concrete roles, skills, and opportunities that await you after completing the program.
-    </p>
-  </div>
+{/* No id here: the #outcomes anchor is on the Section wrapper in
+    ProgramLayout, so it resolves whether this renders or JobRolesSlider does. */}
+<div>
+  {!hideHeading && (
+    <div class="max-w-3xl" data-reveal>
+      <SectionLabel>Career outcomes</SectionLabel>
+      <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">What you can <span class="text-orange-500">achieve</span></h2>
+      <p class="mt-4 text-ink-600 measure">
+        Concrete roles, skills, and opportunities that await you after completing the program.
+      </p>
+    </div>
+  )}
 
   {outcomes && outcomes.length > 0 ? (
-    <div class="mt-10 grid gap-6 lg:grid-cols-3">
+    <div class:list={["grid gap-6 lg:grid-cols-3", !hideHeading && "mt-10"]}>
       {outcomes.map((outcome, i) => (
         <div
           class="rounded-3xl border border-border bg-white p-8 shadow-sm"
