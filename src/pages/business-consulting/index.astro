@@ -5,7 +5,7 @@
  * The B2B vertical: founder-led growth consulting, sales enablement and
  * corporate training for manufacturing, industrial, IT/SaaS and service
  * businesses. Built on the existing design system (Section, SectionLabel,
- * Button, HeroBackdrop) so it reads as part of the site, with a darker,
+ * Button, Section) so it reads as part of the site, with a darker,
  * quieter treatment so it reads as enterprise rather than campus.
  *
  * All copy and figures come from src/data/consulting.ts — edit claims there.
@@ -21,7 +21,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Section from "../../components/ui/Section.astro";
 import SectionLabel from "../../components/ui/SectionLabel.astro";
 import Button from "../../components/ui/Button.astro";
-import HeroBackdrop from "../../components/sections/HeroBackdrop.astro";
 import CompanyReferences from "../../components/consulting/CompanyReferences.astro";
 import ConsultingForm from "../../components/forms/ConsultingForm.tsx";
 import { siteConfig } from "../../config/site";
@@ -134,49 +133,37 @@ const schema: WithContext<ProfessionalService> = {
       buyer arriving from an SAP or cloud search found nothing addressed to
       them. The founder's credibility still matters, so it moved down to its
       own section with the track record beside it, where proof belongs. */}
-  <section
-    class="relative overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-850 text-white"
-  >
-    <HeroBackdrop name="consulting" overlay="dark" />
-    <div
-      aria-hidden="true"
-      class="pointer-events-none absolute inset-0 opacity-[0.06]"
-      style="background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0); background-size: 30px 30px;"
-    >
-    </div>
-
-    <div class="container-wide relative py-16 lg:py-20">
-      <div class="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
+  <Section tone="dark" class="pt-28 pb-20">
+    <div class="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
         <div data-reveal>
           <p
-            class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[0.7rem] font-bold uppercase tracking-wider text-white backdrop-blur-sm"
+            class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[0.7rem] font-bold uppercase tracking-wider text-white"
           >
             <Icon name="lucide:briefcase-business" size={14} class="text-orange-400" />
-            Business consulting for midsize &amp; enterprise · India
+            Independent advisory · Midsize &amp; enterprise · India
           </p>
 
           <h1
             class="mt-6 text-[2rem] font-black leading-[1.08] tracking-tight text-white sm:text-[2.6rem] lg:text-5xl"
           >
-            Growth and technology decisions, made with{" "}
-            <span class="text-orange-400">someone who has nothing to sell you</span>
+            Growth and technology advice from a firm that{" "}
+            <span class="text-orange-400">implements nothing</span>
           </h1>
 
           <p class="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-            Two practices under one principle. Growth work on who you sell to and how marketing
-            and sales operate as one motion. Technology advisory on what to build, buy or
-            modernise — AI, data, cloud, SAP and legacy systems.
+            Thirteen services across two practices: how you win customers, and what you build,
+            buy or modernise. We take no implementation revenue and no vendor commission — which
+            is what lets the answer be that you should keep what you have, or do nothing at all.
           </p>
           <p class="mt-4 max-w-xl text-sm leading-relaxed text-white/70">
-            We take no implementation revenue and no vendor commission, which is what lets the
-            recommendation be to build, to buy, to use a partner, or to do nothing at all. Your
-            team, or the vendor you choose, does the execution.
+            Every engagement ends with a decision you can defend and a team that can run it. Your
+            people, or the partner you appoint, do the execution.
           </p>
 
           <div class="mt-8 flex flex-wrap gap-3">
             <Button href="#consultation" size="lg">Book a business consultation</Button>
             <Button href="#services" variant="ghost-on-dark" icon="lucide:arrow-down">
-              Explore our services
+              See all thirteen services
             </Button>
           </div>
         </div>
@@ -213,9 +200,8 @@ const schema: WithContext<ProfessionalService> = {
             );
           })}
         </div>
-      </div>
     </div>
-  </section>
+  </Section>
 
   <!-- ── 2 · Services (LIGHT) ─────────────────────────────── -->
   <Section tone="white" id="services">
