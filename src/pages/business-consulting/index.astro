@@ -76,7 +76,7 @@ const schema: WithContext<ProfessionalService> = {
   name: "DAIT Business Consulting",
   url,
   description:
-    "Founder-led B2B growth consulting, sales enablement and corporate training for manufacturing, industrial, IT and SaaS businesses in Chhatrapati Sambhajinagar.",
+    "Independent business and technology advisory for midsize and enterprise companies: B2B growth strategy and sales enablement, plus consulting across AI, data, cloud, SAP and application modernisation.",
   parentOrganization: { "@id": `${siteConfig.url}/#organization` },
   areaServed: { "@type": "Country", name: "India" },
   address: {
@@ -107,24 +107,33 @@ const schema: WithContext<ProfessionalService> = {
 ---
 
 <BaseLayout
-  title="DAIT Business Consulting | B2B Growth & Corporate Training"
+  title="Business & Technology Consulting for B2B Companies | DAIT"
   brandedTitle={false}
-  description="B2B growth consulting, sales enablement, manufacturing marketing advisory and corporate training in Chhatrapati Sambhajinagar. Strengthen your team's growth capabilities."
+  description="Independent advisory for midsize and enterprise: B2B growth and sales strategy, plus technology consulting across AI, data, cloud, SAP and app modernisation."
   canonicalPath="/business-consulting/"
   keywords={[
+    "business and technology consulting India",
     "B2B growth consultant Chhatrapati Sambhajinagar",
     "business consulting Sambhaji Nagar",
     "B2B marketing consultant Maharashtra",
     "manufacturing marketing consultant",
-    "corporate sales and marketing training",
     "account-based marketing consultant",
     "fractional CMO services",
+    "AI consulting India",
+    "digital transformation consulting",
+    "cloud and DevOps consulting",
+    "SAP advisory India",
     "technology vendor advisory",
   ]}
   ogImage={f.photo}
   jsonLd={[schema]}
 >
-  <!-- ── 1 · Founder-led hero (DARK) ──────────────────────── -->
+  {/* ── 1 · Hero (DARK) ─────────────────────────────────────
+      Deliberately NOT founder-led. This hub covers two practices now, and a
+      hero built around one person's marketing CV told half the story — a
+      buyer arriving from an SAP or cloud search found nothing addressed to
+      them. The founder's credibility still matters, so it moved down to its
+      own section with the track record beside it, where proof belongs. */}
   <section
     class="relative overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-850 text-white"
   >
@@ -143,25 +152,25 @@ const schema: WithContext<ProfessionalService> = {
             class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[0.7rem] font-bold uppercase tracking-wider text-white backdrop-blur-sm"
           >
             <Icon name="lucide:briefcase-business" size={14} class="text-orange-400" />
-            Founder-led B2B growth consulting · {centre.city}
+            Business consulting for midsize &amp; enterprise · India
           </p>
 
           <h1
             class="mt-6 text-[2rem] font-black leading-[1.08] tracking-tight text-white sm:text-[2.6rem] lg:text-5xl"
           >
-            Better growth strategy. Stronger sales teams.{" "}
-            <span class="text-orange-400">Smarter business decisions.</span>
+            Growth and technology decisions, made with{" "}
+            <span class="text-orange-400">someone who has nothing to sell you</span>
           </h1>
 
           <p class="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-            DAIT Business Consulting helps manufacturing companies, B2B IT, SaaS and technology
-            businesses strengthen their marketing and sales capabilities through strategic
-            consulting, team training and growth coaching.
+            Two practices under one principle. Growth work on who you sell to and how marketing
+            and sales operate as one motion. Technology advisory on what to build, buy or
+            modernise — AI, data, cloud, SAP and legacy systems.
           </p>
           <p class="mt-4 max-w-xl text-sm leading-relaxed text-white/70">
-            With {f.experience} across B2B marketing, enterprise demand generation, SaaS, IT services
-            and international markets, {f.name} helps organisations connect marketing activity to
-            qualified opportunities and measurable pipeline.
+            We take no implementation revenue and no vendor commission, which is what lets the
+            recommendation be to build, to buy, to use a partner, or to do nothing at all. Your
+            team, or the vendor you choose, does the execution.
           </p>
 
           <div class="mt-8 flex flex-wrap gap-3">
@@ -172,68 +181,54 @@ const schema: WithContext<ProfessionalService> = {
           </div>
         </div>
 
-        <!-- Founder portrait. Replace public/images/founder.jpg to change it. -->
-        <div class="relative mx-auto w-full max-w-sm lg:mx-0" data-reveal data-reveal-delay="0.1">
-          <div class="relative overflow-hidden rounded-[24px] shadow-2xl ring-1 ring-white/15">
-            <img
-              src={f.photo}
-              alt={`${f.name}, ${f.positioning.split("|")[0].trim()}, DAIT Business Consulting`}
-              width="1080"
-              height="1080"
-              class="aspect-square w-full object-cover"
-              loading="eager"
-            />
-            <div
-              class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-5 pt-16"
-            >
-              <p class="text-lg font-black text-white">{f.name}</p>
-              <p class="mt-0.5 text-xs leading-snug text-white/75">
-                B2B Growth Strategist · Fractional CMO · Corporate Trainer
-              </p>
-            </div>
-          </div>
+        {/* The two practices, in place of the founder portrait that used to
+            sit here. A buyer who arrived searching for SAP or cloud advisory
+            can now see in the hero that it exists. */}
+        <div class="w-full space-y-4" data-reveal data-reveal-delay="0.1">
+          {serviceCategories.map((cat) => {
+            const inCat = servicesIn(cat.key);
+            return inCat.length === 0 ? null : (
+              <div class="rounded-2xl border border-white/15 bg-white/[0.06] p-5">
+                <p class="flex items-baseline justify-between gap-3">
+                  <span class="text-xs font-bold uppercase tracking-wider text-orange-400">
+                    {cat.label}
+                  </span>
+                  <span class="shrink-0 text-xs font-semibold text-white/50">
+                    {inCat.length} services
+                  </span>
+                </p>
+                <ul class="mt-3 flex flex-wrap gap-1.5">
+                  {inCat.map((s) => (
+                    <li>
+                      <a
+                        href={s.href}
+                        class="inline-block rounded-full bg-white/10 px-2.5 py-1 text-[0.72rem] font-semibold text-white/85 transition-colors hover:bg-white/20 hover:text-white"
+                      >
+                        {s.title.replace(" Consulting", "")}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── 2 · Achievement statistics (LIGHT) ───────────────── -->
-  <Section tone="surface" class="!py-10 lg:!py-12">
-    <dl class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {
-        consultingStats.map((s, i) => (
-          <div
-            class="rounded-2xl border border-border bg-white p-5 shadow-sm"
-            data-reveal
-            data-reveal-delay={(i * 0.06).toString()}
-          >
-            <dt class="sr-only">{s.label}</dt>
-            <dd>
-              <span class="block text-3xl font-black leading-none text-ink-900">{s.value}</span>
-              <span class="mt-2 block text-sm font-semibold leading-snug text-ink-600">
-                {s.label}
-              </span>
-              {s.note && (
-                <span class="mt-1.5 block text-xs leading-snug text-orange-600">{s.note}</span>
-              )}
-            </dd>
-          </div>
-        ))
-      }
-    </dl>
-    <p class="mt-4 max-w-3xl text-xs leading-relaxed text-ink-500">{statsDisclaimer}</p>
-  </Section>
-
-  <!-- ── 3 · Services (LIGHT) ─────────────────────────────── -->
+  <!-- ── 2 · Services (LIGHT) ─────────────────────────────── -->
   <Section tone="white" id="services">
     <div class="max-w-2xl" data-reveal>
       <SectionLabel>What we do</SectionLabel>
       <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
-        Consulting, training and <span class="text-orange-500">coaching</span>
+        Thirteen services, <span class="text-orange-500">two practices</span>
       </h2>
       <p class="mt-4 text-ink-500 measure">
-        We advise your team and build their capability. Your team — or a vendor you choose — does
-        the execution. That boundary is deliberate, and it is what keeps the advice honest.
+        Growth work on how you win customers, and technology advisory on what to build, buy or
+        modernise. Every service states where we stop: we advise your team and build their
+        capability, and your team — or a vendor you choose — does the execution. That boundary
+        is deliberate, and it is what keeps the advice honest.
       </p>
     </div>
 
@@ -341,7 +336,7 @@ const schema: WithContext<ProfessionalService> = {
     </div>
   </Section>
 
-  <!-- ── 4 · Industries (LIGHT) ───────────────────────────── -->
+  <!-- ── 3 · Industries (LIGHT) ───────────────────────────── -->
   <Section tone="surface">
     <div class="max-w-2xl" data-reveal>
       <SectionLabel>Where we work</SectionLabel>
@@ -381,7 +376,7 @@ const schema: WithContext<ProfessionalService> = {
     </div>
   </Section>
 
-  <!-- ── 5 · How we work (DARK) ───────────────────────────── -->
+  <!-- ── 4 · How we work (DARK) ───────────────────────────── -->
   <Section tone="dark">
     <div class="max-w-2xl" data-reveal>
       <SectionLabel onDark>How we work</SectionLabel>
@@ -425,7 +420,7 @@ const schema: WithContext<ProfessionalService> = {
     </div>
   </Section>
 
-  <!-- ── 6 · About the founder (LIGHT) ────────────────────── -->
+  <!-- ── 5 · About the founder (LIGHT) ────────────────────── -->
   <Section tone="white" id="founder">
     <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14 lg:items-start">
       <div class="relative mx-auto w-full max-w-sm lg:mx-0" data-reveal>
@@ -476,8 +471,36 @@ const schema: WithContext<ProfessionalService> = {
     </div>
   </Section>
 
-  <!-- ── 7 · Technology partner network (LIGHT) ───────────── -->
-  <Section tone="surface" id="partners">
+  <!-- ── Track record (LIGHT) — sits with the founder, because these
+       are his figures rather than the practice's headline ─────── -->
+  <Section tone="surface" class="!py-10 lg:!py-12">
+    <dl class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        consultingStats.map((s, i) => (
+          <div
+            class="rounded-2xl border border-border bg-white p-5 shadow-sm"
+            data-reveal
+            data-reveal-delay={(i * 0.06).toString()}
+          >
+            <dt class="sr-only">{s.label}</dt>
+            <dd>
+              <span class="block text-3xl font-black leading-none text-ink-900">{s.value}</span>
+              <span class="mt-2 block text-sm font-semibold leading-snug text-ink-600">
+                {s.label}
+              </span>
+              {s.note && (
+                <span class="mt-1.5 block text-xs leading-snug text-orange-600">{s.note}</span>
+              )}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="mt-4 max-w-3xl text-xs leading-relaxed text-ink-500">{statsDisclaimer}</p>
+  </Section>
+
+  <!-- ── 6 · Technology partner network (WHITE) ───────────── -->
+  <Section tone="white" id="partners">
     <div class="max-w-2xl" data-reveal>
       <SectionLabel>Partner network</SectionLabel>
       <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
@@ -535,7 +558,7 @@ const schema: WithContext<ProfessionalService> = {
     </div>
   </Section>
 
-  <!-- ── 8 · Consultation form (DARK) ─────────────────────── -->
+  <!-- ── 7 · Consultation form (DARK) ─────────────────────── -->
   <Section tone="dark" id="consultation">
     <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14">
       <div data-reveal>
