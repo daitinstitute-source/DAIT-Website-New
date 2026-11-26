@@ -174,7 +174,7 @@ export default defineConfig({
   // Static output. Per-route SSR opt-in later via `export const prerender = false`
   // (add the Cloudflare adapter in Phase 2 when /api/leads is built).
   output: "static",
-  site: process.env.PUBLIC_SITE_URL || "https://daitinstitute.com",
+  site: process.env.PUBLIC_SITE_URL || "https://www.daitinstitute.com",
   /**
    * Keep every noindex page out of the sitemap. Submitting a URL you also tell
    * Google not to index earns a "Submitted URL marked noindex" error in Search

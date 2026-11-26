@@ -38,9 +38,21 @@ export interface SocialLink {
   icon: string; // simple-icons name for astro-icon (e.g. "simple-icons:instagram")
 }
 
+/**
+ * The canonical host, and it must be the one the server actually serves.
+ *
+ * This defaulted to the apex domain while Vercel 308s the apex to www, so
+ * every canonical, og:url and sitemap entry pointed at a URL that immediately
+ * redirected — no page had a self-referencing canonical, and Search Console
+ * reports a sitemap of redirects.
+ *
+ * If PUBLIC_SITE_URL is set in the Vercel project it wins over this default,
+ * so it has to say www too. The live canonical is the test: fetch any page
+ * and the canonical must equal the URL that returns 200.
+ */
 const PUBLIC_SITE_URL =
   import.meta.env.PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://daitinstitute.com";
+  "https://www.daitinstitute.com";
 
 // Digits-only for wa.me links (no +, spaces, or dashes). India country code 91.
 const WHATSAPP_NUMBER =
@@ -119,14 +131,37 @@ export const siteConfig = {
       state: "Maharashtra",
       postalCode: "431007",
       phone: "+91 86688 93439",
-      mapUrl: "", // TODO: paste the Google Maps share link for the centre
+      /**
+       * A Maps search for the exact NAP string above, rather than a share
+       * link to a specific place. It is derived, so it cannot drift out of
+       * sync with the address, and it needs nothing pasted in to start
+       * working — a visitor clicking it gets directions today.
+       *
+       * Replace it with the Google Business Profile share link once that
+       * profile is live: a link to the claimed place beats a search for its
+       * address, because it lands on the listing with the reviews and hours.
+       */
+      mapUrl:
+        "https://www.google.com/maps/search/?api=1&query=" +
+        encodeURIComponent(
+          "DAIT Institute, Ambedkar Chowk, Chikalthana, Sambhaji Nagar, Maharashtra 431007",
+        ),
       hours: "Mon–Sat · 9:00 AM – 6:00 PM",
       openingHours: "Mo-Sa 09:00-18:00",
       // TODO: exact centre coordinates (from the Google Maps pin) → strengthens
-      // hyperlocal ranking. Replace with e.g. { lat: 19.8620, lng: 75.3910 }
-      // Leave undefined rather than approximate: a pin in the wrong place is
-      // worse for local ranking than no pin, and it has to match the Google
-      // Business Profile exactly.
+      // hyperlocal ranking.
+      //
+      // 30 seconds, and only you can do it: open the centre's pin in Google
+      // Maps, right-click it, and the top item in the menu is the latitude and
+      // longitude. Click to copy, then replace the line below with
+      //   geo: { lat: 19.xxxxxx, lng: 75.xxxxxx },
+      //
+      // Still undefined on purpose. Published coordinates are a factual claim
+      // about where the business physically sits: wrong ones are worse than
+      // none, and they must match the Google Business Profile pin, because
+      // disagreeing signals are what weaken a local listing. Looking up the
+      // locality only gets within about a kilometre, which is not good enough
+      // to assert.
       geo: undefined as { lat: number; lng: number } | undefined,
       alternateCityName: "Aurangabad",
       serviceAreas: [
