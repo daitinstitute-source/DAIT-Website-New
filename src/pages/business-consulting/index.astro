@@ -341,11 +341,16 @@ const schema: WithContext<ProfessionalService> = {
     <div class="max-w-2xl" data-reveal>
       <SectionLabel>Where we work</SectionLabel>
       <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
-        Industries, and the growth problems <span class="text-orange-500">they share</span>
+        Industries, and the problems <span class="text-orange-500">they share</span>
       </h2>
+      {/* This used to read "commercial, not technical — not engineering your
+          product", which was honest when the page only sold growth work and
+          flatly contradicts the technology practice. The real boundary is
+          advisory versus delivery, and it holds for both. */}
       <p class="mt-4 text-ink-500 measure">
-        Experience across these sectors is commercial, not technical — we help with how you reach
-        and convince buyers, not with engineering your product.
+        Experience across these sectors is commercial and advisory: how you reach and convince
+        buyers, and how you decide what to build, buy or modernise. Not engineering your product
+        or implementing your systems — that stays with your team or the partner you appoint.
       </p>
     </div>
 
