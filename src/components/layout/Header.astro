@@ -12,6 +12,7 @@ import {
   programAreas,
   primaryCta,
 } from "../../data/navigation";
+import { serviceCategories } from "../../data/consulting";
 import Button from "../ui/Button.astro";
 import MobileNav from "./MobileNav.astro";
 
@@ -45,15 +46,28 @@ const programEntries: MenuEntry[] = programAreas.map((a) => ({
   icon: a.icon,
 }));
 
-const consultingEntries: MenuEntry[] = (await getCollection("consulting"))
+/**
+ * Thirteen services is too many to list with descriptions, so the consulting
+ * menu drops them and groups by practice instead — a scannable index rather
+ * than a wall of prose. The descriptions live on the hub and the pages.
+ */
+const consultingServicesAll = (await getCollection("consulting"))
   .filter((s) => !s.data.draft)
-  .sort((a, b) => a.data.order - b.data.order)
-  .map((s) => ({
-    label: s.data.title,
-    description: s.data.tagline,
-    href: `/business-consulting/${s.id}/`,
-    icon: s.data.icon,
-  }));
+  .sort((a, b) => a.data.order - b.data.order);
+
+const consultingGroups = serviceCategories
+  .map((cat) => ({
+    label: cat.label,
+    entries: consultingServicesAll
+      .filter((s) => s.data.category === cat.key)
+      .map((s) => ({
+        label: s.data.title,
+        description: s.data.tagline,
+        href: `/business-consulting/${s.id}/`,
+        icon: s.data.icon,
+      })),
+  }))
+  .filter((g) => g.entries.length > 0);
 
 /**
  * `wide` gives a two-column menu. Seven consulting services stacked in one
@@ -62,6 +76,7 @@ const consultingEntries: MenuEntry[] = (await getCollection("consulting"))
 const menuFor = (href: string) => {
   if (href === "/programs/") {
     return {
+      groups: [] as { label: string; entries: MenuEntry[] }[],
       entries: programEntries,
       allLabel: "View all programs",
       allHref: "/programs/",
@@ -70,7 +85,8 @@ const menuFor = (href: string) => {
   }
   if (href === "/business-consulting/") {
     return {
-      entries: consultingEntries,
+      groups: consultingGroups,
+      entries: [] as MenuEntry[],
       allLabel: "All consulting services",
       allHref: "/business-consulting/",
       wide: true,
@@ -134,6 +150,33 @@ const menuFor = (href: string) => {
                   ]}
                 >
                   <div class="card p-2">
+                    {/* Grouped form: a scannable index, used where there are
+                        too many services to show a description for each. */}
+                    {menu.groups.length > 0 && (
+                      <div class="grid grid-cols-2 gap-x-2">
+                        {menu.groups.map((group) => (
+                          <div>
+                            <p class="px-3 pt-2 pb-1 text-[0.68rem] font-bold uppercase tracking-wider text-ink-400">
+                              {group.label}
+                            </p>
+                            {group.entries.map((entry) => (
+                              <a
+                                href={entry.href}
+                                class="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-accent-50 transition-colors group/item"
+                              >
+                                <span class="shrink-0 flex h-7 w-7 items-center justify-center rounded-md bg-accent-50 text-accent-600 group-hover/item:bg-accent-500 group-hover/item:text-white transition-colors">
+                                  <Icon name={entry.icon} size={15} />
+                                </span>
+                                <span class="text-sm font-semibold text-ink-900">
+                                  {entry.label}
+                                </span>
+                              </a>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <div class:list={["grid", menu.wide && "grid-cols-2"]}>
                       {menu.entries.map((entry) => (
                         <a

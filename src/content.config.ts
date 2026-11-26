@@ -177,6 +177,14 @@ const consulting = defineCollection({
     tagline: z.string(),
     icon: z.string(),
     /**
+     * Which practice this belongs to. Growth work the founder delivers
+     * personally; technology work is advisory with a partner implementing.
+     * The hub groups by this, and the nav menu splits on it.
+     */
+    category: z.enum(["growth", "technology"]).default("technology"),
+    /** Rendered with stronger visual prominence on the hub. */
+    flagship: z.boolean().default(false),
+    /**
      * Where DAIT stops. REQUIRED, not optional: every one of these services is
      * something an enterprise buyer will assume is delivered in-house unless
      * the page says otherwise, and the whole page's credibility rests on it.

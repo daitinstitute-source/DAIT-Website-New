@@ -29,7 +29,6 @@ import { canonicalUrl } from "../../lib/seo";
 import {
   consultingStats,
   statsDisclaimer,
-  consultingServices,
   serviceCategories,
   consultingIndustries,
   consultingProcess,
@@ -47,7 +46,7 @@ const url = canonicalUrl("/business-consulting/");
  * shape as the growth services so one card template renders both; `href` is
  * what makes a card clickable.
  */
-const technologyServices = (await getCollection("consulting"))
+const allServices = (await getCollection("consulting"))
   .filter((s) => !s.data.draft)
   .sort((a, b) => a.data.order - b.data.order)
   .map((s) => ({
@@ -56,9 +55,13 @@ const technologyServices = (await getCollection("consulting"))
     points: s.data.points,
     icon: s.data.icon,
     boundary: s.data.boundary,
-    flagship: false,
+    flagship: s.data.flagship,
+    category: s.data.category,
     href: `/business-consulting/${s.id}/`,
   }));
+
+/** Every service now has a page, so every card on this hub routes somewhere. */
+const servicesIn = (key: string) => allServices.filter((s) => s.category === key);
 
 /**
  * ProfessionalService rather than a second Organization — the site already
@@ -88,12 +91,15 @@ const schema: WithContext<ProfessionalService> = {
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name: "Consulting services",
-    itemListElement: consultingServices.map((svc) => ({
+    /* Each offer points at its own page via url, so the catalogue links to
+       the Service entities those pages declare rather than restating them. */
+    itemListElement: allServices.map((svc) => ({
       "@type": "Offer" as const,
       itemOffered: {
         "@type": "Service" as const,
         name: svc.title,
         description: svc.summary,
+        url: canonicalUrl(svc.href),
       },
     })),
   },
@@ -235,14 +241,10 @@ const schema: WithContext<ProfessionalService> = {
         split also makes the two propositions legible: growth work the founder
         delivers, and technology advisory where a partner implements. */}
     {serviceCategories.map((cat) => {
-      /* Growth services are defined in data/consulting.ts; technology services
-         live in the content collection because each has its own landing page.
-         Both are normalised to the same card shape here, with `href` set only
-         for the ones that lead somewhere. */
-      const inCat =
-        cat.key === "technology"
-          ? technologyServices
-          : consultingServices.filter((s) => (s.category ?? "growth") === cat.key);
+      /* All thirteen services live in the content collection now, each with
+         its own landing page — so this hub is a directory and every card
+         routes onward, which is the whole point of it. */
+      const inCat = servicesIn(cat.key);
       return inCat.length === 0 ? null : (
         <div class="mt-14 first:mt-10">
           <div class="max-w-3xl" data-reveal>

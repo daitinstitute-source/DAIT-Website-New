@@ -49,25 +49,17 @@ export const consultingStats: ConsultingStat[] = [
 export const statsDisclaimer =
   "Figures reflect outcomes across professional engagements and team efforts over a 9+ year career, not results attributable to a single individual or guaranteed for any client.";
 
-/* --------------------------------------------------------------- services */
+/* --------------------------------------------------------------- services
+ *
+ * The services themselves moved to the `consulting` content collection
+ * (src/content/consulting/*.mdx), because each one now has its own landing
+ * page and the hub is a directory that routes to them. Defining a service
+ * in both places would render it twice on the hub.
+ *
+ * Only the practice headings stay here, since they are page furniture
+ * rather than service data.
+ */
 
-export interface ConsultingService {
-  title: string;
-  summary: string;
-  points: string[];
-  icon: string;
-  /** Flagship card — rendered with stronger visual prominence. */
-  flagship?: boolean;
-  /** Scope boundary shown on the card, where confusion is likely. */
-  boundary?: string;
-  /**
-   * Which practice this belongs to. Thirteen cards in one grid is a wall;
-   * split, it also makes the two propositions legible — growth work the
-   * founder delivers personally, and technology work that is advisory with
-   * delivery through partners.
-   */
-  category?: "growth" | "technology";
-}
 
 /** Headings for each practice, used where the services are grouped. */
 export const serviceCategories = [
@@ -85,105 +77,6 @@ export const serviceCategories = [
   },
 ];
 
-export const consultingServices: ConsultingService[] = [
-  {
-    title: "Manufacturing & Industrial B2B Growth",
-    category: "growth",
-    summary:
-      "For cement, cables, electricals and engineering businesses that sell complex products to long buying committees.",
-    icon: "lucide:factory",
-    flagship: true,
-    points: [
-      "Industrial account targeting and territory focus",
-      "Reaching the decision-makers who actually sign",
-      "Marketing complex, technical products credibly",
-      "Buyer-journey and buying-committee mapping",
-      "Enterprise outreach and sales enablement",
-      "Digital-transformation marketing for industrial firms",
-    ],
-  },
-  {
-    title: "B2B Growth Strategy & Advisory",
-    category: "growth",
-    summary:
-      "The foundations: who you sell to, what you say, and how marketing and sales work as one motion.",
-    icon: "lucide:compass",
-    points: [
-      "Go-to-market strategy",
-      "Ideal customer profile and target-market definition",
-      "Positioning and value proposition",
-      "Marketing and sales alignment",
-      "Growth roadmaps and fractional advisory",
-    ],
-  },
-  {
-    title: "Demand Generation & ABM",
-    category: "growth",
-    summary:
-      "How qualified conversations get created — designed with your team, run by your team.",
-    icon: "lucide:target",
-    boundary:
-      "We design the frameworks and train your team. Campaign execution stays with you or your chosen vendor.",
-    points: [
-      "Inbound marketing strategy",
-      "SEO and website conversion advisory",
-      "Outbound prospecting frameworks",
-      "Account-based marketing",
-      "LinkedIn, Google and Meta campaign strategy",
-      "Paid-media planning, including specialised channels such as Spotify and OTT",
-      "Lead qualification and funnel optimisation",
-    ],
-  },
-  {
-    title: "Sales Enablement & Pipeline Development",
-    category: "growth",
-    summary:
-      "Turning interest into a managed pipeline your sales team can actually work.",
-    icon: "lucide:git-branch",
-    boundary:
-      "This is process consulting and training. DAIT does not book appointments, run your outreach or close deals on your behalf.",
-    points: [
-      "Prospecting and target-account strategy",
-      "Appointment and demo-setting frameworks",
-      "Discovery-call and qualification processes",
-      "Sales handover and follow-up systems",
-      "Pipeline review and opportunity progression",
-      "Sales and marketing alignment",
-    ],
-  },
-  {
-    title: "Technology & Vendor Advisory",
-    category: "growth",
-    summary:
-      "Deciding what you actually need before anyone sells you a platform.",
-    icon: "lucide:clipboard-check",
-    boundary:
-      "We help define requirements and choose a vendor. The selected vendor performs the implementation, not DAIT.",
-    points: [
-      "Business requirements definition",
-      "Vendor evaluation criteria",
-      "Technology-partner shortlisting",
-      "Comparing ERP, CRM, SaaS, AI and industrial software providers",
-      "Discovery and evaluation meeting support",
-      "Decision-making frameworks",
-    ],
-  },
-  {
-    title: "Corporate Training & Growth Coaching",
-    category: "growth",
-    summary:
-      "Building capability inside your team so the improvement outlasts the engagement.",
-    icon: "lucide:users-round",
-    points: [
-      "B2B marketing workshops",
-      "ABM and enterprise prospecting",
-      "SEO and demand-generation training",
-      "Sales enablement",
-      "AI-enabled marketing productivity",
-      "Leadership coaching for marketing and sales teams",
-    ],
-  },
-];
 
 /* ------------------------------------------------------------- industries */
 
