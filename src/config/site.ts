@@ -323,6 +323,28 @@ export const siteConfig = {
     //   1. set this to true, and
     //   2. rename _for-companies.astro back to for-companies.astro
     showForCompanies: false,
+    /**
+     * The homepage "Who teaches you" section. Hidden on request until the
+     * owner says otherwise — set to true to bring it back, nothing else to
+     * change. The section below it flips tone automatically so the
+     * dark/light rhythm holds either way.
+     */
+    showInstructors: false,
+    /**
+     * The Technology & Transformation consulting practice — all seven
+     * services and their pages. Hidden on request until the owner says
+     * otherwise.
+     *
+     * Hiding happens in the CONTENT, not here: each service carries
+     * `draft: true` in src/content/consulting/*.mdx, which every consumer
+     * already honours — the hub, both nav menus, the page route, and the
+     * chatbot's knowledge pack. This flag exists so there is one obvious
+     * place that records the decision; search for it to find the files.
+     *
+     * To restore: set `draft: false` in the seven MDX files whose
+     * `category` is "technology", and flip this to true.
+     */
+    showTechnologyConsulting: false,
   },
 
   // NOTE: the student portal lives on its own subdomain and is deliberately

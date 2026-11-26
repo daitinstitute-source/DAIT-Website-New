@@ -148,13 +148,22 @@ const fmtDate = (d: Date) =>
     }
   </Section>
 
-  <!-- ── 9 · Who teaches you (DARK) ───────────────────────── -->
-  <Section tone="dark">
-    <InstructorsTeam />
-  </Section>
+  {/* ── 9 · Who teaches you (DARK) ─────────────────────────
+      Hidden behind siteConfig.display.showInstructors. */}
+  {
+    siteConfig.display.showInstructors && (
+      <Section tone="dark">
+        <InstructorsTeam />
+      </Section>
+    )
+  }
 
-  <!-- ── 10 · Upcoming batches (LIGHT) ────────────────────── -->
-  <Section tone="white">
+  {/* ── 10 · Upcoming batches (LIGHT) ──────────────────────
+      Switches to the other light tone when the instructors section above is
+      hidden, because the section before that one is also white and the two
+      would otherwise merge into a single band. Not dark: this section's
+      table and labels are styled for a light background. */}
+  <Section tone={siteConfig.display.showInstructors ? "white" : "surface"}>
     <div class="max-w-2xl" data-reveal>
       <SectionLabel>Upcoming cohorts</SectionLabel>
       <h2 class="mt-3 text-3xl sm:text-4xl">Plan your <span class="text-orange-500">start</span></h2>

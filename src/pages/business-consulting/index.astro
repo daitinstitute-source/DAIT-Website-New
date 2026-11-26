@@ -63,6 +63,33 @@ const allServices = (await getCollection("consulting"))
 const servicesIn = (key: string) => allServices.filter((s) => s.category === key);
 
 /**
+ * Counts are derived, never written into the copy.
+ *
+ * The page used to say "Thirteen services across two practices" in three
+ * places. The moment a practice was hidden, the page was advertising services
+ * a visitor could not reach — the kind of thing nobody notices until a
+ * prospect counts them.
+ */
+const NUMBER_WORDS = [
+  "no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+  "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
+  "seventeen", "eighteen", "nineteen", "twenty",
+];
+const inWords = (n: number) => NUMBER_WORDS[n] ?? String(n);
+
+const serviceCount = allServices.length;
+const livePractices = serviceCategories.filter((c) => servicesIn(c.key).length > 0);
+
+/**
+ * Whether the technology practice is actually reachable right now.
+ *
+ * Derived from the content rather than read from a flag, so the headline, the
+ * meta and the schema can never promise AI, cloud or SAP advisory while those
+ * pages are drafts. Restoring the practice restores the copy with it.
+ */
+const hasTechnology = servicesIn("technology").length > 0;
+
+/**
  * ProfessionalService rather than a second Organization — the site already
  * emits an EducationalOrganization from BaseLayout, and declaring two competing
  * organisation entities for one domain muddies the knowledge graph. This is
@@ -74,8 +101,9 @@ const schema: WithContext<ProfessionalService> = {
   "@id": `${url}#service`,
   name: "DAIT Business Consulting",
   url,
-  description:
-    "Independent business and technology advisory for midsize and enterprise companies: B2B growth strategy and sales enablement, plus consulting across AI, data, cloud, SAP and application modernisation.",
+  description: hasTechnology
+    ? "Independent business and technology advisory for midsize and enterprise companies: B2B growth strategy and sales enablement, plus consulting across AI, data, cloud, SAP and application modernisation."
+    : "Independent B2B growth advisory for midsize and enterprise companies: go-to-market strategy, demand generation, sales enablement, vendor selection and corporate training.",
   parentOrganization: { "@id": `${siteConfig.url}/#organization` },
   areaServed: { "@type": "Country", name: "India" },
   address: {
@@ -106,9 +134,17 @@ const schema: WithContext<ProfessionalService> = {
 ---
 
 <BaseLayout
-  title="Business & Technology Consulting for B2B Companies | DAIT"
+  title={
+    hasTechnology
+      ? "Business & Technology Consulting for B2B Companies | DAIT"
+      : "B2B Growth Consulting & Corporate Training | DAIT"
+  }
   brandedTitle={false}
-  description="Independent advisory for midsize and enterprise: B2B growth and sales strategy, plus technology consulting across AI, data, cloud, SAP and app modernisation."
+  description={
+    hasTechnology
+      ? "Independent advisory for midsize and enterprise: B2B growth and sales strategy, plus technology consulting across AI, data, cloud, SAP and app modernisation."
+      : "Independent B2B growth advisory for midsize and enterprise: go-to-market strategy, demand generation and ABM, sales enablement, vendor selection and corporate training."
+  }
   canonicalPath="/business-consulting/"
   keywords={[
     "business and technology consulting India",
@@ -146,14 +182,17 @@ const schema: WithContext<ProfessionalService> = {
           <h1
             class="mt-6 text-[2rem] font-black leading-[1.08] tracking-tight text-white sm:text-[2.6rem] lg:text-5xl"
           >
-            Growth and technology advice from a firm that{" "}
-            <span class="text-orange-400">implements nothing</span>
+            {hasTechnology ? "Growth and technology advice" : "B2B growth advice"} from a firm
+            that <span class="text-orange-400">implements nothing</span>
           </h1>
 
           <p class="mt-5 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-            Thirteen services across two practices: how you win customers, and what you build,
-            buy or modernise. We take no implementation revenue and no vendor commission — which
-            is what lets the answer be that you should keep what you have, or do nothing at all.
+            {inWords(serviceCount).charAt(0).toUpperCase() + inWords(serviceCount).slice(1)}{" "}
+            services across {inWords(livePractices.length)}{" "}
+            {livePractices.length === 1 ? "practice" : "practices"}, on how you win customers and
+            what you build, buy or modernise. We take no implementation revenue and no vendor
+            commission — which is what lets the answer be that you should keep what you have, or
+            do nothing at all.
           </p>
           <p class="mt-4 max-w-xl text-sm leading-relaxed text-white/70">
             Every engagement ends with a decision you can defend and a team that can run it. Your
@@ -163,7 +202,7 @@ const schema: WithContext<ProfessionalService> = {
           <div class="mt-8 flex flex-wrap gap-3">
             <Button href="#consultation" size="lg">Book a business consultation</Button>
             <Button href="#services" variant="ghost-on-dark" icon="lucide:arrow-down">
-              See all thirteen services
+              See all {inWords(serviceCount)} services
             </Button>
           </div>
         </div>
@@ -208,7 +247,8 @@ const schema: WithContext<ProfessionalService> = {
     <div class="max-w-2xl" data-reveal>
       <SectionLabel>What we do</SectionLabel>
       <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
-        Thirteen services, <span class="text-orange-500">two practices</span>
+        {inWords(serviceCount).charAt(0).toUpperCase() + inWords(serviceCount).slice(1)} services,{" "}
+        <span class="text-orange-500">{inWords(livePractices.length)} {livePractices.length === 1 ? "practice" : "practices"}</span>
       </h2>
       <p class="mt-4 text-ink-500 measure">
         Growth work on how you win customers, and technology advisory on what to build, buy or
