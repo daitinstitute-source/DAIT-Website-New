@@ -157,4 +157,55 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { programs, blog };
+/**
+ * Consulting services that have their own landing page.
+ *
+ * These compete on national, high-intent B2B terms ("SAP consulting India",
+ * "application modernisation consulting"), so unlike the course pages their
+ * slugs carry NO city — the buyer is rarely in Sambhaji Nagar and the site's
+ * ProfessionalService schema already declares areaServed: India.
+ *
+ * A service lives EITHER here or in the `consultingServices` array in
+ * src/data/consulting.ts, never both, or the hub renders it twice. Growth
+ * services are still in the array; the technology practice lives here.
+ */
+const consulting = defineCollection({
+  loader: glob({ pattern: "**/*.mdx", base: "./src/content/consulting" }),
+  schema: z.object({
+    title: z.string(),
+    /** Hub card summary and the page's opening line. */
+    tagline: z.string(),
+    icon: z.string(),
+    /**
+     * Where DAIT stops. REQUIRED, not optional: every one of these services is
+     * something an enterprise buyer will assume is delivered in-house unless
+     * the page says otherwise, and the whole page's credibility rests on it.
+     */
+    boundary: z.string(),
+    /** Bullets for the hub card. */
+    points: z.array(z.string()),
+
+    // ---- search metadata, kept apart from the visible copy (as programs do)
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional(),
+    keywords: z.array(z.string()).default([]),
+
+    // ---- detail page
+    /** The situation a buyer is in when they look for this. */
+    heroIntro: z.string(),
+    /** Problems DAIT gets called in for — the page's qualifying section. */
+    problems: z.array(z.object({ title: z.string(), body: z.string() })).default([]),
+    /** How an engagement actually runs, in order. */
+    engagement: z.array(z.object({ title: z.string(), body: z.string() })).default([]),
+    /** What the client is left holding at the end. */
+    deliverables: z.array(z.string()).default([]),
+    /** Who this suits — and, where useful, who it does not. */
+    forWho: z.array(z.string()).default([]),
+    /** Rendered on the page AND emitted as FAQPage JSON-LD. */
+    faqs: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
+    order: z.number().default(99),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { programs, blog, consulting };

@@ -14,17 +14,18 @@
  * not campaign execution, not implementation. The boundary lines on the
  * service cards and in the process section are load-bearing, not decoration.
  */
+import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 import type { WithContext, ProfessionalService } from "schema-dts";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Section from "../components/ui/Section.astro";
-import SectionLabel from "../components/ui/SectionLabel.astro";
-import Button from "../components/ui/Button.astro";
-import HeroBackdrop from "../components/sections/HeroBackdrop.astro";
-import CompanyReferences from "../components/consulting/CompanyReferences.astro";
-import ConsultingForm from "../components/forms/ConsultingForm.tsx";
-import { siteConfig } from "../config/site";
-import { canonicalUrl } from "../lib/seo";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/ui/Section.astro";
+import SectionLabel from "../../components/ui/SectionLabel.astro";
+import Button from "../../components/ui/Button.astro";
+import HeroBackdrop from "../../components/sections/HeroBackdrop.astro";
+import CompanyReferences from "../../components/consulting/CompanyReferences.astro";
+import ConsultingForm from "../../components/forms/ConsultingForm.tsx";
+import { siteConfig } from "../../config/site";
+import { canonicalUrl } from "../../lib/seo";
 import {
   consultingStats,
   statsDisclaimer,
@@ -35,10 +36,29 @@ import {
   processBoundary,
   partnerCategories,
   founderConsulting as f,
-} from "../data/consulting";
+} from "../../data/consulting";
 
 const centre = siteConfig.centers[0];
 const url = canonicalUrl("/business-consulting/");
+
+/**
+ * Technology services come from the content collection, because each one has
+ * its own landing page at /business-consulting/<slug>/. Mapped to the same
+ * shape as the growth services so one card template renders both; `href` is
+ * what makes a card clickable.
+ */
+const technologyServices = (await getCollection("consulting"))
+  .filter((s) => !s.data.draft)
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((s) => ({
+    title: s.data.title,
+    summary: s.data.tagline,
+    points: s.data.points,
+    icon: s.data.icon,
+    boundary: s.data.boundary,
+    flagship: false,
+    href: `/business-consulting/${s.id}/`,
+  }));
 
 /**
  * ProfessionalService rather than a second Organization — the site already
@@ -215,9 +235,14 @@ const schema: WithContext<ProfessionalService> = {
         split also makes the two propositions legible: growth work the founder
         delivers, and technology advisory where a partner implements. */}
     {serviceCategories.map((cat) => {
-      const inCat = consultingServices.filter(
-        (s) => (s.category ?? "growth") === cat.key,
-      );
+      /* Growth services are defined in data/consulting.ts; technology services
+         live in the content collection because each has its own landing page.
+         Both are normalised to the same card shape here, with `href` set only
+         for the ones that lead somewhere. */
+      const inCat =
+        cat.key === "technology"
+          ? technologyServices
+          : consultingServices.filter((s) => (s.category ?? "growth") === cat.key);
       return inCat.length === 0 ? null : (
         <div class="mt-14 first:mt-10">
           <div class="max-w-3xl" data-reveal>
@@ -252,7 +277,19 @@ const schema: WithContext<ProfessionalService> = {
                   </span>
                 )}
                 <h3 class={`text-xl font-bold text-ink-900 ${s.flagship ? "mt-2" : ""}`}>
-                  {s.title}
+                  {/* Services with their own page link from the heading, so the
+                      whole title is the target rather than a "read more" tacked
+                      on underneath. */}
+                  {"href" in s && s.href ? (
+                    <a
+                      href={s.href}
+                      class="transition-colors hover:text-accent-500 focus-visible:text-accent-500"
+                    >
+                      {s.title}
+                    </a>
+                  ) : (
+                    s.title
+                  )}
                 </h3>
                 <p class="mt-1.5 text-sm leading-relaxed text-ink-500">{s.summary}</p>
               </div>
@@ -276,6 +313,16 @@ const schema: WithContext<ProfessionalService> = {
                 <Icon name="lucide:info" size={14} class="mt-0.5 shrink-0 text-ink-400" />
                 <span>{s.boundary}</span>
               </p>
+            )}
+
+            {"href" in s && s.href && (
+              <a
+                href={s.href}
+                class="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-accent-500 transition-colors hover:text-accent-600"
+              >
+                {`How ${s.title.replace(" Consulting", "")} engagements work`}
+                <Icon name="lucide:arrow-right" size={16} />
+              </a>
             )}
           </article>
         ))

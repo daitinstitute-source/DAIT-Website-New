@@ -157,10 +157,32 @@ function renderPost(b) {
 
 const programs = readCollection("programs").sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
 const posts = readCollection("blog");
+const consulting = readCollection("consulting").sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+
+/**
+ * Consulting goes in SHORT.
+ *
+ * The bot's job is career counselling for individuals, and a business buyer is
+ * a different conversation entirely. But a visitor asking "do you do SAP
+ * consulting?" should not be told no, so it gets enough to confirm the service
+ * exists, state the scope boundary, and hand over the page — not enough to
+ * start advising on an enterprise programme.
+ */
+function renderConsulting(c) {
+  return [
+    `### ${c.title}`,
+    `- URL: /business-consulting/${c.slug}/`,
+    `- What it is: ${c.tagline}`,
+    `- SCOPE LIMIT (always state this if asked): ${c.boundary}`,
+  ].join("\n");
+}
 
 const knowledge = [
   `## DAIT Institute programs (${programs.length})`,
   programs.map(renderProgram).join("\n\n"),
+  `\n## Business consulting (B2B — a different audience from course enquiries)`,
+  `DAIT also advises companies. This is NOT training and not for individual learners. If someone asks about these, confirm the service exists, state its scope limit honestly, and point them at the page or the consulting enquiry form at /business-consulting/. Do not advise on an engagement yourself, and do not quote prices.`,
+  consulting.map(renderConsulting).join("\n\n"),
   `\n## Published guides on daitinstitute.com`,
   `Written to be useful about the whole IT job market, not only DAIT's own programs. Cite and link them when they answer the question better than a sales reply would.`,
   posts.map(renderPost).join("\n\n"),

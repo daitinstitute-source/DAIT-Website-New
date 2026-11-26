@@ -1,0 +1,325 @@
+---
+/**
+ * /business-consulting/<slug>/ — one landing page per technology consulting
+ * service.
+ *
+ * Why these exist separately from the hub: an enterprise buyer searching "SAP
+ * readiness assessment" or "application modernisation consulting" will not
+ * convert on a card in a grid of thirteen. They also let you see which service
+ * a lead came from, because the enquiry form carries the slug.
+ *
+ * No city in these URLs, unlike the course pages. Consulting is sold
+ * nationally — the ProfessionalService schema on the hub says areaServed:
+ * India — and a city in the slug would narrow the very terms these pages are
+ * meant to win.
+ */
+import { getCollection, render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import type { WithContext, Service, BreadcrumbList, FAQPage, Thing } from "schema-dts";
+import { Icon } from "astro-icon/components";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Section from "../../components/ui/Section.astro";
+import SectionLabel from "../../components/ui/SectionLabel.astro";
+import Button from "../../components/ui/Button.astro";
+import ConsultingForm from "../../components/forms/ConsultingForm.tsx";
+import { siteConfig } from "../../config/site";
+import { canonicalUrl } from "../../lib/seo";
+
+export const getStaticPaths = (async () => {
+  const services = await getCollection("consulting");
+  return services
+    .filter((s) => !s.data.draft)
+    .map((service) => ({ params: { slug: service.id }, props: { service } }));
+}) satisfies GetStaticPaths;
+
+const { service } = Astro.props;
+const { Content } = await render(service);
+const d = service.data;
+const hasBody = Boolean(service.body?.trim());
+
+const path = `/business-consulting/${service.id}/`;
+const url = canonicalUrl(path);
+
+/**
+ * Service rather than a second ProfessionalService: the hub already declares
+ * that entity for the practice, and these are offerings within it. `provider`
+ * points at the one organisation node so authority consolidates there instead
+ * of being split across nine look-alike entities.
+ */
+const serviceSchema: WithContext<Service> = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": `${url}#service`,
+  name: d.title,
+  description: d.seoDescription ?? d.tagline,
+  url,
+  serviceType: d.title,
+  provider: { "@id": `${siteConfig.url}/#organization` },
+  areaServed: { "@type": "Country", name: "India" },
+  ...(d.deliverables.length
+    ? {
+        hasOfferCatalog: {
+          "@type": "OfferCatalog" as const,
+          name: `${d.title} deliverables`,
+          itemListElement: d.deliverables.map((item) => ({
+            "@type": "Offer" as const,
+            itemOffered: { "@type": "Service" as const, name: item },
+          })),
+        },
+      }
+    : {}),
+};
+
+const breadcrumbs: WithContext<BreadcrumbList> = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: canonicalUrl("/") },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Consulting",
+      item: canonicalUrl("/business-consulting/"),
+    },
+    { "@type": "ListItem", position: 3, name: d.title, item: url },
+  ],
+};
+
+const schemas: WithContext<Thing>[] = [serviceSchema, breadcrumbs];
+
+if (d.faqs.length > 0) {
+  const faqSchema: WithContext<FAQPage> = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: d.faqs.map((f) => ({
+      "@type": "Question" as const,
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer" as const, text: f.a },
+    })),
+  };
+  schemas.push(faqSchema as WithContext<Thing>);
+}
+---
+
+<BaseLayout
+  title={d.seoTitle ?? `${d.title} | DAIT Institute`}
+  description={d.seoDescription ?? d.tagline}
+  canonicalPath={path}
+  brandedTitle={false}
+  keywords={d.keywords}
+  jsonLd={schemas}
+>
+  <!-- ── Hero (DARK) ───────────────────────────────────────── -->
+  <Section tone="dark" class="pt-28 pb-20">
+    <nav aria-label="Breadcrumb" class="text-sm text-white/55" data-reveal>
+      <a href="/" class="transition-colors hover:text-white">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/business-consulting/" class="transition-colors hover:text-white">Consulting</a>
+      <span class="mx-2">/</span>
+      <span class="text-white/80">{d.title}</span>
+    </nav>
+
+    <div class="mt-8 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-start">
+      <div data-reveal>
+        <span class="inline-flex items-center gap-2 rounded-full border border-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/75">
+          <Icon name={d.icon} size={14} />
+          Technology &amp; transformation
+        </span>
+        <h1 class="mt-6 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl">
+          {d.title}
+        </h1>
+        <p class="mt-5 text-lg leading-relaxed text-white/75 measure">{d.heroIntro}</p>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Button href="#consultation" iconLeft="lucide:calendar-check">
+            Book a consultation
+          </Button>
+          <Button href="/business-consulting/" variant="ghost-on-dark" iconLeft="lucide:arrow-left">
+            All consulting services
+          </Button>
+        </div>
+      </div>
+
+      {/* The boundary sits in the hero, not buried at the bottom. A buyer who
+          needs an implementation partner should find that out in the first
+          ten seconds, not after booking a call. */}
+      <aside
+        class="rounded-3xl border border-white/15 bg-white/[0.06] p-6"
+        data-reveal
+        data-reveal-delay="0.1"
+      >
+        <p class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-orange-400">
+          <Icon name="lucide:info" size={14} />
+          Scope of this engagement
+        </p>
+        <p class="mt-3 text-sm leading-relaxed text-white/75">{d.boundary}</p>
+      </aside>
+    </div>
+  </Section>
+
+  <!-- ── When businesses call us (LIGHT) ───────────────────── -->
+  {
+    d.problems.length > 0 && (
+      <Section tone="surface">
+        <div class="max-w-3xl" data-reveal>
+          <SectionLabel>When this comes up</SectionLabel>
+          <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+            The situations we get <span class="text-orange-500">called into</span>
+          </h2>
+        </div>
+        <div class="mt-10 grid gap-6 md:grid-cols-2">
+          {d.problems.map((p, i) => (
+            <article
+              class="rounded-3xl border border-border bg-white p-7 shadow-sm"
+              data-reveal
+              data-reveal-delay={(i * 0.06).toString()}
+            >
+              <h3 class="text-lg font-black text-ink-900">{p.title}</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-ink-600">{p.body}</p>
+            </article>
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- ── How the engagement runs (WHITE) ───────────────────── -->
+  {
+    d.engagement.length > 0 && (
+      <Section tone="white">
+        <div class="max-w-3xl" data-reveal>
+          <SectionLabel>How it runs</SectionLabel>
+          <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+            What the engagement <span class="text-orange-500">actually looks like</span>
+          </h2>
+        </div>
+        <ol class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {d.engagement.map((step, i) => (
+            <li
+              class="rounded-3xl border border-border bg-surface-50 p-7"
+              data-reveal
+              data-reveal-delay={(i * 0.06).toString()}
+            >
+              <span class="flex h-9 w-9 items-center justify-center rounded-full bg-accent-500 text-sm font-black text-white">
+                {i + 1}
+              </span>
+              <h3 class="mt-4 text-base font-black text-ink-900">{step.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-ink-600">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+      </Section>
+    )
+  }
+
+  <!-- ── Deliverables + who it is for (LIGHT) ──────────────── -->
+  {
+    (d.deliverables.length > 0 || d.forWho.length > 0) && (
+      <Section tone="surface">
+        <div class="grid gap-8 lg:grid-cols-2">
+          {d.deliverables.length > 0 && (
+            <div class="rounded-3xl border border-border bg-white p-8 shadow-sm" data-reveal>
+              <h2 class="text-2xl font-black text-ink-900">What you are left with</h2>
+              <ul class="mt-5 space-y-3">
+                {d.deliverables.map((item) => (
+                  <li class="flex gap-3 text-sm leading-relaxed text-ink-600">
+                    <Icon name="lucide:check" size={16} class="mt-0.5 shrink-0 text-accent-500" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {d.forWho.length > 0 && (
+            <div
+              class="rounded-3xl border border-border bg-white p-8 shadow-sm"
+              data-reveal
+              data-reveal-delay="0.08"
+            >
+              <h2 class="text-2xl font-black text-ink-900">Who this is for</h2>
+              <ul class="mt-5 space-y-3">
+                {d.forWho.map((item) => (
+                  <li class="flex gap-3 text-sm leading-relaxed text-ink-600">
+                    <Icon
+                      name="lucide:user-round-check"
+                      size={16}
+                      class="mt-0.5 shrink-0 text-orange-500"
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </Section>
+    )
+  }
+
+  {/* Optional long-form body, same slot pattern as the program pages. */}
+  {
+    hasBody && (
+      <Section tone="white">
+        <div class="article measure" data-reveal>
+          <Content />
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- ── FAQs (LIGHT) ──────────────────────────────────────── -->
+  {
+    d.faqs.length > 0 && (
+      <Section tone="surface">
+        <div class="max-w-3xl" data-reveal>
+          <SectionLabel>Common questions</SectionLabel>
+          <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+            Before you <span class="text-orange-500">get in touch</span>
+          </h2>
+        </div>
+        <div class="mt-10 grid gap-4 lg:grid-cols-2">
+          {d.faqs.map((f, i) => (
+            <details
+              class="group rounded-2xl border border-border bg-white p-6"
+              data-reveal
+              data-reveal-delay={(Math.min(i, 4) * 0.05).toString()}
+            >
+              <summary class="flex cursor-pointer list-none items-start justify-between gap-4 text-base font-bold text-ink-900">
+                <span>{f.q}</span>
+                <Icon
+                  name="lucide:plus"
+                  size={18}
+                  class="mt-0.5 shrink-0 text-accent-500 transition-transform group-open:rotate-45"
+                />
+              </summary>
+              <p class="mt-3 text-sm leading-relaxed text-ink-600">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- ── Enquiry (DARK) ────────────────────────────────────── -->
+  <Section tone="dark" id="consultation">
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-start">
+      <div data-reveal>
+        <SectionLabel onDark>Book a consultation</SectionLabel>
+        <h2 class="mt-3 text-3xl sm:text-4xl text-white">
+          Start with a conversation, <span class="text-orange-400">not a proposal</span>
+        </h2>
+        <p class="mt-4 text-white/70 measure">
+          Tell us where the problem actually sits. If {d.title.toLowerCase()} is not what you
+          need, we will say so — and point you at what is.
+        </p>
+      </div>
+      <div data-reveal data-reveal-delay="0.1">
+        {/* formId travels with the lead into Brevo, so every enquiry says which
+            service page produced it — which is the point of splitting these
+            out rather than funnelling everything through the hub form. */}
+        <ConsultingForm client:visible formId={`Consulting — ${d.title}`} />
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
