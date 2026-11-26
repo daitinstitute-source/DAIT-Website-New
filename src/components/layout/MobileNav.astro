@@ -1,14 +1,38 @@
 ---
 /**
  * MobileNav — off-canvas panel (slides in from right). Toggled by Header's
- * script. Lists main nav + all program areas + primary CTA.
+ * script. Lists main nav, each dropdown's children, and the primary CTA.
  */
+import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 import { siteConfig, whatsappLink } from "../../config/site";
 import { mainNav, programAreas, primaryCta } from "../../data/navigation";
 import Button from "../ui/Button.astro";
 
 const waHref = whatsappLink();
+
+/** Children of a dropdown, keyed by the parent's href — mirrors Header. */
+const programChildren = programAreas.map((a) => ({
+  label: a.label,
+  href: `/programs/#${a.slug}`,
+  icon: a.icon,
+}));
+
+const consultingChildren = (await getCollection("consulting"))
+  .filter((s) => !s.data.draft)
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((s) => ({
+    label: s.data.title,
+    href: `/business-consulting/${s.id}/`,
+    icon: s.data.icon,
+  }));
+
+const subEntries = (href: string) =>
+  href === "/programs/"
+    ? programChildren
+    : href === "/business-consulting/"
+      ? consultingChildren
+      : [];
 ---
 
 <div
@@ -51,20 +75,19 @@ const waHref = whatsappLink();
                 >
                   {item.label}
                 </a>
-                {item.dropdown && (
+                {/* Entries are resolved per item. This used to render
+                    programAreas under ANY dropdown, so the moment a second
+                    dropdown existed it listed program areas under Consulting. */}
+                {subEntries(item.href).length > 0 && (
                   <ul class="pl-3 pb-2 space-y-0.5 border-l-2 border-border">
-                    {programAreas.map((area) => (
+                    {subEntries(item.href).map((entry) => (
                       <li>
                         <a
-                          href={`/programs/#${area.slug}`}
+                          href={entry.href}
                           class="flex items-center gap-2.5 py-2 text-sm text-ink-600 hover:text-accent-600"
                         >
-                          <Icon
-                            name={area.icon}
-                            size={16}
-                            class="text-accent-500"
-                          />
-                          {area.label}
+                          <Icon name={entry.icon} size={16} class="text-accent-500" />
+                          {entry.label}
                         </a>
                       </li>
                     ))}

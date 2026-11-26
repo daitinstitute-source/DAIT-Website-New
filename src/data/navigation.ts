@@ -72,7 +72,7 @@ export const mainNav: NavItem[] = [
   { label: "Programs", href: "/programs/", dropdown: true },
   { label: "For Colleges", href: "/for-colleges/" },
   // B2B consulting vertical — deliberately sits next to the other B2B entries.
-  { label: "Consulting", href: "/business-consulting/" },
+  { label: "Consulting", href: "/business-consulting/", dropdown: true },
   // Parked until the B2B offering is settled — see siteConfig.display.showForCompanies.
   { label: "For Companies", href: "/for-companies/", comingSoon: !siteConfig.display.showForCompanies },
   { label: "Blog", href: "/blog/" },

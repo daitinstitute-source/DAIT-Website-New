@@ -4,6 +4,7 @@
  * (area list from navigation.ts), primary CTA, and a mobile menu.
  * Dropdown works without JS (focus-within/hover); mobile toggle is a tiny script.
  */
+import { getCollection } from "astro:content";
 import { Icon } from "astro-icon/components";
 import { siteConfig } from "../../config/site";
 import {
@@ -21,6 +22,62 @@ const { solid = true } = Astro.props;
 const current = Astro.url.pathname;
 const isActive = (href: string) =>
   href === "/" ? current === "/" : current.startsWith(href);
+
+/**
+ * Dropdown contents.
+ *
+ * This used to be hardcoded to programAreas, so a second dropdown was
+ * impossible. Both menus now resolve to the same entry shape and the markup
+ * below renders whichever the nav item asks for — adding a third dropdown is
+ * a `menuFor` case, not another copy of the markup.
+ */
+interface MenuEntry {
+  label: string;
+  description: string;
+  href: string;
+  icon: string;
+}
+
+const programEntries: MenuEntry[] = programAreas.map((a) => ({
+  label: a.label,
+  description: a.description,
+  href: `/programs/#${a.slug}`,
+  icon: a.icon,
+}));
+
+const consultingEntries: MenuEntry[] = (await getCollection("consulting"))
+  .filter((s) => !s.data.draft)
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((s) => ({
+    label: s.data.title,
+    description: s.data.tagline,
+    href: `/business-consulting/${s.id}/`,
+    icon: s.data.icon,
+  }));
+
+/**
+ * `wide` gives a two-column menu. Seven consulting services stacked in one
+ * 320px column runs past the fold on a laptop; four program areas do not.
+ */
+const menuFor = (href: string) => {
+  if (href === "/programs/") {
+    return {
+      entries: programEntries,
+      allLabel: "View all programs",
+      allHref: "/programs/",
+      wide: false,
+    };
+  }
+  if (href === "/business-consulting/") {
+    return {
+      entries: consultingEntries,
+      allLabel: "All consulting services",
+      allHref: "/business-consulting/",
+      wide: true,
+    };
+  }
+  return null;
+};
 ---
 
 <header
@@ -48,8 +105,9 @@ const isActive = (href: string) =>
       {
         mainNav
           .filter((item) => !item.comingSoon && item.href !== "/")
-          .map((item) =>
-            item.dropdown ? (
+          .map((item) => {
+            const menu = item.dropdown ? menuFor(item.href) : null;
+            return menu ? (
               <div class="relative group">
                 <a
                   href={item.href}
@@ -69,31 +127,41 @@ const isActive = (href: string) =>
                   />
                 </a>
                 {/* Dropdown */}
-                <div class="absolute left-0 top-full pt-2 w-[320px] opacity-0 invisible translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0">
+                <div
+                  class:list={[
+                    "absolute left-0 top-full pt-2 opacity-0 invisible translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:visible group-focus-within:translate-y-0",
+                    menu.wide ? "w-[640px]" : "w-[320px]",
+                  ]}
+                >
                   <div class="card p-2">
-                    {programAreas.map((area) => (
-                      <a
-                        href={`/programs/#${area.slug}`}
-                        class="flex items-start gap-3 p-3 rounded-lg hover:bg-accent-50 transition-colors group/item"
-                      >
-                        <span class="shrink-0 mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-accent-50 text-accent-600 group-hover/item:bg-accent-500 group-hover/item:text-white transition-colors">
-                          <Icon name={area.icon} size={18} />
-                        </span>
-                        <span>
-                          <span class="block text-sm font-bold text-ink-900">
-                            {area.label}
+                    <div class:list={["grid", menu.wide && "grid-cols-2"]}>
+                      {menu.entries.map((entry) => (
+                        <a
+                          href={entry.href}
+                          class="flex items-start gap-3 p-3 rounded-lg hover:bg-accent-50 transition-colors group/item"
+                        >
+                          <span class="shrink-0 mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-accent-50 text-accent-600 group-hover/item:bg-accent-500 group-hover/item:text-white transition-colors">
+                            <Icon name={entry.icon} size={18} />
                           </span>
-                          <span class="block text-xs text-ink-500 leading-snug mt-0.5">
-                            {area.description}
+                          <span class="min-w-0">
+                            <span class="block text-sm font-bold text-ink-900">
+                              {entry.label}
+                            </span>
+                            {/* Clamped: consulting taglines are written for a
+                                page, not a menu, and would otherwise set the
+                                row height from the longest one. */}
+                            <span class="block text-xs text-ink-500 leading-snug mt-0.5 line-clamp-2">
+                              {entry.description}
+                            </span>
                           </span>
-                        </span>
-                      </a>
-                    ))}
+                        </a>
+                      ))}
+                    </div>
                     <a
-                      href="/programs/"
+                      href={menu.allHref}
                       class="flex items-center justify-center gap-1 mt-1 p-2.5 rounded-lg text-sm font-bold text-accent-600 hover:bg-accent-50 transition-colors"
                     >
-                      View all programs
+                      {menu.allLabel}
                       <Icon name="lucide:arrow-right" size={15} />
                     </a>
                   </div>
@@ -112,8 +180,8 @@ const isActive = (href: string) =>
               >
                 {item.label}
               </a>
-            ),
-          )
+            );
+          })
       }
     </nav>
 
