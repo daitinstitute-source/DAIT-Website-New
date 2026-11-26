@@ -33,9 +33,14 @@ export interface BrochureCopy {
     soon: string;
   };
   cta: { counselling: string; whatsapp: string; call: string; share: string; viewCourse: string; download: string };
-  /** The details form shown before the PDF downloads. */
+  /**
+   * The details form shown before the PDF downloads.
+   *
+   * No `pdf` path here any more: the file is not public, and /api/brochure
+   * serves it against a signed token. The language alone is enough for the
+   * component to ask for the right one.
+   */
   gate: {
-    pdf: string;
     title: string;
     intro: string;
     name: string;

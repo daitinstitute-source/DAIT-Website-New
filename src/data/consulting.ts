@@ -60,11 +60,35 @@ export interface ConsultingService {
   flagship?: boolean;
   /** Scope boundary shown on the card, where confusion is likely. */
   boundary?: string;
+  /**
+   * Which practice this belongs to. Thirteen cards in one grid is a wall;
+   * split, it also makes the two propositions legible — growth work the
+   * founder delivers personally, and technology work that is advisory with
+   * delivery through partners.
+   */
+  category?: "growth" | "technology";
 }
+
+/** Headings for each practice, used where the services are grouped. */
+export const serviceCategories = [
+  {
+    key: "growth" as const,
+    label: "Growth & go-to-market",
+    blurb:
+      "Founder-led work on who you sell to, what you say, and how marketing and sales operate as one motion.",
+  },
+  {
+    key: "technology" as const,
+    label: "Technology & transformation",
+    blurb:
+      "Advisory for midsize and enterprise teams deciding what to build, buy or modernise — the assessment, the business case and the partner selection. Implementation stays with your team or the partner you choose.",
+  },
+];
 
 export const consultingServices: ConsultingService[] = [
   {
     title: "Manufacturing & Industrial B2B Growth",
+    category: "growth",
     summary:
       "For cement, cables, electricals and engineering businesses that sell complex products to long buying committees.",
     icon: "lucide:factory",
@@ -80,6 +104,7 @@ export const consultingServices: ConsultingService[] = [
   },
   {
     title: "B2B Growth Strategy & Advisory",
+    category: "growth",
     summary:
       "The foundations: who you sell to, what you say, and how marketing and sales work as one motion.",
     icon: "lucide:compass",
@@ -93,6 +118,7 @@ export const consultingServices: ConsultingService[] = [
   },
   {
     title: "Demand Generation & ABM",
+    category: "growth",
     summary:
       "How qualified conversations get created — designed with your team, run by your team.",
     icon: "lucide:target",
@@ -110,6 +136,7 @@ export const consultingServices: ConsultingService[] = [
   },
   {
     title: "Sales Enablement & Pipeline Development",
+    category: "growth",
     summary:
       "Turning interest into a managed pipeline your sales team can actually work.",
     icon: "lucide:git-branch",
@@ -126,6 +153,7 @@ export const consultingServices: ConsultingService[] = [
   },
   {
     title: "Technology & Vendor Advisory",
+    category: "growth",
     summary:
       "Deciding what you actually need before anyone sells you a platform.",
     icon: "lucide:clipboard-check",
@@ -142,6 +170,7 @@ export const consultingServices: ConsultingService[] = [
   },
   {
     title: "Corporate Training & Growth Coaching",
+    category: "growth",
     summary:
       "Building capability inside your team so the improvement outlasts the engagement.",
     icon: "lucide:users-round",
@@ -152,6 +181,125 @@ export const consultingServices: ConsultingService[] = [
       "Sales enablement",
       "AI-enabled marketing productivity",
       "Leadership coaching for marketing and sales teams",
+    ],
+  },
+  {
+    title: "AI & Machine Learning Consulting",
+    summary:
+      "Working out where AI genuinely pays back in your operation, and what has to be true before it will.",
+    icon: "lucide:brain-circuit",
+    category: "technology",
+    boundary:
+      "We identify, prioritise and govern the use cases. Model building and deployment runs with your team or an implementation partner.",
+    points: [
+      "Use-case discovery and prioritisation against business value",
+      "Data readiness assessment — whether your data can support the idea",
+      "Build, buy or partner decisions, with the cost of each",
+      "Proof-of-concept scoping and success criteria agreed up front",
+      "Model governance, risk and acceptable-use policy",
+      "Capability plan so the work does not depend on one hire",
+    ],
+  },
+  {
+    title: "Generative AI Consulting",
+    summary:
+      "Where large language models actually help a business, and where they quietly create risk.",
+    icon: "lucide:sparkles",
+    category: "technology",
+    boundary:
+      "We define the use case, the guardrails and how it gets evaluated. Build and integration stays with your team or a partner.",
+    points: [
+      "Opportunity mapping across support, sales, operations and documentation",
+      "Retrieval, prompting or fine-tuning — which the problem actually needs",
+      "Data privacy, confidentiality and IP boundaries before anything is sent",
+      "Staff acceptable-use policy and review process",
+      "Model and vendor selection, including what running it will cost",
+      "Pilot design with a measurable definition of working",
+    ],
+  },
+  {
+    title: "Digital Transformation Consulting",
+    summary:
+      "A sequenced plan for changing how the business runs — not a platform purchase with a new name.",
+    icon: "lucide:refresh-ccw",
+    category: "technology",
+    boundary:
+      "We assess, sequence and build the business case. Delivery runs with your team and the vendors you select.",
+    points: [
+      "Current-state assessment across process, systems and people",
+      "Process mapping and where the time and money actually go",
+      "Technology roadmap with phasing, so nothing goes big-bang",
+      "Business case and ROI model your board can test",
+      "Change management and adoption planning",
+      "Governance: who decides what, and how progress is reviewed",
+    ],
+  },
+  {
+    title: "Cloud & DevOps Consulting",
+    summary:
+      "Whether to move, what to move first, what it will cost to run, and how releases stop being events.",
+    icon: "lucide:cloud",
+    category: "technology",
+    boundary:
+      "We assess and plan. Migration and pipeline engineering is performed by your team or the managed service provider you appoint.",
+    points: [
+      "Cloud readiness assessment and migration sequencing",
+      "Architecture and landing-zone review against your actual workloads",
+      "Run-cost modelling and ongoing cost control",
+      "CI/CD and release maturity assessment",
+      "Managed service provider evaluation and selection",
+      "Internal capability plan so you are not locked to one vendor",
+    ],
+  },
+  {
+    title: "Data & Analytics Consulting",
+    summary:
+      "Getting to one version of the numbers, and making sure the ones on the dashboard are the ones that matter.",
+    icon: "lucide:chart-column",
+    category: "technology",
+    boundary:
+      "We define the model, the metrics and the tooling. Pipeline and dashboard build runs with your team or a partner.",
+    points: [
+      "Data maturity assessment across sources, quality and ownership",
+      "Defining the metrics the business will actually be run on",
+      "Warehouse and BI platform evaluation",
+      "Reporting governance and a single source of truth",
+      "Analytics operating model — who owns what, and who answers questions",
+      "Team capability and training plan",
+    ],
+  },
+  {
+    title: "Application Modernisation Consulting",
+    summary:
+      "Deciding what to do with the systems the business depends on and nobody wants to touch.",
+    icon: "lucide:layers",
+    category: "technology",
+    boundary:
+      "We assess the portfolio and recommend the route. Re-engineering and migration is delivered by your team or a partner.",
+    points: [
+      "Application portfolio assessment — cost, risk and business criticality",
+      "Rehost, replatform, refactor or replace, decided per application",
+      "Integration and data migration planning",
+      "Phasing that keeps the business running throughout",
+      "Build-versus-buy for replacements, and vendor shortlisting",
+      "Business case covering the cost of doing nothing",
+    ],
+  },
+  {
+    title: "SAP Consulting",
+    summary:
+      "Advisory for businesses evaluating, scoping or governing an SAP programme — before and alongside the implementation partner.",
+    icon: "lucide:database",
+    category: "technology",
+    boundary:
+      "DAIT is NOT an SAP implementation partner and does not configure SAP. We help define requirements, evaluate and select a certified partner, and govern the programme on your side of the table.",
+    points: [
+      "Readiness and fit-gap assessment against how you actually operate",
+      "S/4HANA migration decision support, including whether to wait",
+      "Module and scope definition before a quote is requested",
+      "Systems-integrator evaluation, shortlisting and commercial comparison",
+      "Business case and total cost of ownership over the full term",
+      "Programme governance and change management for your team",
     ],
   },
 ];

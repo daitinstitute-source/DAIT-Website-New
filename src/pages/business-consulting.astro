@@ -29,6 +29,7 @@ import {
   consultingStats,
   statsDisclaimer,
   consultingServices,
+  serviceCategories,
   consultingIndustries,
   consultingProcess,
   processBoundary,
@@ -210,9 +211,23 @@ const schema: WithContext<ProfessionalService> = {
       </p>
     </div>
 
-    <div class="mt-10 grid gap-6 md:grid-cols-2">
+    {/* Grouped by practice. Thirteen services in one grid is a wall, and the
+        split also makes the two propositions legible: growth work the founder
+        delivers, and technology advisory where a partner implements. */}
+    {serviceCategories.map((cat) => {
+      const inCat = consultingServices.filter(
+        (s) => (s.category ?? "growth") === cat.key,
+      );
+      return inCat.length === 0 ? null : (
+        <div class="mt-14 first:mt-10">
+          <div class="max-w-3xl" data-reveal>
+            <h3 class="text-2xl font-black text-ink-900">{cat.label}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-ink-500 measure">{cat.blurb}</p>
+          </div>
+
+          <div class="mt-8 grid gap-6 md:grid-cols-2">
       {
-        consultingServices.map((s, i) => (
+        inCat.map((s, i) => (
           <article
             class={`flex flex-col rounded-3xl border p-7 shadow-sm ${
               s.flagship
@@ -265,9 +280,12 @@ const schema: WithContext<ProfessionalService> = {
           </article>
         ))
       }
-    </div>
+          </div>
+        </div>
+      );
+    })}
 
-    <div class="mt-8" data-reveal>
+    <div class="mt-10" data-reveal>
       <Button href="#consultation" variant="outline" icon="lucide:arrow-right">
         Request a growth assessment
       </Button>

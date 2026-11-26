@@ -28,10 +28,18 @@ const enc = new TextEncoder();
 const b64url = (bytes: Uint8Array): string =>
   btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 
-const unb64url = (s: string): Uint8Array => {
+/**
+ * Returns Uint8Array<ArrayBuffer> explicitly, not the default
+ * Uint8Array<ArrayBufferLike>. crypto.subtle wants a BufferSource backed by a
+ * real ArrayBuffer, and `Uint8Array.from` widens to include SharedArrayBuffer,
+ * which does not satisfy it.
+ */
+const unb64url = (s: string): Uint8Array<ArrayBuffer> => {
   const pad = s.replace(/-/g, "+").replace(/_/g, "/");
   const bin = atob(pad + "=".repeat((4 - (pad.length % 4)) % 4));
-  return Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  const out = new Uint8Array(new ArrayBuffer(bin.length));
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
 };
 
 async function key(secret: string): Promise<CryptoKey> {
