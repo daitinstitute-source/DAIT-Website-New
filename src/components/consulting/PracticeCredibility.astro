@@ -1,0 +1,169 @@
+---
+/**
+ * PracticeCredibility — who stands behind the advice, on every service page.
+ *
+ * Replaces AdviserCard, which was wrong in three ways the owner caught:
+ *
+ *  1. It led with the founder as a single named adviser. The practice works as
+ *     a team and should be positioned as a consulting partner, not a solo
+ *     practitioner. He is now a short line with a link, not the centrepiece.
+ *  2. Its proof was consultingStats — ABM pipeline, enterprise logos won.
+ *     Those are marketing numbers. On an SAP or cloud page they read as a
+ *     marketing CV stapled to the wrong service. Technology pages now use
+ *     practiceCredentials instead, which are capability and model claims.
+ *  3. It was byte-identical on all thirteen pages. The credentials and the
+ *     industries shown are now chosen by practice, so a growth page and a
+ *     technology page do not read the same.
+ *
+ * The years figure is COMBINED team experience and must stay labelled that
+ * way. The founder's own figure is 9+ per his CV and lives in
+ * founderConsulting; the two are different claims and merging them would
+ * overstate both.
+ */
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+import Button from "../ui/Button.astro";
+import {
+  founderConsulting as f,
+  consultingStats,
+  statsDisclaimer,
+  practiceCredentials,
+  consultingIndustries,
+} from "../../data/consulting";
+
+interface Props {
+  service: string;
+  /** "growth" | "technology" — selects which credentials make sense here. */
+  category: string;
+  /** False while no credentials PDF exists, so the CTA is never a dead link. */
+  packAvailable: boolean;
+}
+const { service, category, packAvailable } = Astro.props;
+
+const isTechnology = category === "technology";
+
+/** Growth pages keep the marketing numbers; they are genuinely apt there. */
+const cards = isTechnology
+  ? practiceCredentials.map((c) => ({ icon: c.icon, value: c.value, label: c.label }))
+  : consultingStats.map((s) => ({ icon: "lucide:trending-up", value: s.value, label: s.label }));
+---
+
+<div>
+  <div class="max-w-3xl" data-reveal>
+    <SectionLabel>Who stands behind the advice</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+      A consulting team, <span class="text-orange-500">not a pitch deck</span>
+    </h2>
+    <p class="mt-4 text-ink-600 measure">
+      {service} engagements are scoped and run by people who have done this work inside
+      enterprise environments — across industries where the constraints are real, not
+      theoretical. You deal with the same people from first conversation to final
+      recommendation.
+    </p>
+  </div>
+
+  <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {
+      cards.map((c, i) => (
+        <div
+          class="rounded-2xl border border-border bg-white p-5 shadow-sm"
+          data-reveal
+          data-reveal-delay={(i * 0.05).toString()}
+        >
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-50 text-accent-600">
+            <Icon name={c.icon} size={17} />
+          </span>
+          <p class="mt-4 text-xl font-black leading-none text-ink-900">{c.value}</p>
+          <p class="mt-2 text-sm font-medium leading-snug text-ink-600">{c.label}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  {!isTechnology && (
+    <p class="mt-4 flex items-start gap-2 text-xs leading-relaxed text-ink-500" data-reveal>
+      <Icon name="lucide:info" size={14} class="mt-0.5 shrink-0" />
+      <span>{statsDisclaimer}</span>
+    </p>
+  )}
+
+  {/* Industries worked across. Sector familiarity is what an enterprise buyer
+      actually tests early — the constraints in a cement plant are not the
+      constraints in a hospital, and saying so is cheap to verify in a call. */}
+  <div class="mt-12" data-reveal>
+    <h3 class="text-xl font-black text-ink-900">Industries we have worked across</h3>
+    <p class="mt-2 text-sm leading-relaxed text-ink-500 measure">
+      Experience spanning these sectors, from the commercial side and from inside their
+      technology decisions.
+    </p>
+    <ul class="mt-5 flex flex-wrap gap-2">
+      {
+        consultingIndustries.map((ind) => (
+          <li class="inline-flex items-center gap-2 rounded-full border border-border bg-white px-3.5 py-1.5 text-sm font-semibold text-ink-600">
+            <Icon name={ind.icon} size={15} class="text-accent-500" />
+            {ind.name}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="mt-12 grid gap-6 lg:grid-cols-2" data-reveal>
+    {/* The founder, deliberately brief. He leads the practice; the page is not
+        about him, and his marketing titles are not the credential a technology
+        buyer is looking for. */}
+    <div class="flex items-start gap-4 rounded-2xl border border-border bg-surface-50 p-6">
+      <img
+        src={f.photo}
+        alt={`${f.name}, who leads DAIT's consulting practice`}
+        width="160"
+        height="160"
+        class="h-14 w-14 shrink-0 rounded-xl object-cover"
+        loading="lazy"
+      />
+      <div class="min-w-0">
+        <p class="text-sm font-black text-ink-900">Led by {f.name}</p>
+        <p class="mt-1 text-sm leading-relaxed text-ink-600">
+          Consulting partner for DAIT, with {f.experience} building marketing, pre-sales and
+          go-to-market functions across the USA, Asia, the Middle East and DACH. Alumnus of IIM
+          Raipur's Strategic CMO Programme.
+        </p>
+        <a
+          href="/business-consulting/#founder"
+          class="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-accent-500 transition-colors hover:text-accent-600"
+        >
+          Full background
+          <Icon name="lucide:arrow-right" size={15} />
+        </a>
+      </div>
+    </div>
+
+    {/* Named engagements cannot go on a public page — the owner's call, and the
+        right one for work done under other firms. The pack is how a serious
+        buyer gets them, and gating it is the point. */}
+    <div class="rounded-2xl border border-border-blue bg-accent-50/60 p-6">
+      <p class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-accent-600">
+        <Icon name="lucide:lock" size={14} />
+        Client work, on request
+      </p>
+      <p class="mt-3 text-sm leading-relaxed text-ink-600">
+        The enterprise customers and use cases behind this experience are not listed publicly.
+        The consulting profile names them, with the engagements and what each one changed.
+      </p>
+      {
+        packAvailable ? (
+          <div class="mt-5">
+            <Button data-consulting-pack size="sm" iconLeft="lucide:download">
+              Request the consulting profile
+            </Button>
+          </div>
+        ) : (
+          <p class="mt-5 text-sm font-semibold text-ink-500">
+            Ask on the enquiry form below — mention {service.toLowerCase()} and it comes back with
+            the reply.
+          </p>
+        )
+      }
+    </div>
+  </div>
+</div>

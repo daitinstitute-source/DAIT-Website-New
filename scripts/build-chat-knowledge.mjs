@@ -174,6 +174,7 @@ function renderConsulting(c) {
     `- URL: /business-consulting/${c.slug}/`,
     `- What it is: ${c.tagline}`,
     `- SCOPE LIMIT (always state this if asked): ${c.boundary}`,
+    ...(c.technologies?.length ? [`- Platforms advised on: ${c.technologies.join(", ")}`] : []),
   ].join("\n");
 }
 

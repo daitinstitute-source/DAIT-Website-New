@@ -46,8 +46,52 @@ export const consultingStats: ConsultingStat[] = [
   },
 ];
 
+/**
+ * Shown under consultingStats, which are GROWTH figures. It used to say "over
+ * a 9+ year career" and "not attributable to a single individual", which read
+ * as one person's CV and contradicted a practice that works as a team.
+ */
 export const statsDisclaimer =
-  "Figures reflect outcomes across professional engagements and team efforts over a 9+ year career, not results attributable to a single individual or guaranteed for any client.";
+  "Figures reflect outcomes across professional engagements and team efforts, not results attributable to any single individual or guaranteed for any client.";
+
+/**
+ * Credentials for the TECHNOLOGY practice.
+ *
+ * consultingStats are marketing numbers — ABM pipeline, enterprise logos won.
+ * Apt on a demand-generation page, irrelevant on an SAP or cloud page, where
+ * they made the section read as a marketing CV attached to the wrong service.
+ *
+ * These are capability and model claims instead, which is what a technology
+ * buyer is assessing: how much experience stands behind the advice, whether
+ * it has met enterprise scale, and whether the adviser profits from the
+ * recommendation.
+ *
+ * "15+ years" is COMBINED team experience, stated by the owner. It is not the
+ * founder's own figure, which data above keeps at 9+ per his CV — do not
+ * merge the two.
+ */
+export const practiceCredentials = [
+  {
+    icon: "lucide:users",
+    value: "15+ years",
+    label: "Combined industry experience across the team",
+  },
+  {
+    icon: "lucide:building-2",
+    value: "Enterprise",
+    label: "Engagements with enterprise customers and use cases",
+  },
+  {
+    icon: "lucide:scale",
+    value: "Advisory only",
+    label: "No implementation revenue, no vendor commission",
+  },
+  {
+    icon: "lucide:network",
+    value: "Partner network",
+    label: "Delivery through specialists you select, not us",
+  },
+] as const;
 
 /* --------------------------------------------------------------- services
  *
