@@ -294,8 +294,17 @@ export const founderConsulting = {
   name: "Amol G. Dhakne",
   positioning:
     "B2B Growth Strategist | Marketing & Pre-Sales Leader | Fractional CMO | Corporate Trainer",
-  /** 9+ per the CV. Do not inflate to 10+ without an updated, verified CV. */
-  experience: "9+ years",
+  /**
+   * 10+, confirmed by the owner on 2026-11-27. This read 9+ with a note not to
+   * inflate it; that guard was against the number drifting upward on its own,
+   * not against the owner correcting his own record. It also resolves a real
+   * inconsistency — config/site.ts and data/brochure.ts already said 10+, so
+   * the site contradicted itself.
+   *
+   * The guard still stands for everyone else: do not raise this again without
+   * the owner confirming it.
+   */
+  experience: "10+ years",
   bio: [
     "Amol G. Dhakne is a B2B marketing and growth professional with experience across IT services, SaaS, cloud, AI, data analytics, digital transformation and B2C services. His work has centred on building marketing functions from scratch, developing go-to-market strategies, designing account-based marketing programmes, strengthening sales enablement and leading cross-functional marketing teams.",
     "He has worked across the USA, Asia, the Middle East and DACH markets, supporting business growth through targeted outreach, executive engagement, partner marketing, content-led demand generation and enterprise sales enablement.",
@@ -305,7 +314,7 @@ export const founderConsulting = {
   /**
    * Credential cards, same treatment as the homepage founder block.
    * IIM Raipur was an executive PROGRAMME, not a degree — keep that wording.
-   * Years stay at 9+ per the CV; do not inflate without a verified update.
+   * Years are 10+ as confirmed by the owner; do not change without his say-so.
    */
   credentials: [
     {
@@ -315,7 +324,7 @@ export const founderConsulting = {
     },
     {
       icon: "lucide:briefcase-business",
-      value: "9+ years",
+      value: "10+ years",
       label: "B2B marketing & pre-sales leadership",
     },
     {

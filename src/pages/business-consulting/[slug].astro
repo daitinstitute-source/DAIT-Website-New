@@ -8,10 +8,12 @@
  * convert on a card in a grid of thirteen. They also let you see which service
  * a lead came from, because the enquiry form carries the slug.
  *
- * No city in these URLs, unlike the course pages. Consulting is sold
- * nationally — the ProfessionalService schema on the hub says areaServed:
- * India — and a city in the slug would narrow the very terms these pages are
- * meant to win.
+ * These slugs carry the city, like the course pages. They first did not,
+ * on the reasoning that consulting sells nationally — but the owner has
+ * confirmed the practice is deliberately local for now, so the URLs, the copy
+ * and the schema all say the same thing. Area comes from localAreaServed() in
+ * data/seo-defaults.ts, shared with the LocalBusiness node so the two cannot
+ * disagree about where the business operates.
  */
 import { getCollection, render } from "astro:content";
 import type { GetStaticPaths } from "astro";
@@ -27,6 +29,7 @@ import PracticeCredibility from "../../components/consulting/PracticeCredibility
 import ToolsMarquee from "../../components/sections/ToolsMarquee.astro";
 import { siteConfig } from "../../config/site";
 import { canonicalUrl } from "../../lib/seo";
+import { localAreaServed } from "../../data/seo-defaults";
 import { existsSync } from "node:fs";
 
 /**
@@ -66,7 +69,7 @@ const serviceSchema: WithContext<Service> = {
   url,
   serviceType: d.title,
   provider: { "@id": `${siteConfig.url}/#organization` },
-  areaServed: { "@type": "Country", name: "India" },
+  areaServed: localAreaServed(),
   ...(d.deliverables.length
     ? {
         hasOfferCatalog: {

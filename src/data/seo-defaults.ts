@@ -71,6 +71,36 @@ export function educationalOrganizationSchema(): WithContext<EducationalOrganiza
  * ("IT institute near me", "… in Sambhaji Nagar"). Linked to the org node.
  * geo + hasMap emit only once the real centre coords / Maps link are set in site.ts.
  */
+/**
+ * Where DAIT serves — ONE definition, used by every schema that declares it.
+ *
+ * The city carries its former name as an alternateName, so the entity resolves
+ * for "Aurangabad" searches without that word appearing in visible copy. The
+ * localities follow as Place nodes contained in the city.
+ *
+ * Consulting used to declare areaServed: Country India while the courses
+ * declared the city. Two schemas on one domain disagreeing about where the
+ * business operates is exactly the kind of conflicting signal that weakens a
+ * local listing, and the owner has since confirmed the intent is this city and
+ * nearby only. Changing the radius now means changing serviceAreas in
+ * config/site.ts, and everything follows.
+ */
+export function localAreaServed() {
+  const center = siteConfig.centers[0];
+  return [
+    {
+      "@type": "City" as const,
+      name: center.city,
+      ...(center.alternateCityName ? { alternateName: center.alternateCityName } : {}),
+    },
+    ...(center.serviceAreas ?? []).map((area) => ({
+      "@type": "Place" as const,
+      name: area,
+      containedInPlace: { "@type": "City" as const, name: center.city },
+    })),
+  ];
+}
+
 export function localBusinessSchema(): WithContext<LocalBusiness> {
   const center = siteConfig.centers[0];
   return {
@@ -98,18 +128,7 @@ export function localBusinessSchema(): WithContext<LocalBusiness> {
      * hyperlocal signal, and it is only credible while every entry is somewhere
      * a student would actually travel from.
      */
-    areaServed: [
-      {
-        "@type": "City",
-        name: center.city,
-        ...(center.alternateCityName ? { alternateName: center.alternateCityName } : {}),
-      },
-      ...(center.serviceAreas ?? []).map((area) => ({
-        "@type": "Place" as const,
-        name: area,
-        containedInPlace: { "@type": "City" as const, name: center.city },
-      })),
-    ],
+    areaServed: localAreaServed(),
     ...(center.geo
       ? { geo: { "@type": "GeoCoordinates", latitude: center.geo.lat, longitude: center.geo.lng } }
       : {}),

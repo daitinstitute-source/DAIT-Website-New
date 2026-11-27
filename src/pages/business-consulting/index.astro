@@ -25,6 +25,7 @@ import CompanyReferences from "../../components/consulting/CompanyReferences.ast
 import ConsultingForm from "../../components/forms/ConsultingForm.tsx";
 import { siteConfig } from "../../config/site";
 import { canonicalUrl } from "../../lib/seo";
+import { localAreaServed } from "../../data/seo-defaults";
 import {
   consultingStats,
   statsDisclaimer,
@@ -105,7 +106,7 @@ const schema: WithContext<ProfessionalService> = {
     ? "Independent business and technology advisory for midsize and enterprise companies: B2B growth strategy and sales enablement, plus consulting across AI, data, cloud, SAP and application modernisation."
     : "Independent B2B growth advisory for midsize and enterprise companies: go-to-market strategy, demand generation, sales enablement, vendor selection and corporate training.",
   parentOrganization: { "@id": `${siteConfig.url}/#organization` },
-  areaServed: { "@type": "Country", name: "India" },
+  areaServed: localAreaServed(),
   address: {
     "@type": "PostalAddress",
     addressLocality: centre.city,

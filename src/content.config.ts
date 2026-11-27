@@ -160,10 +160,11 @@ const blog = defineCollection({
 /**
  * Consulting services that have their own landing page.
  *
- * These compete on national, high-intent B2B terms ("SAP consulting India",
- * "application modernisation consulting"), so unlike the course pages their
- * slugs carry NO city — the buyer is rarely in Sambhaji Nagar and the site's
- * ProfessionalService schema already declares areaServed: India.
+ * Slugs carry the city, like the course pages, because the owner has
+ * confirmed the practice serves Chhatrapati Sambhajinagar (still widely
+ * searched as Aurangabad) and the surrounding area only for now. The schema
+ * agrees: areaServed comes from localAreaServed() in data/seo-defaults.ts,
+ * shared with the LocalBusiness node.
  *
  * A service lives EITHER here or in the `consultingServices` array in
  * src/data/consulting.ts, never both, or the hub renders it twice. Growth
