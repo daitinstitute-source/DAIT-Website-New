@@ -22,8 +22,18 @@ import Section from "../../components/ui/Section.astro";
 import SectionLabel from "../../components/ui/SectionLabel.astro";
 import Button from "../../components/ui/Button.astro";
 import ConsultingForm from "../../components/forms/ConsultingForm.tsx";
+import IndependenceNote from "../../components/consulting/IndependenceNote.astro";
+import AdviserCard from "../../components/consulting/AdviserCard.astro";
 import { siteConfig } from "../../config/site";
 import { canonicalUrl } from "../../lib/seo";
+import { existsSync } from "node:fs";
+
+/**
+ * The credentials pack is a real PDF the owner supplies; until it exists the
+ * CTA would be a dead download, so the component falls back to asking on the
+ * enquiry form. Same gate-on-the-asset pattern as the chat widget.
+ */
+const packAvailable = existsSync("assets/credentials/dait-consulting-profile.pdf");
 
 export const getStaticPaths = (async () => {
   const services = await getCollection("consulting");
@@ -131,8 +141,11 @@ if (d.faqs.length > 0) {
         <p class="mt-5 text-lg leading-relaxed text-white/75 measure">{d.heroIntro}</p>
 
         <div class="mt-8 flex flex-wrap gap-3">
+          {/* Names the first deliverable, not the meeting. A buyer approving
+              "an SAP readiness assessment" knows what they are agreeing to;
+              one approving "a consultation" does not. */}
           <Button href="#consultation" iconLeft="lucide:calendar-check">
-            Book a consultation
+            {d.ctaLabel ?? `Scope a ${d.title.replace(" Consulting", "")} engagement`}
           </Button>
           <Button href="/business-consulting/" variant="ghost-on-dark" iconLeft="lucide:arrow-left">
             All consulting services
@@ -257,10 +270,22 @@ if (d.faqs.length > 0) {
     )
   }
 
+  {/* ── Why independent (DARK) ───────────────────────────────
+      The differentiator gets its own section, because it is the one claim a
+      Big 4 or SI page structurally cannot make. */}
+  <Section tone="dark">
+    <IndependenceNote service={d.title} boundary={d.boundary} />
+  </Section>
+
+  <!-- ── Who you work with (WHITE) ─────────────────────────── -->
+  <Section tone="white">
+    <AdviserCard service={d.title} packAvailable={packAvailable} />
+  </Section>
+
   {/* Optional long-form body, same slot pattern as the program pages. */}
   {
     hasBody && (
-      <Section tone="white">
+      <Section tone="surface">
         <div class="article measure" data-reveal>
           <Content />
         </div>
@@ -271,7 +296,10 @@ if (d.faqs.length > 0) {
   <!-- ── FAQs (LIGHT) ──────────────────────────────────────── -->
   {
     d.faqs.length > 0 && (
-      <Section tone="surface">
+      /* White when an MDX body precedes this, since that section is also
+         surface and the two would meet with no visual break. No consulting
+         page has a body today, so this only matters for the first one. */
+      <Section tone={hasBody ? "white" : "surface"}>
         <div class="max-w-3xl" data-reveal>
           <SectionLabel>Common questions</SectionLabel>
           <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">

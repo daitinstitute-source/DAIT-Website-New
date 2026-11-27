@@ -192,6 +192,13 @@ const consulting = defineCollection({
     boundary: z.string(),
     /** Bullets for the hub card. */
     points: z.array(z.string()),
+    /**
+     * The primary CTA wording. A CTA that names the outcome converts better
+     * than "Book a consultation", and the natural first step genuinely differs
+     * per service — a readiness assessment is not a workshop. Falls back to a
+     * generic ask so a new service is never missing a button.
+     */
+    ctaLabel: z.string().optional(),
 
     // ---- search metadata, kept apart from the visible copy (as programs do)
     seoTitle: z.string().optional(),

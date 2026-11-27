@@ -1,0 +1,93 @@
+---
+/**
+ * IndependenceNote — the argument a Big 4 or SI page structurally cannot make.
+ *
+ * Benchmarked against KPMG India's SAP services page, which is the convention
+ * an enterprise buyer expects: partner badges, fourteen capability blocks,
+ * proprietary products, named partners, case studies, a metric testimonial.
+ * DAIT cannot compete on any of that and should not pretend to.
+ *
+ * What that page states nowhere is a scope limit. Every recommendation on it
+ * is one the firm would be paid to deliver. That asymmetry is the whole
+ * position here, so it gets its own section rather than a line in the hero.
+ *
+ * Deliberately NOT a claim about being better. It is a claim about being
+ * differently incentivised, which is checkable.
+ */
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+
+interface Props {
+  /** Service name, so the closing line names the decision at hand. */
+  service: string;
+  /** The service's own scope limit, restated where the argument lands. */
+  boundary: string;
+}
+const { service, boundary } = Astro.props;
+
+const points = [
+  {
+    icon: "lucide:receipt",
+    title: "No implementation revenue",
+    body: "We are not bidding to build what we recommend, so 'build it' and 'buy it' and 'do nothing' all cost us the same.",
+  },
+  {
+    icon: "lucide:handshake",
+    title: "No vendor commission",
+    body: "No referral fees, no reseller margin, no partner tier to protect. A shortlist is a shortlist, not a favour being returned.",
+  },
+  {
+    icon: "lucide:file-pen",
+    title: "Your requirements, not a bidder's",
+    body: "Requirements written by the firm hoping to deliver them is the most expensive habit in enterprise buying. Yours are written on your side of the table.",
+  },
+  {
+    icon: "lucide:user-check",
+    title: "One named adviser",
+    body: "You meet the person who does the work. Nobody is swapped out for a junior team after the pitch, because there is no pitch team.",
+  },
+];
+---
+
+<div>
+  <div class="max-w-3xl" data-reveal>
+    <SectionLabel onDark>Why independent</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-white">
+      The adviser who <span class="text-orange-400">isn't bidding for the work</span>
+    </h2>
+    <p class="mt-4 text-white/70 measure">
+      Most {service.toLowerCase()} advice comes from a firm that also wants to deliver it. That is
+      not dishonest, but it is a structural conflict, and it shows up in scope decisions that
+      quietly grow the contract.
+    </p>
+  </div>
+
+  <div class="mt-10 grid gap-5 sm:grid-cols-2">
+    {
+      points.map((p, i) => (
+        <div
+          class="rounded-2xl border border-white/10 bg-white/[0.05] p-6"
+          data-reveal
+          data-reveal-delay={(i * 0.06).toString()}
+        >
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-orange-300">
+            <Icon name={p.icon} size={19} />
+          </span>
+          <h3 class="mt-4 text-base font-black text-white">{p.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-white/70">{p.body}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  {/* The boundary again, where the independence argument lands. Saying what we
+      do not do is the proof of the claim above, not a disclaimer buried in a
+      footer. */}
+  <p
+    class="mt-8 flex items-start gap-3 rounded-2xl border border-orange-400/30 bg-orange-500/10 p-5 text-sm leading-relaxed text-white/85"
+    data-reveal
+  >
+    <Icon name="lucide:shield-check" size={18} class="mt-0.5 shrink-0 text-orange-400" />
+    <span><strong class="font-bold text-white">Where we stop:</strong> {boundary}</span>
+  </p>
+</div>

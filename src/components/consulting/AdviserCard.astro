@@ -1,0 +1,143 @@
+---
+/**
+ * AdviserCard — who the buyer actually works with, on every service page.
+ *
+ * The gap this closes: the thirteen service pages carried no proof of any
+ * kind. No case study, no client, no metric, no named human, no credential.
+ * Well-written prose with nothing standing behind it reads as a brochure, and
+ * an enterprise buyer comparing this against a Big 4 page notices instantly.
+ *
+ * Client names cannot go on the public site — that is the owner's decision and
+ * the right one for work done under other firms. So proof here is the two
+ * things that CAN be said: a named, credentialled adviser, and a track record
+ * carrying its own disclaimer. The specifics live in the credentials pack,
+ * which is gated so the owner knows who holds them.
+ *
+ * Figures and wording come from data/consulting.ts. Do not inflate them here —
+ * that file carries explicit notes about the years and the IIM credential.
+ */
+import { Icon } from "astro-icon/components";
+import SectionLabel from "../ui/SectionLabel.astro";
+import Button from "../ui/Button.astro";
+import {
+  founderConsulting as f,
+  consultingStats,
+  statsDisclaimer,
+} from "../../data/consulting";
+
+interface Props {
+  /** Shown on the pack CTA so the ask names the service in hand. */
+  service: string;
+  /** False while no credentials PDF exists, so the CTA is never a dead link. */
+  packAvailable: boolean;
+}
+const { service, packAvailable } = Astro.props;
+---
+
+<div>
+  <div class="max-w-3xl" data-reveal>
+    <SectionLabel>Who you work with</SectionLabel>
+    <h2 class="mt-3 text-3xl sm:text-4xl text-ink-900">
+      One adviser, <span class="text-orange-500">named and accountable</span>
+    </h2>
+    <p class="mt-4 text-ink-600 measure">
+      You are not handed to a delivery team after the first meeting. The person below scopes the
+      work, runs it, and is the one you hold to it.
+    </p>
+  </div>
+
+  <div class="mt-10 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
+    <div class="rounded-3xl border border-border bg-white p-7 shadow-sm" data-reveal>
+      <div class="flex items-start gap-4">
+        <img
+          src={f.photo}
+          alt={`${f.name}, ${f.positioning.split("|")[0].trim()}`}
+          width="200"
+          height="200"
+          class="h-16 w-16 shrink-0 rounded-2xl object-cover"
+          loading="lazy"
+        />
+        <div class="min-w-0">
+          <p class="text-lg font-black leading-tight text-ink-900">{f.name}</p>
+          <p class="mt-1 text-xs leading-snug text-ink-500">{f.positioning}</p>
+        </div>
+      </div>
+
+      <ul class="mt-6 space-y-3">
+        {
+          f.credentials.map((c) => (
+            <li class="flex items-start gap-3">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-accent-600">
+                <Icon name={c.icon} size={16} />
+              </span>
+              <span class="min-w-0">
+                <span class="block text-sm font-bold text-ink-900">{c.value}</span>
+                <span class="block text-xs leading-snug text-ink-500">{c.label}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a
+        href="/business-consulting/#founder"
+        class="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-accent-500 transition-colors hover:text-accent-600"
+      >
+        Full background
+        <Icon name="lucide:arrow-right" size={15} />
+      </a>
+    </div>
+
+    <div data-reveal data-reveal-delay="0.08">
+      <dl class="grid gap-4 sm:grid-cols-2">
+        {
+          consultingStats.map((s) => (
+            <div class="rounded-2xl border border-border bg-surface-50 p-5">
+              <dt class="sr-only">{s.label}</dt>
+              <dd>
+                <span class="block text-2xl font-black leading-none text-ink-900">{s.value}</span>
+                <span class="mt-2 block text-sm font-semibold leading-snug text-ink-600">
+                  {s.label}
+                </span>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <p class="mt-4 flex items-start gap-2 text-xs leading-relaxed text-ink-500">
+        <Icon name="lucide:info" size={14} class="mt-0.5 shrink-0" />
+        <span>{statsDisclaimer}</span>
+      </p>
+
+      {/* Named engagements cannot go on a public page. The pack is how a
+          serious buyer gets them, and gating it is the point: the owner knows
+          who is holding those names. */}
+      <div class="mt-6 rounded-2xl border border-border-blue bg-accent-50/60 p-6">
+        <p class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-accent-600">
+          <Icon name="lucide:lock" size={14} />
+          Client work, on request
+        </p>
+        <p class="mt-3 text-sm leading-relaxed text-ink-600">
+          The organisations behind these figures are not listed publicly. The consulting profile
+          names them, with the engagements and what each one changed — shared directly with
+          buyers who ask.
+        </p>
+        {
+          packAvailable ? (
+            <div class="mt-5">
+              <Button data-consulting-pack size="sm" iconLeft="lucide:download">
+                Request the consulting profile
+              </Button>
+            </div>
+          ) : (
+            <p class="mt-5 text-sm font-semibold text-ink-500">
+              Ask for it on the enquiry form below — mention {service.toLowerCase()} and it comes
+              back with the reply.
+            </p>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</div>
