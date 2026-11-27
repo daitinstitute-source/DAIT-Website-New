@@ -344,7 +344,7 @@ export const siteConfig = {
      * To restore: set `draft: false` in the seven MDX files whose
      * `category` is "technology", and flip this to true.
      */
-    showTechnologyConsulting: false,
+    showTechnologyConsulting: true,
   },
 
   // NOTE: the student portal lives on its own subdomain and is deliberately
