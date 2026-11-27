@@ -199,6 +199,17 @@ const consulting = defineCollection({
      * generic ask so a new service is never missing a button.
      */
     ctaLabel: z.string().optional(),
+    /**
+     * Platforms and tools this service advises ON — not tools DAIT implements
+     * with. The distinction is the whole practice, so the rendered label says
+     * "advise on" and must keep saying it.
+     *
+     * Kept short on purpose. The best example of this section in the wild
+     * (Innowise's Tableau page) lists four product names beside a named
+     * executive quote; authority comes from placement, not from a catalogue.
+     * Only list what a buyer would actually be choosing between.
+     */
+    technologies: z.array(z.string()).default([]),
 
     // ---- search metadata, kept apart from the visible copy (as programs do)
     seoTitle: z.string().optional(),

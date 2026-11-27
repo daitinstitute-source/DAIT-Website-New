@@ -32,6 +32,71 @@
       "source": "/programs/digital-marketing-course-sambhaji-nagar",
       "destination": "/digital-marketing-course-sambhaji-nagar/",
       "permanent": true
+    },
+    {
+      "source": "/business-consulting/ai-ml-consulting",
+      "destination": "/business-consulting/ai-ml-consulting-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/application-modernisation-consulting",
+      "destination": "/business-consulting/application-modernisation-consulting-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/b2b-growth-strategy",
+      "destination": "/business-consulting/b2b-growth-strategy-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/cloud-devops-consulting",
+      "destination": "/business-consulting/cloud-devops-consulting-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/corporate-training-coaching",
+      "destination": "/business-consulting/corporate-training-coaching-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/data-analytics-consulting",
+      "destination": "/business-consulting/data-analytics-consulting-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/demand-generation-abm",
+      "destination": "/business-consulting/demand-generation-abm-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/digital-transformation-consulting",
+      "destination": "/business-consulting/digital-transformation-consulting-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/generative-ai-consulting",
+      "destination": "/business-consulting/generative-ai-consulting-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/manufacturing-b2b-growth",
+      "destination": "/business-consulting/manufacturing-b2b-growth-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/sales-enablement-pipeline",
+      "destination": "/business-consulting/sales-enablement-pipeline-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/sap-consulting",
+      "destination": "/business-consulting/sap-consulting-sambhaji-nagar/",
+      "permanent": true
+    },
+    {
+      "source": "/business-consulting/technology-vendor-advisory",
+      "destination": "/business-consulting/technology-vendor-advisory-sambhaji-nagar/",
+      "permanent": true
     }
   ],
   "headers": [
